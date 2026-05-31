@@ -5,7 +5,7 @@ export const siteSettingsSchema = defineType({
   title: "Paramètres du site",
   type: "document",
   // Singleton — only one document of this type
-  __experimental_actions: ["update", "publish"],
+  // Use structure builder to hide "Create" button in Sanity Studio
   fields: [
     defineField({
       name: "siteName",

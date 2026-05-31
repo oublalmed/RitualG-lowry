@@ -120,7 +120,7 @@ export const blogPostSchema = defineType({
       subtitle: "publishedAt",
       media: "featuredImage",
     },
-    prepare({ title, subtitle, media }: { title?: string; subtitle?: string; media?: unknown }) {
+    prepare({ title, subtitle, media }: { title?: string; subtitle?: string; media?: string }) {
       return {
         title: title ?? "Sans titre",
         subtitle: subtitle ? new Date(subtitle).toLocaleDateString("fr-MA") : "Non publié",

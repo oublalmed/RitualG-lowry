@@ -67,7 +67,7 @@ export const categorySchema = defineType({
       subtitle: "parent.name",
       media: "image",
     },
-    prepare({ title, subtitle, media }: { title?: string; subtitle?: string; media?: unknown }) {
+    prepare({ title, subtitle, media }: { title?: string; subtitle?: string; media?: string }) {
       return {
         title: title ?? "Sans nom",
         subtitle: subtitle ? `Sous-catégorie de: ${subtitle}` : "Catégorie principale",
