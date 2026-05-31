@@ -49,8 +49,8 @@ export function Header() {
   const [mobileOpen, setMobileOpen] = useState(false);
   const megaMenuTimer = useRef<ReturnType<typeof setTimeout> | null>(null);
 
-  const { getTotalItems, openCart } = useCartStore();
-  const cartCount = getTotalItems();
+  const { getItemCount, openCart } = useCartStore();
+  const cartCount = getItemCount();
 
   useEffect(() => {
     const handleScroll = () => {

@@ -67,14 +67,15 @@ export function ProductPageClient({ product, relatedProducts }: ProductPageClien
 
   const handleAddToCart = useCallback(() => {
     addItem({
+      id: `${product._id}-${selectedVariant?.label ?? 'default'}`,
       productId: product._id,
-      variantId: selectedVariant?.label,
+      sanityProductId: product._id,
+      sanityVariantId: selectedVariant?.label,
       name: product.name,
+      variantLabel: selectedVariant?.label ?? 'Standard',
       slug: product.slug,
-      image: null,
+      imageUrl: undefined,
       price: currentPrice,
-      quantity,
-      size: selectedVariant?.label,
     });
   }, [addItem, product, selectedVariant, currentPrice, quantity]);
 

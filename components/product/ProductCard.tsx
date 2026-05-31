@@ -50,12 +50,14 @@ export function ProductCard({ product }: ProductCardProps) {
   const handleAddToCart = (e: React.MouseEvent) => {
     e.preventDefault();
     addItem({
+      id: `${product.id}-default`,
       productId: product.id,
+      sanityProductId: product.id,
       name: product.name,
+      variantLabel: 'Standard',
       slug,
-      image: null,
+      imageUrl: undefined,
       price: product.price,
-      quantity: 1,
     });
   };
 
