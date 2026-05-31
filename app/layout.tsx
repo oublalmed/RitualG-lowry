@@ -2,6 +2,7 @@ import type { Metadata, Viewport } from 'next';
 import { Playfair_Display, Cormorant_Garamond, Inter } from 'next/font/google';
 import './globals.css';
 import { QueryProvider } from '@/components/providers/QueryProvider';
+import { SessionProvider } from '@/components/providers/SessionProvider';
 import { CartDrawer } from '@/components/cart/CartDrawer';
 
 const playfair = Playfair_Display({
@@ -121,10 +122,12 @@ export default function RootLayout({
         />
       </head>
       <body className="min-h-full flex flex-col bg-[#FAF6EF] font-sans">
-        <QueryProvider>
-          {children}
-          <CartDrawer />
-        </QueryProvider>
+        <SessionProvider>
+          <QueryProvider>
+            {children}
+            <CartDrawer />
+          </QueryProvider>
+        </SessionProvider>
       </body>
     </html>
   );
