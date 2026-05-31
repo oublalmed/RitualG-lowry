@@ -62,7 +62,7 @@ export function ProductCard({ product }: ProductCardProps) {
   return (
     <article className="group flex flex-col">
       {/* Image container */}
-      <Link href={`/boutique/${slug}`} className="block overflow-hidden">
+      <Link href={`/produit/${slug}`} className="block overflow-hidden">
         <div
           className="relative aspect-[3/4] w-full overflow-hidden"
           style={
@@ -106,7 +106,7 @@ export function ProductCard({ product }: ProductCardProps) {
             {product.category}
           </span>
         )}
-        <Link href={`/boutique/${slug}`}>
+        <Link href={`/produit/${slug}`}>
           <h3 className="font-playfair font-bold text-base text-[#1A1410] hover:text-[#C9A875] transition-colors leading-snug">
             {product.name}
           </h3>

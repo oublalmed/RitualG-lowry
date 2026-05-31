@@ -157,9 +157,10 @@ export function FilterSidebar({ filters, onChange, onReset }: FilterSidebarProps
           max={80}
           step={5}
           value={[filters.minLength, filters.maxLength]}
-          onValueChange={([min, max]) =>
-            onChange({ ...filters, minLength: min, maxLength: max })
-          }
+          onValueChange={(vals) => {
+            const arr = Array.isArray(vals) ? vals : [vals];
+            onChange({ ...filters, minLength: arr[0] ?? filters.minLength, maxLength: arr[1] ?? filters.maxLength });
+          }}
           className="[&_[data-slot=slider-track]]:bg-[#3D2B1F]/15 [&_[data-slot=slider-range]]:bg-[#C9A875] [&_[data-slot=slider-thumb]]:border-[#C9A875] [&_[data-slot=slider-thumb]]:bg-[#FAF6EF]"
         />
         <div className="flex justify-between text-xs font-inter text-[#3D2B1F]/40">
@@ -185,9 +186,10 @@ export function FilterSidebar({ filters, onChange, onReset }: FilterSidebarProps
           max={2000}
           step={50}
           value={[filters.minPrice, filters.maxPrice]}
-          onValueChange={([min, max]) =>
-            onChange({ ...filters, minPrice: min, maxPrice: max })
-          }
+          onValueChange={(vals) => {
+            const arr = Array.isArray(vals) ? vals : [vals];
+            onChange({ ...filters, minPrice: arr[0] ?? filters.minPrice, maxPrice: arr[1] ?? filters.maxPrice });
+          }}
           className="[&_[data-slot=slider-track]]:bg-[#3D2B1F]/15 [&_[data-slot=slider-range]]:bg-[#C9A875] [&_[data-slot=slider-thumb]]:border-[#C9A875] [&_[data-slot=slider-thumb]]:bg-[#FAF6EF]"
         />
         <div className="flex justify-between text-xs font-inter text-[#3D2B1F]/40">
