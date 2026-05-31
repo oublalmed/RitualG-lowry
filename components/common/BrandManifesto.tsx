@@ -1,63 +1,87 @@
-"use client";
+'use client';
+
+import { motion } from 'framer-motion';
+import { Sparkles, ShieldCheck, Leaf, Heart } from 'lucide-react';
+import { fadeInUp, staggerContainer } from '@/lib/animations';
+
+const pillars = [
+  {
+    icon: Sparkles,
+    title: 'Qualité Premium',
+    description: 'Extensions 100% naturelles, certifiées Remy',
+  },
+  {
+    icon: ShieldCheck,
+    title: 'Effet Naturel',
+    description: 'Mélange parfait avec vos cheveux',
+  },
+  {
+    icon: Leaf,
+    title: 'Confort Absolu',
+    description: 'Légères et respirantes, portez les toute la journée',
+  },
+  {
+    icon: Heart,
+    title: 'Toutes Textures',
+    description: 'Lisses, bouclées, afro — pour toutes les femmes',
+  },
+];
 
 export function BrandManifesto() {
-  const pillars = [
-    {
-      number: "01",
-      title: "Botanically Sourced",
-      description:
-        "Every ingredient is ethically sourced from the world's richest botanicals — from Moroccan argan groves to Brazilian rainforests.",
-    },
-    {
-      number: "02",
-      title: "Science-Backed",
-      description:
-        "Our formulations are developed by leading trichologists and chemists to deliver results that are clinically proven.",
-    },
-    {
-      number: "03",
-      title: "Cruelty-Free",
-      description:
-        "We never test on animals. Our products are vegan, free of harmful chemicals, and certified by Leaping Bunny.",
-    },
-  ];
-
   return (
-    <section className="py-24 md:py-32 bg-brand-mocha">
+    <section className="py-24 md:py-32 bg-[#3D2B1F]">
       <div className="container mx-auto px-4 md:px-8 lg:px-12">
-        {/* Centered tagline */}
-        <div className="text-center mb-20">
-          <p className="text-xs font-inter font-semibold uppercase tracking-[0.25em] text-brand-champagne mb-4">
-            Our Philosophy
-          </p>
-          <h2 className="text-4xl md:text-5xl lg:text-6xl font-playfair font-bold italic text-brand-ivory leading-tight max-w-2xl mx-auto">
-            Beauty rooted in ritual
-          </h2>
-          <p className="mt-6 text-lg font-cormorant text-brand-cream/70 max-w-xl mx-auto leading-relaxed">
-            We believe beautiful hair is a daily ceremony — one that deserves
-            only the finest, most thoughtfully crafted ingredients.
-          </p>
-        </div>
+        {/* Header */}
+        <motion.div
+          className="text-center mb-16"
+          variants={staggerContainer}
+          initial="hidden"
+          whileInView="visible"
+          viewport={{ once: true }}
+        >
+          <motion.p
+            variants={fadeInUp}
+            className="text-xs font-inter font-semibold uppercase tracking-[0.15em] text-[#C9A875] mb-4"
+          >
+            Notre Engagement
+          </motion.p>
+          <motion.h2
+            variants={fadeInUp}
+            className="text-4xl md:text-5xl lg:text-6xl font-playfair font-bold italic text-[#FAF6EF] leading-tight max-w-2xl mx-auto"
+          >
+            L&apos;Excellence à Votre Service
+          </motion.h2>
+        </motion.div>
 
         {/* Pillars */}
-        <div className="grid grid-cols-1 md:grid-cols-3 gap-8 md:gap-12">
-          {pillars.map((pillar) => (
-            <div
-              key={pillar.number}
-              className="flex flex-col border-t border-brand-champagne/20 pt-8"
-            >
-              <span className="text-xs font-inter font-semibold text-brand-champagne/50 tracking-widest mb-4">
-                {pillar.number}
-              </span>
-              <h3 className="text-xl font-playfair font-bold italic text-brand-ivory mb-3">
-                {pillar.title}
-              </h3>
-              <p className="text-sm font-cormorant text-brand-cream/60 leading-relaxed">
-                {pillar.description}
-              </p>
-            </div>
-          ))}
-        </div>
+        <motion.div
+          className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-8 md:gap-6"
+          variants={staggerContainer}
+          initial="hidden"
+          whileInView="visible"
+          viewport={{ once: true }}
+        >
+          {pillars.map((pillar) => {
+            const Icon = pillar.icon;
+            return (
+              <motion.div
+                key={pillar.title}
+                variants={fadeInUp}
+                className="flex flex-col items-center text-center border-t border-[#C9A875]/20 pt-8"
+              >
+                <div className="w-12 h-12 flex items-center justify-center mb-4">
+                  <Icon className="h-8 w-8 text-[#C9A875]" />
+                </div>
+                <h3 className="text-lg font-playfair font-bold italic text-[#FAF6EF] mb-2">
+                  {pillar.title}
+                </h3>
+                <p className="text-sm font-inter text-[#FAF6EF]/60 leading-relaxed">
+                  {pillar.description}
+                </p>
+              </motion.div>
+            );
+          })}
+        </motion.div>
       </div>
     </section>
   );

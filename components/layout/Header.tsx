@@ -2,7 +2,7 @@
 
 import { useState, useEffect, useRef } from 'react';
 import Link from 'next/link';
-import { ShoppingBag, Search, User, Heart, Menu, X, ChevronRight } from 'lucide-react';
+import { ShoppingBag, Search, User, Heart, Menu, ChevronRight } from 'lucide-react';
 import { Sheet, SheetContent, SheetTrigger } from '@/components/ui/sheet';
 import { useCartStore } from '@/stores/cartStore';
 
@@ -17,19 +17,19 @@ const megaMenuCategories = [
     name: 'Extensions Lisses',
     description: 'Soyeuses et légères',
     href: '/boutique/lisses',
-    color: '#3D2B1F',
+    color: 'linear-gradient(135deg, #3D2B1F 0%, #5A3D2B 100%)',
   },
   {
     name: 'Extensions Bouclées',
     description: 'Volume et mouvement naturel',
     href: '/boutique/bouclees',
-    color: '#4A3528',
+    color: 'linear-gradient(135deg, #4A3528 0%, #6B4C35 100%)',
   },
   {
     name: 'Extensions Afro',
     description: 'Pour toutes les textures',
     href: '/boutique/afro',
-    color: '#5A3D2B',
+    color: 'linear-gradient(135deg, #5A3D2B 0%, #C9A875 100%)',
   },
 ];
 
@@ -140,6 +140,14 @@ export function Header() {
                       >
                         <User className="h-5 w-5" />
                         Mon compte
+                      </Link>
+                      <Link
+                        href="/wishlist"
+                        onClick={() => setMobileOpen(false)}
+                        className="flex items-center gap-2 text-sm font-inter text-[#3D2B1F] hover:text-[#C9A875] transition-colors"
+                      >
+                        <Heart className="h-5 w-5" />
+                        Favoris
                       </Link>
                       <button
                         onClick={() => {
@@ -259,7 +267,7 @@ export function Header() {
                   >
                     <div
                       className="aspect-[3/2] w-full"
-                      style={{ backgroundColor: cat.color }}
+                      style={{ background: cat.color }}
                     />
                     <div className="p-4">
                       <h3 className="font-playfair font-bold italic text-base text-[#1A1410] group-hover:text-[#C9A875] transition-colors">
