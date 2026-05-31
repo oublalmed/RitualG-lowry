@@ -1,37 +1,34 @@
-import { create } from "zustand";
-import { persist, createJSONStorage } from "zustand/middleware";
+import { create } from 'zustand';
+import { persist, createJSONStorage } from 'zustand/middleware';
 
 export interface CartItem {
-  id: string;
+  id: string; // productId + variantLabel composite key
   productId: string;
-  variantId?: string;
+  sanityProductId: string;
+  sanityVariantId?: string;
   name: string;
-  slug: string;
-  image: string | null;
+  variantLabel: string;
   price: number;
   quantity: number;
-  size?: string;
+  imageUrl?: string;
+  slug: string;
 }
 
-interface CartState {
+interface CartStore {
   items: CartItem[];
   isOpen: boolean;
-
-  // Actions
-  addItem: (item: Omit<CartItem, "id">) => void;
+  addItem: (item: Omit<CartItem, 'quantity'>) => void;
   removeItem: (id: string) => void;
   updateQuantity: (id: string, quantity: number) => void;
-  clearCart: () => void;
+  clear: () => void;
   openCart: () => void;
   closeCart: () => void;
   toggleCart: () => void;
-
-  // Computed
-  getTotalItems: () => number;
-  getTotalPrice: () => number;
+  getSubtotal: () => number;
+  getItemCount: () => number;
 }
 
-export const useCartStore = create<CartState>()(
+export const useCartStore = create<CartStore>()(
   persist(
     (set, get) => ({
       items: [],
@@ -39,27 +36,21 @@ export const useCartStore = create<CartState>()(
 
       addItem: (item) => {
         const state = get();
-        const existingItem = state.items.find(
-          (i) =>
-            i.productId === item.productId &&
-            i.variantId === item.variantId
-        );
+        const existing = state.items.find((i) => i.id === item.id);
 
-        if (existingItem) {
+        if (existing) {
           set({
             items: state.items.map((i) =>
-              i.id === existingItem.id
-                ? { ...i, quantity: i.quantity + item.quantity }
-                : i
+              i.id === item.id ? { ...i, quantity: i.quantity + 1 } : i
             ),
+            isOpen: true,
           });
         } else {
-          const id = `${item.productId}-${item.variantId ?? "default"}-${Date.now()}`;
-          set({ items: [...state.items, { ...item, id }] });
+          set({
+            items: [...state.items, { ...item, quantity: 1 }],
+            isOpen: true,
+          });
         }
-
-        // Auto-open cart when item is added
-        set({ isOpen: true });
       },
 
       removeItem: (id) => {
@@ -72,33 +63,24 @@ export const useCartStore = create<CartState>()(
           return;
         }
         set({
-          items: get().items.map((i) =>
-            i.id === id ? { ...i, quantity } : i
-          ),
+          items: get().items.map((i) => (i.id === id ? { ...i, quantity } : i)),
         });
       },
 
-      clearCart: () => {
-        set({ items: [] });
-      },
+      clear: () => set({ items: [] }),
 
       openCart: () => set({ isOpen: true }),
       closeCart: () => set({ isOpen: false }),
       toggleCart: () => set({ isOpen: !get().isOpen }),
 
-      getTotalItems: () => {
-        return get().items.reduce((total, item) => total + item.quantity, 0);
-      },
+      getSubtotal: () =>
+        get().items.reduce((sum, item) => sum + item.price * item.quantity, 0),
 
-      getTotalPrice: () => {
-        return get().items.reduce(
-          (total, item) => total + item.price * item.quantity,
-          0
-        );
-      },
+      getItemCount: () =>
+        get().items.reduce((sum, item) => sum + item.quantity, 0),
     }),
     {
-      name: "ritual-glowry-cart",
+      name: 'ritual-glowry-cart',
       storage: createJSONStorage(() => localStorage),
       partialize: (state) => ({ items: state.items }),
     }
