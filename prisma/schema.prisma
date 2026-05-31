@@ -1,15 +1,82 @@
-// This is your Prisma schema file,
-// learn more about it in the docs: https://pris.ly/d/prisma-schema
-
 generator client {
   provider = "prisma-client-js"
 }
 
 datasource db {
   provider = "postgresql"
+  url      = env("DATABASE_URL")
 }
 
-// ==================== AUTH ====================
+enum Role {
+  CUSTOMER
+  ADMIN
+}
+
+enum LoyaltyTier {
+  BRONZE
+  SILVER
+  GOLD
+  PLATINUM
+}
+
+enum OrderStatus {
+  PENDING
+  PAID
+  PROCESSING
+  SHIPPED
+  DELIVERED
+  CANCELLED
+  REFUNDED
+}
+
+enum ShippingMethod {
+  STANDARD
+  EXPRESS
+  PREMIUM
+}
+
+enum ReviewStatus {
+  PENDING
+  APPROVED
+  REJECTED
+}
+
+enum LoyaltyTransactionType {
+  EARNED
+  SPENT
+  REFUNDED
+  EXPIRED
+  REFERRAL
+}
+
+model User {
+  id                String    @id @default(cuid())
+  email             String    @unique
+  name              String?
+  phone             String?
+  hashedPassword    String?
+  emailVerified     DateTime?
+  image             String?
+  role              Role      @default(CUSTOMER)
+  loyaltyPoints     Int       @default(0)
+  loyaltyTier       LoyaltyTier @default(BRONZE)
+  referralCode      String    @unique @default(cuid())
+  referredById      String?
+  referredBy        User?     @relation("Referrals", fields: [referredById], references: [id])
+  referrals         User[]    @relation("Referrals")
+  newsletterOptIn   Boolean   @default(false)
+  createdAt         DateTime  @default(now())
+  updatedAt         DateTime  @updatedAt
+  lastLoginAt       DateTime?
+
+  accounts          Account[]
+  sessions          Session[]
+  addresses         Address[]
+  orders            Order[]
+  reviews           Review[]
+  wishlistItems     WishlistItem[]
+  loyaltyTransactions LoyaltyTransaction[]
+}
 
 model Account {
   id                String  @id @default(cuid())
@@ -24,10 +91,10 @@ model Account {
   scope             String?
   id_token          String? @db.Text
   session_state     String?
-
-  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+  user              User    @relation(fields: [userId], references: [id], onDelete: Cascade)
 
   @@unique([provider, providerAccountId])
+  @@index([userId])
 }
 
 model Session {
@@ -36,26 +103,8 @@ model Session {
   userId       String
   expires      DateTime
   user         User     @relation(fields: [userId], references: [id], onDelete: Cascade)
-}
 
-model User {
-  id            String    @id @default(cuid())
-  name          String?
-  email         String?   @unique
-  emailVerified DateTime?
-  image         String?
-  password      String?
-  role          UserRole  @default(CUSTOMER)
-  createdAt     DateTime  @default(now())
-  updatedAt     DateTime  @updatedAt
-
-  accounts  Account[]
-  sessions  Session[]
-  orders    Order[]
-  addresses Address[]
-  wishlist  WishlistItem[]
-
-  @@map("users")
+  @@index([userId])
 }
 
 model VerificationToken {
@@ -66,150 +115,163 @@ model VerificationToken {
   @@unique([identifier, token])
 }
 
-enum UserRole {
-  ADMIN
-  CUSTOMER
+model Address {
+  id          String  @id @default(cuid())
+  userId      String
+  label       String  @default("Domicile")
+  firstName   String
+  lastName    String
+  line1       String
+  line2       String?
+  city        String
+  postalCode  String
+  country     String  @default("MA")
+  phone       String?
+  isDefault   Boolean @default(false)
+  user        User    @relation(fields: [userId], references: [id], onDelete: Cascade)
+  ordersShipping Order[] @relation("ShippingAddress")
+  ordersBilling  Order[] @relation("BillingAddress")
+
+  @@index([userId])
 }
-
-// ==================== PRODUCTS ====================
-
-model Product {
-  id          String   @id @default(cuid())
-  sanityId    String?  @unique
-  name        String
-  slug        String   @unique
-  description String?
-  price       Float
-  compareAt   Float?
-  images      Json     @default("[]")
-  category    String?
-  tags        String[] @default([])
-  featured    Boolean  @default(false)
-  active      Boolean  @default(true)
-  createdAt   DateTime @default(now())
-  updatedAt   DateTime @updatedAt
-
-  variants    ProductVariant[]
-  orderItems  OrderItem[]
-  wishlist    WishlistItem[]
-
-  @@map("products")
-}
-
-model ProductVariant {
-  id            String   @id @default(cuid())
-  productId     String
-  name          String
-  sku           String   @unique
-  price         Float?
-  stockQuantity Int      @default(0)
-  size          String?
-  createdAt     DateTime @default(now())
-  updatedAt     DateTime @updatedAt
-
-  product    Product     @relation(fields: [productId], references: [id], onDelete: Cascade)
-  orderItems OrderItem[]
-
-  @@map("product_variants")
-}
-
-// ==================== ORDERS ====================
 
 model Order {
-  id              String      @id @default(cuid())
-  userId          String?
-  email           String
-  status          OrderStatus @default(PENDING)
-  paymentStatus   PaymentStatus @default(UNPAID)
-  subtotal        Float
-  shipping        Float       @default(0)
-  tax             Float       @default(0)
-  total           Float
-  currency        String      @default("USD")
-  stripePaymentId String?
-  stripeSessionId String?
-  shippingAddress Json?
-  billingAddress  Json?
-  notes           String?
-  createdAt       DateTime    @default(now())
-  updatedAt       DateTime    @updatedAt
+  id                    String        @id @default(cuid())
+  userId                String?
+  orderNumber           String        @unique
+  status                OrderStatus   @default(PENDING)
+  subtotal              Decimal       @db.Decimal(10, 2)
+  shipping              Decimal       @db.Decimal(10, 2) @default(0)
+  discount              Decimal       @db.Decimal(10, 2) @default(0)
+  tax                   Decimal       @db.Decimal(10, 2) @default(0)
+  total                 Decimal       @db.Decimal(10, 2)
+  currency              String        @default("MAD")
+  stripePaymentIntentId String?
+  shippingAddressId     String?
+  billingAddressId      String?
+  shippingMethod        ShippingMethod @default(STANDARD)
+  promoCode             String?
+  notes                 String?
+  trackingNumber        String?
+  trackingUrl           String?
+  guestEmail            String?
+  createdAt             DateTime      @default(now())
+  updatedAt             DateTime      @updatedAt
+  paidAt                DateTime?
+  shippedAt             DateTime?
+  deliveredAt           DateTime?
 
-  user       User?       @relation(fields: [userId], references: [id])
-  items      OrderItem[]
+  user                  User?         @relation(fields: [userId], references: [id])
+  shippingAddress       Address?      @relation("ShippingAddress", fields: [shippingAddressId], references: [id])
+  billingAddress        Address?      @relation("BillingAddress", fields: [billingAddressId], references: [id])
+  items                 OrderItem[]
+  reviews               Review[]
+  loyaltyTransactions   LoyaltyTransaction[]
 
-  @@map("orders")
+  @@index([userId, createdAt])
+  @@index([orderNumber])
+  @@index([status])
 }
 
 model OrderItem {
-  id        String  @id @default(cuid())
-  orderId   String
-  productId String
-  variantId String?
-  name      String
-  image     String?
-  price     Float
-  quantity  Int
+  id              String  @id @default(cuid())
+  orderId         String
+  sanityProductId String
+  sanityVariantId String?
+  productName     String
+  variantLabel    String?
+  quantity        Int
+  unitPrice       Decimal @db.Decimal(10, 2)
+  totalPrice      Decimal @db.Decimal(10, 2)
+  imageUrl        String?
+  order           Order   @relation(fields: [orderId], references: [id], onDelete: Cascade)
 
-  order   Order          @relation(fields: [orderId], references: [id], onDelete: Cascade)
-  product Product        @relation(fields: [productId], references: [id])
-  variant ProductVariant? @relation(fields: [variantId], references: [id])
-
-  @@map("order_items")
+  @@index([orderId])
+  @@index([sanityProductId])
 }
 
-enum OrderStatus {
-  PENDING
-  CONFIRMED
-  PROCESSING
-  SHIPPED
-  DELIVERED
-  CANCELLED
-  REFUNDED
+model Review {
+  id              String       @id @default(cuid())
+  sanityProductId String
+  userId          String
+  orderId         String?
+  rating          Int
+  title           String?
+  comment         String       @db.Text
+  images          String[]
+  isVerified      Boolean      @default(false)
+  status          ReviewStatus @default(PENDING)
+  adminReply      String?      @db.Text
+  createdAt       DateTime     @default(now())
+  user            User         @relation(fields: [userId], references: [id])
+  order           Order?       @relation(fields: [orderId], references: [id])
+
+  @@index([sanityProductId])
+  @@index([userId])
 }
-
-enum PaymentStatus {
-  UNPAID
-  PAID
-  PARTIALLY_REFUNDED
-  REFUNDED
-  FAILED
-}
-
-// ==================== ADDRESS ====================
-
-model Address {
-  id         String   @id @default(cuid())
-  userId     String
-  firstName  String
-  lastName   String
-  company    String?
-  address1   String
-  address2   String?
-  city       String
-  state      String?
-  postalCode String
-  country    String
-  phone      String?
-  isDefault  Boolean  @default(false)
-  createdAt  DateTime @default(now())
-  updatedAt  DateTime @updatedAt
-
-  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
-
-  @@map("addresses")
-}
-
-// ==================== WISHLIST ====================
 
 model WishlistItem {
-  id        String   @id @default(cuid())
-  userId    String
-  productId String
-  createdAt DateTime @default(now())
+  id              String   @id @default(cuid())
+  userId          String
+  sanityProductId String
+  createdAt       DateTime @default(now())
+  user            User     @relation(fields: [userId], references: [id], onDelete: Cascade)
 
-  user    User    @relation(fields: [userId], references: [id], onDelete: Cascade)
-  product Product @relation(fields: [productId], references: [id], onDelete: Cascade)
+  @@unique([userId, sanityProductId])
+  @@index([userId])
+}
 
-  @@unique([userId, productId])
-  @@map("wishlist_items")
+model Newsletter {
+  id              String    @id @default(cuid())
+  email           String    @unique
+  source          String?
+  isActive        Boolean   @default(true)
+  createdAt       DateTime  @default(now())
+  unsubscribedAt  DateTime?
+
+  @@index([email])
+}
+
+model LoyaltyTransaction {
+  id          String                 @id @default(cuid())
+  userId      String
+  type        LoyaltyTransactionType
+  points      Int
+  orderId     String?
+  description String
+  createdAt   DateTime               @default(now())
+  user        User                   @relation(fields: [userId], references: [id])
+  order       Order?                 @relation(fields: [orderId], references: [id])
+
+  @@index([userId])
+}
+
+model PromoCode {
+  id            String    @id @default(cuid())
+  code          String    @unique
+  type          String    // PERCENTAGE | FIXED
+  value         Decimal   @db.Decimal(10, 2)
+  minAmount     Decimal?  @db.Decimal(10, 2)
+  maxUses       Int?
+  currentUses   Int       @default(0)
+  startsAt      DateTime?
+  expiresAt     DateTime?
+  isActive      Boolean   @default(true)
+  conditions    Json?
+  createdAt     DateTime  @default(now())
+
+  @@index([code])
+}
+
+model AdminLog {
+  id           String   @id @default(cuid())
+  adminId      String
+  action       String
+  resourceType String
+  resourceId   String?
+  metadata     Json?
+  createdAt    DateTime @default(now())
+
+  @@index([adminId])
+  @@index([resourceType, resourceId])
 }
