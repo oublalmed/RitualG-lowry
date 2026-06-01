@@ -208,10 +208,11 @@ export default function PointsPage() {
           className="text-lg text-[#3D2B1F] mb-1"
           style={{ fontFamily: 'var(--font-playfair)' }}
         >
-          Parrainez vos amies
+          Parrainez vos amies &amp; gagnez du crédit
         </h2>
         <p className="text-sm font-inter text-[#3D2B1F]/60 mb-4">
-          Gagnez <strong className="text-[#B8924B]">100 pts</strong> pour chaque amie parrainée !
+          Parrainez une amie et recevez toutes les deux{' '}
+          <strong className="text-[#B8924B]">20 MAD de crédit</strong> sur votre prochain achat.
         </p>
         <div className="flex gap-2">
           <input

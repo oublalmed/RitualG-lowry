@@ -7,7 +7,7 @@ import { mockBlogPosts, BlogPost } from '@/lib/mockData'
 import { format } from 'date-fns'
 import { fr } from 'date-fns/locale'
 
-const CATEGORIES = ['Tous', 'Conseils', 'Tendances', 'Guides', 'Entretien', 'Inspiration']
+const CATEGORIES = ['Tous', 'Entretien', 'Tendances', 'Avant/Après', 'Tutos', 'Guides']
 const PER_PAGE = 6
 
 function formatDate(dateStr: string) {

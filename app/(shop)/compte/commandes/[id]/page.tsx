@@ -5,6 +5,15 @@ import Link from 'next/link';
 import { Download, ArrowLeft, CheckCircle, Circle, Star } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 
+const PrintStyles = () => (
+  <style>{`
+    @media print {
+      header, nav, aside, .no-print { display: none !important; }
+      body { background: white !important; }
+    }
+  `}</style>
+);
+
 const mockOrderDetails: Record<
   string,
   {
@@ -97,6 +106,7 @@ export default function OrderDetailPage() {
 
   return (
     <div className="max-w-3xl mx-auto space-y-8">
+      <PrintStyles />
       {/* Back */}
       <Link
         href="/compte/commandes"
@@ -119,10 +129,11 @@ export default function OrderDetailPage() {
         </div>
         <Button
           variant="outline"
-          className="border-[#C9A875]/30 text-[#3D2B1F] font-inter text-sm gap-2"
+          className="border-[#C9A875]/30 text-[#3D2B1F] font-inter text-sm gap-2 no-print"
+          onClick={() => window.print()}
         >
           <Download className="h-4 w-4" />
-          Facture
+          Télécharger la facture
         </Button>
       </div>
 

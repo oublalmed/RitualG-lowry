@@ -14,6 +14,7 @@ interface ProductCardProduct {
   isBestSeller?: boolean;
   rating?: number;
   reviewCount?: number;
+  stockStatus?: string;
   // legacy fields
   category?: string;
   originalPrice?: number | null;
@@ -84,6 +85,15 @@ export function ProductCard({ product }: ProductCardProps) {
                 }`}
               >
                 {badge}
+              </span>
+            </div>
+          )}
+
+          {/* Stock limité badge */}
+          {product.stockStatus === 'low_stock' && (
+            <div className="absolute top-3 right-3 z-10">
+              <span className="text-xs font-inter font-semibold uppercase tracking-wider px-2 py-1 bg-[#C9A8A0] text-[#1A1410]">
+                Stock limité
               </span>
             </div>
           )}

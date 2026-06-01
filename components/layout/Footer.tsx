@@ -11,6 +11,7 @@ const footerLinks = {
     { href: '/boutique/afro', label: 'Extensions Afro' },
     { href: '/boutique/perruques', label: 'Perruques' },
     { href: '/boutique/accessoires', label: 'Accessoires' },
+    { href: '/cartes-cadeaux', label: 'Cartes cadeaux' },
   ],
   aide: [
     { href: '/faq', label: 'FAQ' },

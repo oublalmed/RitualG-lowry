@@ -9,6 +9,7 @@ import { Breadcrumb } from '@/components/common/Breadcrumb';
 import { StarRating } from '@/components/common/StarRating';
 import { ProductGallery } from './ProductGallery';
 import { ProductVariantSelector } from './ProductVariantSelector';
+import { ColorQuizCTA } from './ColorQuizCTA';
 import { ReviewSection } from './ReviewSection';
 import { RelatedProducts } from './RelatedProducts';
 import { MobileStickyBar } from './MobileStickyBar';
@@ -179,6 +180,11 @@ export function ProductPageClient({ product, relatedProducts }: ProductPageClien
                 onSelect={setSelectedVariant}
                 basePrice={product.basePrice}
               />
+            </motion.div>
+
+            {/* Color quiz CTA */}
+            <motion.div variants={fadeInUp}>
+              <ColorQuizCTA />
             </motion.div>
 
             {/* Stock indicator */}

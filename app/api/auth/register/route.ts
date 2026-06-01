@@ -2,6 +2,7 @@ import { NextResponse } from 'next/server';
 import bcrypt from 'bcryptjs';
 import { z } from 'zod';
 import { prisma } from '@/lib/prisma';
+import { sendWelcomeEmail } from '@/lib/email';
 
 const schema = z.object({
   name: z.string().min(2),
@@ -36,6 +37,26 @@ export async function POST(req: Request) {
     }).catch(() => {
       // If DB unavailable, still succeed in dev
     });
+
+    // Newsletter opt-in: upsert into Newsletter table if opted in
+    if (newsletterOptIn) {
+      try {
+        await (prisma as unknown as { newsletter: { upsert: (args: unknown) => Promise<unknown> } }).newsletter.upsert({
+          where: { email },
+          update: {},
+          create: { email },
+        });
+      } catch {
+        // Non-blocking — Newsletter table may not exist in schema yet
+      }
+    }
+
+    // Send welcome email (non-blocking)
+    try {
+      await sendWelcomeEmail(email, name);
+    } catch {
+      // Non-blocking
+    }
 
     return NextResponse.json({ success: true }, { status: 201 });
   } catch {

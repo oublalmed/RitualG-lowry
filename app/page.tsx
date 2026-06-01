@@ -6,6 +6,7 @@ import { CollectionsSection } from '@/components/home/CollectionsSection';
 import { FeaturedProducts } from '@/components/product/FeaturedProducts';
 import { BrandManifesto } from '@/components/common/BrandManifesto';
 import { TestimonialsSection } from '@/components/common/TestimonialsSection';
+import { BeforeAfterSection } from '@/components/home/BeforeAfterSection';
 import { StoryPreview } from '@/components/home/StoryPreview';
 import { NewsletterSection } from '@/components/home/NewsletterSection';
 
@@ -50,6 +51,9 @@ export default function HomePage() {
 
         {/* Section 5 — Témoignages */}
         <TestimonialsSection />
+
+        {/* Section 5b — Avant/Après */}
+        <BeforeAfterSection />
 
         {/* Section 6 — Notre Histoire */}
         <StoryPreview />

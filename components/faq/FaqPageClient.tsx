@@ -2,6 +2,7 @@
 
 import { useState } from 'react';
 import { motion } from 'framer-motion';
+import { Search } from 'lucide-react';
 import {
   Accordion,
   AccordionContent,
@@ -27,8 +28,18 @@ interface FaqPageClientProps {
 
 export function FaqPageClient({ categories }: FaqPageClientProps) {
   const [activeCategory, setActiveCategory] = useState(categories[0]?.id ?? '');
+  const [searchTerm, setSearchTerm] = useState('');
 
   const currentCategory = categories.find((c) => c.id === activeCategory) ?? categories[0];
+
+  // When searching: flatten all questions across all categories
+  const searchResults = searchTerm.trim()
+    ? categories.flatMap((cat) =>
+        cat.questions
+          .filter((q) => q.q.toLowerCase().includes(searchTerm.toLowerCase()))
+          .map((q) => ({ ...q, categoryLabel: cat.label }))
+      )
+    : [];
 
   return (
     <>
@@ -70,6 +81,20 @@ export function FaqPageClient({ categories }: FaqPageClientProps) {
       {/* FAQ Content */}
       <section className="py-20 bg-[#FAF6EF]">
         <div className="container mx-auto px-4 md:px-8 lg:px-12">
+          {/* Search bar */}
+          <div className="max-w-xl mb-10">
+            <div className="relative">
+              <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-[#3D2B1F]/40 pointer-events-none" />
+              <input
+                type="text"
+                value={searchTerm}
+                onChange={(e) => setSearchTerm(e.target.value)}
+                placeholder="Rechercher une question..."
+                className="w-full bg-[#FAF6EF] border border-[#3D2B1F]/20 pl-10 pr-4 py-3 font-inter text-sm text-[#1A1410] placeholder:text-[#3D2B1F]/40 focus:outline-none focus:border-[#C9A875] transition-colors"
+              />
+            </div>
+          </div>
+
           <div className="flex flex-col md:flex-row gap-10 md:gap-16">
             {/* Sidebar — categories */}
             <aside className="md:w-56 flex-shrink-0">
@@ -92,7 +117,7 @@ export function FaqPageClient({ categories }: FaqPageClientProps) {
 
             {/* Accordion */}
             <motion.div
-              key={activeCategory}
+              key={searchTerm || activeCategory}
               className="flex-1"
               variants={staggerContainer}
               initial="hidden"
@@ -102,26 +127,37 @@ export function FaqPageClient({ categories }: FaqPageClientProps) {
                 variants={fadeInUp}
                 className="text-2xl md:text-3xl font-playfair font-bold italic text-[#3D2B1F] mb-8"
               >
-                {currentCategory?.label}
+                {searchTerm.trim() ? `Résultats pour "${searchTerm}"` : currentCategory?.label}
               </motion.h2>
 
-              <Accordion className="space-y-3">
-                {currentCategory?.questions.map((item, index) => (
-                  <motion.div key={index} variants={fadeInUp}>
-                    <AccordionItem
-                      value={`item-${index}`}
-                      className="border border-[#3D2B1F]/10 bg-white px-6"
-                    >
-                      <AccordionTrigger className="font-inter font-semibold text-sm text-[#1A1410] hover:text-[#C9A875] hover:no-underline py-5 text-left">
-                        {item.q}
-                      </AccordionTrigger>
-                      <AccordionContent className="font-inter text-sm text-[#3D2B1F]/70 leading-relaxed pb-5">
-                        {item.a}
-                      </AccordionContent>
-                    </AccordionItem>
-                  </motion.div>
-                ))}
-              </Accordion>
+              {searchTerm.trim() && searchResults.length === 0 ? (
+                <motion.div variants={fadeInUp} className="py-8">
+                  <p className="font-inter text-sm text-[#3D2B1F]/60">
+                    Aucun résultat pour &ldquo;{searchTerm}&rdquo;.{' '}
+                    <a href="/contact" className="text-[#C9A875] hover:text-[#B8924B] transition-colors">
+                      Contactez-nous →
+                    </a>
+                  </p>
+                </motion.div>
+              ) : (
+                <Accordion className="space-y-3">
+                  {(searchTerm.trim() ? searchResults : currentCategory?.questions ?? []).map((item, index) => (
+                    <motion.div key={index} variants={fadeInUp}>
+                      <AccordionItem
+                        value={`item-${index}`}
+                        className="border border-[#3D2B1F]/10 bg-white px-6"
+                      >
+                        <AccordionTrigger className="font-inter font-semibold text-sm text-[#1A1410] hover:text-[#C9A875] hover:no-underline py-5 text-left">
+                          {item.q}
+                        </AccordionTrigger>
+                        <AccordionContent className="font-inter text-sm text-[#3D2B1F]/70 leading-relaxed pb-5">
+                          {item.a}
+                        </AccordionContent>
+                      </AccordionItem>
+                    </motion.div>
+                  ))}
+                </Accordion>
+              )}
 
               {/* Contact CTA */}
               <motion.div

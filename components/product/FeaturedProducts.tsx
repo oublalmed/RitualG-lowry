@@ -46,6 +46,7 @@ const bestSellers = [
     isBestSeller: false,
     rating: 4.6,
     reviewCount: 56,
+    stockStatus: 'low_stock',
   },
 ];
 

@@ -65,19 +65,33 @@ export function ProductVariantSelector({
           </p>
           <div className="flex gap-2.5 flex-wrap">
             {uniqueColors.map((color) => (
-              <button
-                key={color.hexCode}
-                onClick={() => handleColorSelect(color.hexCode)}
-                title={color.name}
-                className={`w-7 h-7 rounded-full transition-all duration-150 ${
-                  selectedColor?.hexCode === color.hexCode
-                    ? 'ring-2 ring-[#C9A875] ring-offset-2'
-                    : 'ring-1 ring-[#3D2B1F]/20 hover:ring-[#C9A875]/60 hover:ring-offset-1'
-                }`}
-                style={{ backgroundColor: color.hexCode }}
-                aria-label={color.name}
-                aria-pressed={selectedColor?.hexCode === color.hexCode}
-              />
+              <div key={color.hexCode} className="relative group">
+                {/* Tooltip */}
+                <div
+                  className="absolute bottom-[calc(100%+8px)] left-1/2 -translate-x-1/2 z-20
+                    opacity-0 group-hover:opacity-100 pointer-events-none transition-opacity duration-150
+                    bg-[#F5EDE0] border border-[#C9A875]/40 rounded px-2 py-1 whitespace-nowrap shadow-sm"
+                >
+                  <div className="flex items-center gap-1.5">
+                    <span
+                      className="w-5 h-5 rounded-full flex-shrink-0 ring-1 ring-[#3D2B1F]/20"
+                      style={{ backgroundColor: color.hexCode }}
+                    />
+                    <span className="font-inter text-xs text-[#3D2B1F]">{color.name}</span>
+                  </div>
+                </div>
+                <button
+                  onClick={() => handleColorSelect(color.hexCode)}
+                  className={`w-7 h-7 rounded-full transition-all duration-150 ${
+                    selectedColor?.hexCode === color.hexCode
+                      ? 'ring-2 ring-[#C9A875] ring-offset-2'
+                      : 'ring-1 ring-[#3D2B1F]/20 hover:ring-[#C9A875]/60 hover:ring-offset-1'
+                  }`}
+                  style={{ backgroundColor: color.hexCode }}
+                  aria-label={color.name}
+                  aria-pressed={selectedColor?.hexCode === color.hexCode}
+                />
+              </div>
             ))}
           </div>
         </div>
