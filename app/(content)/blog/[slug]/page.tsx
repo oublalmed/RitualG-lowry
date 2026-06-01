@@ -1,7 +1,7 @@
 import type { Metadata } from 'next'
 import { notFound } from 'next/navigation'
 import Link from 'next/link'
-import { mockBlogPosts } from '@/lib/mockData'
+import { getAllBlogSlugs, getBlogPostBySlug, getBlogPosts } from '@/lib/sanity/fetch'
 import { format } from 'date-fns'
 import { fr } from 'date-fns/locale'
 import { ArticleClient } from './ArticleClient'
@@ -11,12 +11,13 @@ type Props = {
 }
 
 export async function generateStaticParams() {
-  return mockBlogPosts.map((post) => ({ slug: post.slug }))
+  const slugs = await getAllBlogSlugs()
+  return slugs.map((s) => ({ slug: s.slug }))
 }
 
 export async function generateMetadata({ params }: Props): Promise<Metadata> {
   const { slug } = await params
-  const post = mockBlogPosts.find((p) => p.slug === slug)
+  const post = await getBlogPostBySlug(slug)
   if (!post) return {}
   const base = process.env.NEXT_PUBLIC_APP_URL || 'https://ritualglowry.ma'
   return {
@@ -27,7 +28,7 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
       description: post.excerpt,
       type: 'article',
       publishedTime: post.publishedAt,
-      authors: [post.author.name],
+      authors: [post.author?.name].filter(Boolean),
       url: `${base}/blog/${post.slug}`,
     },
     twitter: {
@@ -44,10 +45,11 @@ function formatDate(dateStr: string) {
 
 export default async function BlogArticlePage({ params }: Props) {
   const { slug } = await params
-  const post = mockBlogPosts.find((p) => p.slug === slug)
+  const post = await getBlogPostBySlug(slug)
   if (!post) notFound()
 
-  const related = mockBlogPosts.filter((p) => p._id !== post._id).slice(0, 3)
+  const { posts: allPosts } = await getBlogPosts()
+  const related = allPosts.filter((p: any) => p._id !== post._id).slice(0, 3)
   const base = process.env.NEXT_PUBLIC_APP_URL || 'https://ritualglowry.ma'
 
   const articleJsonLd = {
@@ -112,7 +114,7 @@ export default async function BlogArticlePage({ params }: Props) {
           </nav>
 
           {/* Category */}
-          {post.categories[0] && (
+          {post.categories?.[0] && (
             <span className="inline-block bg-[#C9A875]/20 text-[#C9A875] text-[11px] font-inter font-semibold uppercase tracking-[0.12em] px-3 py-1 mb-4">
               {post.categories[0]}
             </span>
@@ -133,35 +135,64 @@ export default async function BlogArticlePage({ params }: Props) {
           {/* Main content */}
           <article className="flex-1 lg:w-[70%] max-w-none">
             <div className="prose-custom">
-              {post.body.map((block, i) => {
-                if (block.type === 'paragraph') {
+              {Array.isArray(post.body) && post.body.map((block: any, i: number) => {
+                // Support Sanity portable text blocks
+                if (block._type === 'block') {
+                  const text = block.children?.map((c: any) => c.text).join('') ?? ''
+                  if (block.style === 'h2' || block.style === 'h3') {
+                    return (
+                      <h2
+                        key={block._key ?? i}
+                        className="font-playfair italic text-[#3D2B1F] text-2xl md:text-3xl mt-10 mb-5"
+                      >
+                        {text}
+                      </h2>
+                    )
+                  }
+                  if (block.style === 'blockquote') {
+                    return (
+                      <div
+                        key={block._key ?? i}
+                        className="bg-[#F5EDE0] border-l-4 border-[#C9A875] px-6 py-4 mb-6"
+                      >
+                        <p className="text-xs font-inter font-semibold uppercase tracking-[0.1em] text-[#C9A875] mb-2">
+                          Conseil pro
+                        </p>
+                        <p className="font-cormorant italic text-[#3D2B1F] text-lg leading-relaxed">
+                          {text}
+                        </p>
+                      </div>
+                    )
+                  }
                   return (
                     <p
-                      key={i}
+                      key={block._key ?? i}
                       className="font-cormorant text-[#1A1410] text-lg leading-[1.8] mb-6"
                     >
+                      {text}
+                    </p>
+                  )
+                }
+                // Legacy mock data format support
+                if (block.type === 'paragraph') {
+                  return (
+                    <p key={i} className="font-cormorant text-[#1A1410] text-lg leading-[1.8] mb-6">
                       {block.text}
                     </p>
                   )
                 }
                 if (block.type === 'heading') {
                   return (
-                    <h2
-                      key={i}
-                      className="font-playfair italic text-[#3D2B1F] text-2xl md:text-3xl mt-10 mb-5"
-                    >
+                    <h2 key={i} className="font-playfair italic text-[#3D2B1F] text-2xl md:text-3xl mt-10 mb-5">
                       {block.text}
                     </h2>
                   )
                 }
                 if (block.type === 'tip') {
                   return (
-                    <div
-                      key={i}
-                      className="bg-[#F5EDE0] border-l-4 border-[#C9A875] px-6 py-4 mb-6"
-                    >
+                    <div key={i} className="bg-[#F5EDE0] border-l-4 border-[#C9A875] px-6 py-4 mb-6">
                       <p className="text-xs font-inter font-semibold uppercase tracking-[0.1em] text-[#C9A875] mb-2">
-                        💡 Conseil pro
+                        Conseil pro
                       </p>
                       <p className="font-cormorant italic text-[#3D2B1F] text-lg leading-relaxed">
                         {block.text}
@@ -174,9 +205,9 @@ export default async function BlogArticlePage({ params }: Props) {
             </div>
 
             {/* Tags */}
-            {post.tags.length > 0 && (
+            {post.tags?.length > 0 && (
               <div className="mt-10 pt-8 border-t border-[#F5EDE0] flex flex-wrap gap-2">
-                {post.tags.map((tag) => (
+                {post.tags.map((tag: string) => (
                   <span
                     key={tag}
                     className="bg-[#F5EDE0] text-[#3D2B1F]/70 text-xs font-inter px-3 py-1"
@@ -259,7 +290,7 @@ export default async function BlogArticlePage({ params }: Props) {
                   style={{ background: 'linear-gradient(135deg, #3D2B1F 0%, #C9A875 100%)' }}
                 />
                 <div className="p-5">
-                  {r.categories[0] && (
+                  {r.categories?.[0] && (
                     <span className="inline-block bg-[#C9A875]/20 text-[#B8924B] text-[11px] font-inter font-semibold uppercase tracking-[0.1em] px-2 py-1 mb-3">
                       {r.categories[0]}
                     </span>
@@ -271,7 +302,7 @@ export default async function BlogArticlePage({ params }: Props) {
                     {r.excerpt}
                   </p>
                   <div className="flex items-center gap-2 text-xs font-inter text-[#3D2B1F]/50">
-                    <span>{r.author.name}</span>
+                    <span>{r.author?.name}</span>
                     <span>·</span>
                     <span>{formatDate(r.publishedAt)}</span>
                     <span>·</span>

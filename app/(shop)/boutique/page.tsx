@@ -1,4 +1,5 @@
 import type { Metadata } from 'next';
+import { getAllProducts } from '@/lib/sanity/fetch';
 import { BoutiqueClient } from '@/components/shop/BoutiqueClient';
 
 export const metadata: Metadata = {
@@ -7,6 +8,8 @@ export const metadata: Metadata = {
     'Découvrez notre collection complète d\'extensions, perruques et accessoires capillaires premium 100% naturels.',
 };
 
-export default function BoutiquePage() {
-  return <BoutiqueClient />;
+export default async function BoutiquePage() {
+  const products = await getAllProducts();
+
+  return <BoutiqueClient products={products ?? []} />;
 }

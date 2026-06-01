@@ -3,8 +3,7 @@ generator client {
 }
 
 datasource db {
-  provider = "postgresql"
-  url      = env("DATABASE_URL")
+  provider = "sqlite"
 }
 
 enum Role {
@@ -54,7 +53,7 @@ model User {
   email             String    @unique
   name              String?
   phone             String?
-  hashedPassword    String?
+  password          String?
   emailVerified     DateTime?
   image             String?
   role              Role      @default(CUSTOMER)
@@ -84,12 +83,12 @@ model Account {
   type              String
   provider          String
   providerAccountId String
-  refresh_token     String? @db.Text
-  access_token      String? @db.Text
+  refresh_token     String?
+  access_token      String?
   expires_at        Int?
   token_type        String?
   scope             String?
-  id_token          String? @db.Text
+  id_token          String?
   session_state     String?
   user              User    @relation(fields: [userId], references: [id], onDelete: Cascade)
 
@@ -140,11 +139,11 @@ model Order {
   userId                String?
   orderNumber           String        @unique
   status                OrderStatus   @default(PENDING)
-  subtotal              Decimal       @db.Decimal(10, 2)
-  shipping              Decimal       @db.Decimal(10, 2) @default(0)
-  discount              Decimal       @db.Decimal(10, 2) @default(0)
-  tax                   Decimal       @db.Decimal(10, 2) @default(0)
-  total                 Decimal       @db.Decimal(10, 2)
+  subtotal              Decimal
+  shipping              Decimal       @default(0)
+  discount              Decimal       @default(0)
+  tax                   Decimal       @default(0)
+  total                 Decimal
   currency              String        @default("MAD")
   stripePaymentIntentId String?
   shippingAddressId     String?
@@ -181,8 +180,8 @@ model OrderItem {
   productName     String
   variantLabel    String?
   quantity        Int
-  unitPrice       Decimal @db.Decimal(10, 2)
-  totalPrice      Decimal @db.Decimal(10, 2)
+  unitPrice       Decimal
+  totalPrice      Decimal
   imageUrl        String?
   order           Order   @relation(fields: [orderId], references: [id], onDelete: Cascade)
 
@@ -197,11 +196,11 @@ model Review {
   orderId         String?
   rating          Int
   title           String?
-  comment         String       @db.Text
-  images          String[]
+  comment         String
+  images          String       @default("[]")
   isVerified      Boolean      @default(false)
   status          ReviewStatus @default(PENDING)
-  adminReply      String?      @db.Text
+  adminReply      String?
   createdAt       DateTime     @default(now())
   user            User         @relation(fields: [userId], references: [id])
   order           Order?       @relation(fields: [orderId], references: [id])
@@ -249,15 +248,15 @@ model LoyaltyTransaction {
 model PromoCode {
   id            String    @id @default(cuid())
   code          String    @unique
-  type          String    // PERCENTAGE | FIXED
-  value         Decimal   @db.Decimal(10, 2)
-  minAmount     Decimal?  @db.Decimal(10, 2)
+  type          String
+  value         Decimal
+  minAmount     Decimal?
   maxUses       Int?
   currentUses   Int       @default(0)
   startsAt      DateTime?
   expiresAt     DateTime?
   isActive      Boolean   @default(true)
-  conditions    Json?
+  conditions    String?
   createdAt     DateTime  @default(now())
 
   @@index([code])
@@ -269,7 +268,7 @@ model AdminLog {
   action       String
   resourceType String
   resourceId   String?
-  metadata     Json?
+  metadata     String?
   createdAt    DateTime @default(now())
 
   @@index([adminId])

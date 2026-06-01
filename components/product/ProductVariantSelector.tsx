@@ -1,12 +1,12 @@
 'use client';
 
 import { useMemo } from 'react';
-import type { MockVariant } from '@/lib/mockData';
+import type { ProductVariant } from '@/lib/types';
 
 interface ProductVariantSelectorProps {
-  variants: MockVariant[];
-  selectedVariant: MockVariant | null;
-  onSelect: (variant: MockVariant) => void;
+  variants: ProductVariant[];
+  selectedVariant: ProductVariant | null;
+  onSelect: (variant: ProductVariant) => void;
   basePrice: number;
 }
 
@@ -42,7 +42,7 @@ export function ProductVariantSelector({
     if (firstForColor) onSelect(firstForColor);
   };
 
-  const handleLengthSelect = (variant: MockVariant) => {
+  const handleLengthSelect = (variant: ProductVariant) => {
     if (variant.isAvailable) onSelect(variant);
   };
 

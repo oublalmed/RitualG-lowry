@@ -1,12 +1,14 @@
 import type { Metadata } from 'next'
 import { BlogClientPage } from './BlogClientPage'
+import { getBlogPosts } from '@/lib/sanity/fetch'
 
 export const metadata: Metadata = {
   title: 'Blog',
   description: 'Conseils, tendances et inspiration beauté pour vos cheveux. Guides extensions, entretien et tendances 2026.',
 }
 
-export default function BlogPage() {
+export default async function BlogPage() {
+  const { posts } = await getBlogPosts()
   return (
     <>
       {/* Hero */}
@@ -28,7 +30,7 @@ export default function BlogPage() {
       </section>
 
       {/* Client interactive section */}
-      <BlogClientPage />
+      <BlogClientPage posts={posts} />
     </>
   )
 }

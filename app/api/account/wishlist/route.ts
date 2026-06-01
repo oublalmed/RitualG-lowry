@@ -22,7 +22,7 @@ export async function GET() {
   }
 }
 
-const addSchema = z.object({ productId: z.string().min(1) });
+const addSchema = z.object({ sanityProductId: z.string().min(1) });
 
 export async function POST(req: Request) {
   try {
@@ -39,15 +39,15 @@ export async function POST(req: Request) {
 
     const item = await prisma.wishlistItem.upsert({
       where: {
-        userId_productId: {
+        userId_sanityProductId: {
           userId: session.user.id,
-          productId: parsed.data.productId,
+          sanityProductId: parsed.data.sanityProductId,
         },
       },
       update: {},
       create: {
         userId: session.user.id,
-        productId: parsed.data.productId,
+        sanityProductId: parsed.data.sanityProductId,
       },
     }).catch(() => null);
 
@@ -65,13 +65,13 @@ export async function DELETE(req: Request) {
     }
 
     const { searchParams } = new URL(req.url);
-    const productId = searchParams.get('productId');
-    if (!productId) {
-      return NextResponse.json({ error: 'productId requis' }, { status: 400 });
+    const sanityProductId = searchParams.get('sanityProductId');
+    if (!sanityProductId) {
+      return NextResponse.json({ error: 'sanityProductId requis' }, { status: 400 });
     }
 
     await prisma.wishlistItem.deleteMany({
-      where: { userId: session.user.id, productId },
+      where: { userId: session.user.id, sanityProductId },
     }).catch(() => {});
 
     return NextResponse.json({ success: true });

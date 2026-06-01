@@ -185,6 +185,51 @@ export async function sendPaymentFailureEmail(
   });
 }
 
+export async function sendPasswordResetEmail(
+  to: string,
+  data: { resetUrl: string; name?: string }
+): Promise<void> {
+  const greeting = data.name ? `Bonjour ${data.name},` : 'Bonjour,';
+
+  await resend.emails.send({
+    from: FROM_EMAIL,
+    to,
+    subject: 'Réinitialisation de votre mot de passe — Ritual Glowry',
+    html: `
+      <div style="font-family: Inter, -apple-system, sans-serif; max-width: 600px; margin: 0 auto; background: #FAF6EF;">
+        <div style="background: #C9A875; padding: 24px 40px; text-align: center;">
+          <p style="font-family: Georgia, serif; font-style: italic; font-size: 28px; font-weight: bold; color: #1A1410; margin: 0;">Ritual Glowry</p>
+          <p style="font-size: 11px; color: #1A1410; letter-spacing: 3px; text-transform: uppercase; margin: 4px 0 0;">Premium Hair — Maroc</p>
+        </div>
+        <div style="background: #ffffff; padding: 40px;">
+          <h1 style="font-family: Georgia, serif; font-style: italic; font-size: 26px; color: #3D2B1F; margin: 0 0 16px;">
+            Réinitialisation du mot de passe
+          </h1>
+          <p style="font-size: 14px; color: #3D2B1F; line-height: 1.6; margin: 0 0 12px;">${greeting}</p>
+          <p style="font-size: 14px; color: #3D2B1F; line-height: 1.6; margin: 0 0 12px;">
+            Nous avons reçu une demande de réinitialisation de votre mot de passe.
+            Cliquez sur le bouton ci-dessous pour en choisir un nouveau.
+          </p>
+          <div style="text-align: center; padding: 24px 0;">
+            <a href="${data.resetUrl}"
+               style="display: inline-block; background: #C9A875; color: #1A1410; padding: 14px 32px; text-decoration: none; font-weight: 600; text-transform: uppercase; letter-spacing: 2px; font-size: 13px;">
+              Réinitialiser mon mot de passe
+            </a>
+          </div>
+          <p style="font-size: 13px; color: #3D2B1F; opacity: 0.7; line-height: 1.6;">
+            Ce lien expire dans 1 heure. Si vous n'avez pas demandé cette réinitialisation,
+            ignorez simplement cet email — votre mot de passe restera inchangé.
+          </p>
+          <hr style="border-color: #F5EDE0; margin: 20px 0;" />
+          <p style="font-size: 11px; color: #3D2B1F; opacity: 0.4; text-align: center; margin: 4px 0;">
+            &copy; ${new Date().getFullYear()} Ritual Glowry &middot; Maroc
+          </p>
+        </div>
+      </div>
+    `,
+  });
+}
+
 export async function sendAdminNotification(
   to: string,
   data: AdminNotificationData

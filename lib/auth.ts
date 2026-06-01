@@ -1,10 +1,8 @@
 import { NextAuthOptions } from 'next-auth';
-import { PrismaAdapter } from '@auth/prisma-adapter';
 import CredentialsProvider from 'next-auth/providers/credentials';
 import GoogleProvider from 'next-auth/providers/google';
 import bcrypt from 'bcryptjs';
 import { z } from 'zod';
-import { prisma } from './prisma';
 
 const loginSchema = z.object({
   email: z.string().email(),
@@ -34,16 +32,19 @@ declare module 'next-auth/jwt' {
 }
 
 export const authOptions: NextAuthOptions = {
-  adapter: PrismaAdapter(prisma) as NextAuthOptions['adapter'],
   session: {
     strategy: 'jwt',
     maxAge: 30 * 24 * 60 * 60,
   },
   providers: [
-    GoogleProvider({
-      clientId: process.env.GOOGLE_CLIENT_ID ?? '',
-      clientSecret: process.env.GOOGLE_CLIENT_SECRET ?? '',
-    }),
+    ...(process.env.GOOGLE_CLIENT_ID && process.env.GOOGLE_CLIENT_SECRET
+      ? [
+          GoogleProvider({
+            clientId: process.env.GOOGLE_CLIENT_ID,
+            clientSecret: process.env.GOOGLE_CLIENT_SECRET,
+          }),
+        ]
+      : []),
     CredentialsProvider({
       name: 'credentials',
       credentials: {
@@ -57,6 +58,7 @@ export const authOptions: NextAuthOptions = {
 
           const { email, password } = parsed.data;
 
+          const { prisma } = await import('./prisma');
           const user = await prisma.user.findUnique({
             where: { email },
           });

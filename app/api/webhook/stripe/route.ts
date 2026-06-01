@@ -75,51 +75,63 @@ async function handlePaymentSucceeded(pi: Stripe.PaymentIntent) {
     return;
   }
 
-  // Idempotency: check paymentStatus
-  if (order.paymentStatus === 'PAID') {
+  // Idempotency: check status
+  if (order.status === 'PAID') {
     console.info(`[stripe-webhook] Order ${orderId} already PAID, skipping`);
     return;
   }
 
-  // Update order to CONFIRMED + PAID
+  // Update order to PAID
   await prisma.order.update({
     where: { id: orderId },
     data: {
-      status: 'CONFIRMED',
-      paymentStatus: 'PAID',
-      stripePaymentId: pi.id,
+      status: 'PAID',
+      stripePaymentIntentId: pi.id,
+      paidAt: new Date(),
     },
   });
 
-  // Loyalty points (1 per 10 MAD) — if user model supports it
+  // Loyalty points (1 per 10 MAD)
   if (order.userId) {
-    const points = Math.floor(order.total / 10);
+    const points = Math.floor(Number(order.total) / 10);
     if (points > 0) {
       await prisma.user
         .update({
           where: { id: order.userId },
           data: {
             loyaltyPoints: { increment: points },
-          } as Parameters<typeof prisma.user.update>[0]['data'],
+          },
         })
-        .catch(() => {/* loyalty field may not exist yet */});
+        .catch(() => {/* loyalty update failed */});
+
+      await prisma.loyaltyTransaction
+        .create({
+          data: {
+            userId: order.userId,
+            type: 'EARNED',
+            points,
+            orderId: order.id,
+            description: `Commande ${order.orderNumber}`,
+          },
+        })
+        .catch(() => {/* loyalty transaction failed */});
     }
   }
 
   // Send confirmation email
-  const recipientEmail = order.email;
+  const recipientEmail = order.guestEmail ?? order.user?.email;
   if (recipientEmail && recipientEmail !== 'guest@checkout.local') {
     try {
       await sendOrderConfirmation(recipientEmail, {
-        orderNumber: order.id,
+        orderNumber: order.orderNumber,
         items: order.items.map((i) => ({
-          name: i.name,
-          variant: '',
+          name: i.productName,
+          variant: i.variantLabel ?? '',
           quantity: i.quantity,
-          price: i.price,
+          price: Number(i.unitPrice),
         })),
-        total: order.total,
-        shippingMethod: 'STANDARD',
+        total: Number(order.total),
+        shippingMethod: order.shippingMethod,
       });
     } catch (err) {
       console.error('[stripe-webhook] Failed to send confirmation email:', err);
@@ -130,9 +142,9 @@ async function handlePaymentSucceeded(pi: Stripe.PaymentIntent) {
   try {
     const adminEmail = process.env.ADMIN_EMAIL ?? 'admin@ritualglowry.com';
     await sendAdminNotification(adminEmail, {
-      orderNumber: order.id,
-      total: order.total,
-      customerEmail: recipientEmail,
+      orderNumber: order.orderNumber,
+      total: Number(order.total),
+      customerEmail: recipientEmail ?? '',
     });
   } catch (err) {
     console.error('[stripe-webhook] Failed to send admin notification:', err);
@@ -154,15 +166,14 @@ async function handlePaymentFailed(pi: Stripe.PaymentIntent) {
     where: { id: orderId },
     data: {
       status: 'CANCELLED',
-      paymentStatus: 'FAILED',
     },
   });
 
-  const recipientEmail = order.email;
+  const recipientEmail = order.guestEmail ?? order.user?.email;
   if (recipientEmail && recipientEmail !== 'guest@checkout.local') {
     try {
       await sendPaymentFailureEmail(recipientEmail, {
-        orderNumber: order.id,
+        orderNumber: order.orderNumber,
       });
     } catch (err) {
       console.error('[stripe-webhook] Failed to send failure email:', err);

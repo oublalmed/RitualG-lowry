@@ -5,7 +5,7 @@ import { useRouter, useSearchParams } from 'next/navigation';
 import { SlidersHorizontal, ChevronDown } from 'lucide-react';
 import { motion } from 'framer-motion';
 
-import { mockProducts } from '@/lib/mockData';
+import type { SanityProduct } from '@/components/shop/ProductGrid';
 import { Breadcrumb } from '@/components/common/Breadcrumb';
 import { FilterSidebar, type FilterState } from '@/components/shop/FilterSidebar';
 import { ProductGrid } from '@/components/shop/ProductGrid';
@@ -62,7 +62,11 @@ function buildSearchParams(filters: FilterState, sort: SortOption): URLSearchPar
   return params;
 }
 
-export function BoutiqueClient() {
+interface BoutiqueClientProps {
+  products: SanityProduct[];
+}
+
+export function BoutiqueClient({ products }: BoutiqueClientProps) {
   const router = useRouter();
   const searchParams = useSearchParams();
   const [isPending, startTransition] = useTransition();
@@ -100,17 +104,17 @@ export function BoutiqueClient() {
   );
 
   const filteredProducts = useMemo(() => {
-    let results = [...mockProducts];
+    let results = [...products];
 
     if (filters.types.length) {
       results = results.filter((p) =>
-        p.productType.some((t) => filters.types.includes(t))
+        p.productType?.some((t) => filters.types.includes(t))
       );
     }
 
     if (filters.textures.length) {
       results = results.filter((p) =>
-        p.texture.some((t) => filters.textures.includes(t))
+        p.texture?.some((t) => filters.textures.includes(t))
       );
     }
 
@@ -118,20 +122,12 @@ export function BoutiqueClient() {
       (p) => p.basePrice >= filters.minPrice && p.basePrice <= filters.maxPrice
     );
 
-    if (filters.minLength > 30 || filters.maxLength < 80) {
-      results = results.filter((p) => {
-        const lengths = p.variants.map((v) => v.length).filter((l) => l > 0);
-        if (!lengths.length) return true;
-        return lengths.some((l) => l >= filters.minLength && l <= filters.maxLength);
-      });
-    }
-
     if (filters.state === 'new') {
       results = results.filter((p) => p.isNew);
     } else if (filters.state === 'bestseller') {
       results = results.filter((p) => p.isBestSeller);
     } else if (filters.state === 'promo') {
-      results = results.filter((p) => p.comparePrice !== null);
+      results = results.filter((p) => p.comparePrice != null);
     }
 
     switch (sort) {
@@ -145,12 +141,12 @@ export function BoutiqueClient() {
         results.sort((a, b) => b.basePrice - a.basePrice);
         break;
       case 'popular':
-        results.sort((a, b) => b.reviewCount - a.reviewCount);
+        // No reviewCount from Sanity; keep original order
         break;
     }
 
     return results;
-  }, [filters, sort]);
+  }, [products, filters, sort]);
 
   return (
     <div className="min-h-screen bg-[#FAF6EF]">

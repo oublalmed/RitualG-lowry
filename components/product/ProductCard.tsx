@@ -27,7 +27,7 @@ interface ProductCardProps {
   product: ProductCardProduct;
 }
 
-// Gradient placeholder colors per product index
+// Gradient placeholder colors — picked deterministically by product id
 const gradients = [
   'linear-gradient(135deg, #3D2B1F 0%, #5A3D2B 100%)',
   'linear-gradient(135deg, #4A3528 0%, #C9A875 100%)',
@@ -35,14 +35,20 @@ const gradients = [
   'linear-gradient(135deg, #3D2B1F 0%, #C9A8A0 100%)',
 ];
 
-let cardIndex = 0;
+function stableIndex(id: string) {
+  let hash = 0;
+  for (let i = 0; i < id.length; i++) {
+    hash = (hash * 31 + id.charCodeAt(i)) | 0;
+  }
+  return Math.abs(hash) % gradients.length;
+}
 
 export function ProductCard({ product }: ProductCardProps) {
   const { addItem } = useCartStore();
   const slug = product.slug ?? product.name.toLowerCase().replace(/\s+/g, '-');
   const gradientBg = product.imagePlaceholder
     ? undefined
-    : gradients[cardIndex++ % gradients.length];
+    : gradients[stableIndex(product.id)];
 
   const badge = product.badge ?? (product.isBestSeller ? 'Best-seller' : product.isNew ? 'Nouveau' : null);
   const displayPrice = product.price;

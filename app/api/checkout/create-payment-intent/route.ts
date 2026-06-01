@@ -2,7 +2,8 @@ import { NextRequest, NextResponse } from 'next/server';
 import { z } from 'zod/v4';
 import { prisma } from '@/lib/prisma';
 import { stripe, formatAmountForStripe } from '@/lib/stripe';
-import { mockProducts } from '@/lib/mockData';
+import { sanityClient } from '@/lib/sanity/client';
+import { rateLimit, getClientIp, RATE_LIMITS } from '@/lib/rate-limit';
 
 // ─── Zod schemas ──────────────────────────────────────────────────────────────
 
@@ -32,17 +33,6 @@ const requestSchema = z.object({
   guestEmail: z.string().email().nullable().optional(),
 });
 
-// ─── Mock promo codes ──────────────────────────────────────────────────────────
-
-const MOCK_PROMOS: Record<
-  string,
-  { type: 'PERCENTAGE' | 'FIXED'; value: number; minAmount: number }
-> = {
-  GLOWRY10: { type: 'PERCENTAGE', value: 10, minAmount: 0 },
-  BIENVENUE: { type: 'PERCENTAGE', value: 15, minAmount: 500 },
-  LUXE200: { type: 'FIXED', value: 200, minAmount: 1000 },
-};
-
 // ─── Shipping cost ─────────────────────────────────────────────────────────────
 
 function computeShipping(method: 'STANDARD' | 'EXPRESS' | 'PREMIUM', subtotal: number): number {
@@ -62,6 +52,15 @@ function generateOrderNumber(): string {
 // ─── Route handler ─────────────────────────────────────────────────────────────
 
 export async function POST(request: NextRequest) {
+  const ip = getClientIp(request);
+  const limiter = rateLimit(`checkout:${ip}`, RATE_LIMITS.checkout);
+  if (!limiter.success) {
+    return NextResponse.json(
+      { error: 'Trop de requêtes. Réessayez plus tard.' },
+      { status: 429, headers: { 'Retry-After': String(limiter.resetIn) } }
+    );
+  }
+
   try {
     const body = (await request.json()) as unknown;
     const parsed = requestSchema.safeParse(body);
@@ -88,7 +87,14 @@ export async function POST(request: NextRequest) {
     const resolvedItems: ResolvedItem[] = [];
 
     for (const item of items) {
-      const product = mockProducts.find((p) => p._id === item.sanityProductId);
+      const product = await sanityClient.fetch<{
+        name: string;
+        basePrice: number;
+        variants: { _key: string; label: string; price: number }[] | null;
+      } | null>(
+        `*[_type == "product" && _id == $id][0]{ name, basePrice, "variants": variants[]{ _key, label, price } }`,
+        { id: item.sanityProductId }
+      );
       if (!product) {
         return NextResponse.json(
           { error: `Produit introuvable: ${item.sanityProductId}` },
@@ -96,7 +102,7 @@ export async function POST(request: NextRequest) {
         );
       }
 
-      const variant = product.variants.find((v) => v.label === item.variantLabel);
+      const variant = product.variants?.find((v) => v.label === item.variantLabel);
       const unitPrice = variant ? variant.price : product.basePrice;
 
       subtotal += unitPrice * item.quantity;
@@ -115,12 +121,25 @@ export async function POST(request: NextRequest) {
     let discount = 0;
     if (promoCode) {
       const upperCode = promoCode.toUpperCase();
-      const promo = MOCK_PROMOS[upperCode];
-      if (promo && subtotal >= promo.minAmount) {
-        discount =
-          promo.type === 'PERCENTAGE'
-            ? Math.round((subtotal * promo.value) / 100)
-            : promo.value;
+      try {
+        const promo = await prisma.promoCode.findUnique({
+          where: { code: upperCode },
+        });
+        if (
+          promo &&
+          promo.isActive &&
+          (!promo.expiresAt || promo.expiresAt > new Date()) &&
+          (!promo.startsAt || promo.startsAt <= new Date()) &&
+          (!promo.maxUses || promo.currentUses < promo.maxUses) &&
+          (!promo.minAmount || subtotal >= Number(promo.minAmount))
+        ) {
+          discount =
+            promo.type === 'PERCENTAGE'
+              ? Math.round((subtotal * Number(promo.value)) / 100)
+              : Number(promo.value);
+        }
+      } catch {
+        // If DB is unavailable, skip promo validation
       }
     }
 
@@ -131,32 +150,32 @@ export async function POST(request: NextRequest) {
     // ── Create Order in Prisma ──
     let dbOrderId: string | null = null;
     try {
-      // Store items summary in notes as JSON (items are Sanity-based, not DB Product records)
-      const itemsNote = JSON.stringify(resolvedItems.map((i) => ({
-        name: i.name,
-        price: i.price,
-        qty: i.quantity,
-      })));
-
       const order = await prisma.order.create({
         data: {
-          email,
+          orderNumber,
           status: 'PENDING',
-          paymentStatus: 'UNPAID',
           subtotal,
           shipping: shippingCost,
+          discount,
           total,
           currency: 'MAD',
-          shippingAddress: {
-            ...shippingAddress,
-            shippingMethod,
+          shippingMethod,
+          guestEmail: email,
+          promoCode: promoCode ?? undefined,
+          notes: JSON.stringify({
+            shippingAddress,
+          }),
+          items: {
+            create: resolvedItems.map((ri, idx) => ({
+              sanityProductId: items[idx].sanityProductId,
+              sanityVariantId: items[idx].sanityVariantId ?? null,
+              productName: ri.name,
+              variantLabel: items[idx].variantLabel,
+              quantity: ri.quantity,
+              unitPrice: ri.price,
+              totalPrice: ri.price * ri.quantity,
+            })),
           },
-          notes: [
-            promoCode ? `Promo: ${promoCode}` : null,
-            `Items: ${itemsNote}`,
-          ]
-            .filter(Boolean)
-            .join(' | ') || null,
         },
       });
       dbOrderId = order.id;
@@ -191,7 +210,7 @@ export async function POST(request: NextRequest) {
       await prisma.order
         .update({
           where: { id: dbOrderId },
-          data: { stripePaymentId: paymentIntent.id },
+          data: { stripePaymentIntentId: paymentIntent.id },
         })
         .catch(() => {/* ignore */});
     }

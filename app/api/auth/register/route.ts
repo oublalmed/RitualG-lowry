@@ -3,6 +3,7 @@ import bcrypt from 'bcryptjs';
 import { z } from 'zod';
 import { prisma } from '@/lib/prisma';
 import { sendWelcomeEmail } from '@/lib/email';
+import { rateLimit, getClientIp, RATE_LIMITS } from '@/lib/rate-limit';
 
 const schema = z.object({
   name: z.string().min(2),
@@ -12,6 +13,15 @@ const schema = z.object({
 });
 
 export async function POST(req: Request) {
+  const ip = getClientIp(req);
+  const limiter = rateLimit(`register:${ip}`, RATE_LIMITS.register);
+  if (!limiter.success) {
+    return NextResponse.json(
+      { error: 'Trop de requêtes. Réessayez plus tard.' },
+      { status: 429, headers: { 'Retry-After': String(limiter.resetIn) } }
+    );
+  }
+
   try {
     const body = await req.json();
     const parsed = schema.safeParse(body);

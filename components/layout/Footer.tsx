@@ -6,11 +6,11 @@ import { Share2, Users, Music2 } from 'lucide-react';
 
 const footerLinks = {
   boutique: [
-    { href: '/boutique/lisses', label: 'Extensions Lisses' },
-    { href: '/boutique/bouclees', label: 'Extensions Bouclées' },
-    { href: '/boutique/afro', label: 'Extensions Afro' },
-    { href: '/boutique/perruques', label: 'Perruques' },
-    { href: '/boutique/accessoires', label: 'Accessoires' },
+    { href: '/boutique?textures=lisse', label: 'Extensions Lisses' },
+    { href: '/boutique?textures=bouclée', label: 'Extensions Bouclées' },
+    { href: '/boutique?textures=afro', label: 'Extensions Afro' },
+    { href: '/boutique?types=perruque', label: 'Perruques' },
+    { href: '/boutique?types=accessoire', label: 'Accessoires' },
     { href: '/cartes-cadeaux', label: 'Cartes cadeaux' },
   ],
   aide: [

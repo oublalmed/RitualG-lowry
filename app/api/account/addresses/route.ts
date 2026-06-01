@@ -7,13 +7,14 @@ import { z } from 'zod';
 const addressSchema = z.object({
   firstName: z.string().min(2),
   lastName: z.string().min(2),
-  address1: z.string().min(5),
-  address2: z.string().optional(),
+  line1: z.string().min(5),
+  line2: z.string().optional(),
   city: z.string().min(2),
   postalCode: z.string().min(4),
   country: z.string().min(2).default('MA'),
   phone: z.string().optional(),
   isDefault: z.boolean().optional(),
+  label: z.string().optional(),
 });
 
 export async function GET() {
@@ -25,7 +26,7 @@ export async function GET() {
 
     const addresses = await prisma.address.findMany({
       where: { userId: session.user.id },
-      orderBy: [{ isDefault: 'desc' }, { createdAt: 'asc' }],
+      orderBy: { isDefault: 'desc' },
     }).catch(() => []);
 
     return NextResponse.json({ data: addresses });
@@ -49,7 +50,6 @@ export async function POST(req: Request) {
 
     const data = parsed.data;
 
-    // If setting as default, unset others
     if (data.isDefault) {
       await prisma.address.updateMany({
         where: { userId: session.user.id },
@@ -62,18 +62,19 @@ export async function POST(req: Request) {
         userId: session.user.id,
         firstName: data.firstName,
         lastName: data.lastName,
-        address1: data.address1,
-        address2: data.address2,
+        line1: data.line1,
+        line2: data.line2,
         city: data.city,
         postalCode: data.postalCode,
         country: data.country,
         phone: data.phone,
         isDefault: data.isDefault ?? false,
+        label: data.label ?? 'Domicile',
       },
     }).catch(() => null);
 
     if (!address) {
-      return NextResponse.json({ error: 'Impossible de créer l\'adresse' }, { status: 500 });
+      return NextResponse.json({ error: "Impossible de créer l'adresse" }, { status: 500 });
     }
 
     return NextResponse.json({ data: address }, { status: 201 });

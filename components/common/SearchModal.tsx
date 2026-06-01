@@ -14,9 +14,9 @@ interface SearchModalProps {
 }
 
 const POPULAR_SUGGESTIONS = [
-  { label: 'Extensions lisses', href: '/boutique/lisses' },
-  { label: 'Perruques lace front', href: '/boutique/perruques' },
-  { label: 'Extensions bouclées', href: '/boutique/bouclees' },
+  { label: 'Extensions lisses', href: '/boutique?textures=lisse' },
+  { label: 'Perruques lace front', href: '/boutique?types=perruque' },
+  { label: 'Extensions bouclées', href: '/boutique?textures=bouclée' },
 ]
 
 function highlight(text: string, query: string) {
@@ -42,7 +42,7 @@ export function SearchModal({ open, onClose }: SearchModalProps) {
     ? mockProducts.filter(
         (p) =>
           p.name.toLowerCase().includes(query.toLowerCase()) ||
-          p.shortDescription.toLowerCase().includes(query.toLowerCase()) ||
+          p.shortDescription?.toLowerCase().includes(query.toLowerCase()) ||
           p.category.name.toLowerCase().includes(query.toLowerCase())
       ).slice(0, 4)
     : []

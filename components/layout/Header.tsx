@@ -17,27 +17,27 @@ const megaMenuCategories = [
   {
     name: 'Extensions Lisses',
     description: 'Soyeuses et légères',
-    href: '/boutique/lisses',
+    href: '/boutique?textures=lisse',
     color: 'linear-gradient(135deg, #3D2B1F 0%, #5A3D2B 100%)',
   },
   {
     name: 'Extensions Bouclées',
     description: 'Volume et mouvement naturel',
-    href: '/boutique/bouclees',
+    href: '/boutique?textures=bouclée',
     color: 'linear-gradient(135deg, #4A3528 0%, #6B4C35 100%)',
   },
   {
     name: 'Extensions Afro',
     description: 'Pour toutes les textures',
-    href: '/boutique/afro',
+    href: '/boutique?textures=afro',
     color: 'linear-gradient(135deg, #5A3D2B 0%, #C9A875 100%)',
   },
 ];
 
 const navLinks = [
   { href: '/boutique', label: 'Boutique', hasMegaMenu: true },
-  { href: '/boutique/nouveautes', label: 'Nouveautés', hasMegaMenu: false },
-  { href: '/boutique/best-sellers', label: 'Best-sellers', hasMegaMenu: false },
+  { href: '/boutique?state=new', label: 'Nouveautés', hasMegaMenu: false },
+  { href: '/boutique?state=bestseller', label: 'Best-sellers', hasMegaMenu: false },
   { href: '/a-propos', label: 'À propos', hasMegaMenu: false },
   { href: '/blog', label: 'Blog', hasMegaMenu: false },
   { href: '/faq', label: 'FAQ', hasMegaMenu: false },

@@ -1,32 +1,8 @@
-export interface MockVariant {
-  label: string;
-  color: { name: string; hexCode: string };
-  length: number;
-  price: number;
-  stock: number;
-  isAvailable: boolean;
-}
+export type { MockProduct, MockVariant, Product, ProductVariant } from './types';
 
-export interface MockProduct {
-  _id: string;
-  slug: string;
-  name: string;
-  shortDescription: string;
-  basePrice: number;
-  comparePrice: number | null;
-  isNew: boolean;
-  isBestSeller: boolean;
-  isFeatured: boolean;
-  stockStatus: 'in_stock' | 'low_stock' | 'out_of_stock';
-  productType: string[];
-  texture: string[];
-  rating: number;
-  reviewCount: number;
-  variants: MockVariant[];
-  category: { name: string; slug: string };
-}
+import type { Product } from './types';
 
-export const mockProducts: MockProduct[] = [
+export const mockProducts: Product[] = [
   {
     _id: 'prod-1',
     slug: 'extension-lisse-naturelle',
@@ -43,9 +19,9 @@ export const mockProducts: MockProduct[] = [
     rating: 4.8,
     reviewCount: 124,
     variants: [
-      { label: '40cm - Noir Naturel', color: { name: 'Noir Naturel', hexCode: '#1A1410' }, length: 40, price: 890, stock: 15, isAvailable: true },
-      { label: '50cm - Noir Naturel', color: { name: 'Noir Naturel', hexCode: '#1A1410' }, length: 50, price: 990, stock: 8, isAvailable: true },
-      { label: '60cm - Châtain', color: { name: 'Châtain', hexCode: '#6B3A2A' }, length: 60, price: 1090, stock: 3, isAvailable: true },
+      { _key: 'v1a', label: '40cm - Noir Naturel', color: { name: 'Noir Naturel', hexCode: '#1A1410' }, length: 40, price: 890, stock: 15, isAvailable: true },
+      { _key: 'v1b', label: '50cm - Noir Naturel', color: { name: 'Noir Naturel', hexCode: '#1A1410' }, length: 50, price: 990, stock: 8, isAvailable: true },
+      { _key: 'v1c', label: '60cm - Châtain', color: { name: 'Châtain', hexCode: '#6B3A2A' }, length: 60, price: 1090, stock: 3, isAvailable: true },
     ],
     category: { name: 'Extensions', slug: 'extensions' },
   },
@@ -65,8 +41,8 @@ export const mockProducts: MockProduct[] = [
     rating: 4.9,
     reviewCount: 87,
     variants: [
-      { label: '40cm - Noir', color: { name: 'Noir', hexCode: '#1A1410' }, length: 40, price: 950, stock: 20, isAvailable: true },
-      { label: '50cm - Brun', color: { name: 'Brun', hexCode: '#3D2B1F' }, length: 50, price: 1050, stock: 5, isAvailable: true },
+      { _key: 'v2a', label: '40cm - Noir', color: { name: 'Noir', hexCode: '#1A1410' }, length: 40, price: 950, stock: 20, isAvailable: true },
+      { _key: 'v2b', label: '50cm - Brun', color: { name: 'Brun', hexCode: '#3D2B1F' }, length: 50, price: 1050, stock: 5, isAvailable: true },
     ],
     category: { name: 'Extensions', slug: 'extensions' },
   },
@@ -86,8 +62,8 @@ export const mockProducts: MockProduct[] = [
     rating: 4.7,
     reviewCount: 203,
     variants: [
-      { label: '14 pouces - Noir', color: { name: 'Noir', hexCode: '#1A1410' }, length: 35, price: 1450, stock: 12, isAvailable: true },
-      { label: '18 pouces - Noir', color: { name: 'Noir', hexCode: '#1A1410' }, length: 45, price: 1650, stock: 7, isAvailable: true },
+      { _key: 'v3a', label: '14 pouces - Noir', color: { name: 'Noir', hexCode: '#1A1410' }, length: 35, price: 1450, stock: 12, isAvailable: true },
+      { _key: 'v3b', label: '18 pouces - Noir', color: { name: 'Noir', hexCode: '#1A1410' }, length: 45, price: 1650, stock: 7, isAvailable: true },
     ],
     category: { name: 'Perruques', slug: 'perruques' },
   },
@@ -107,7 +83,7 @@ export const mockProducts: MockProduct[] = [
     rating: 4.6,
     reviewCount: 56,
     variants: [
-      { label: '30cm - Noir', color: { name: 'Noir', hexCode: '#1A1410' }, length: 30, price: 780, stock: 4, isAvailable: true },
+      { _key: 'v4a', label: '30cm - Noir', color: { name: 'Noir', hexCode: '#1A1410' }, length: 30, price: 780, stock: 4, isAvailable: true },
     ],
     category: { name: 'Extensions', slug: 'extensions' },
   },
@@ -127,8 +103,8 @@ export const mockProducts: MockProduct[] = [
     rating: 4.5,
     reviewCount: 34,
     variants: [
-      { label: 'Beige', color: { name: 'Beige', hexCode: '#F5EDE0' }, length: 0, price: 180, stock: 50, isAvailable: true },
-      { label: 'Noir', color: { name: 'Noir', hexCode: '#1A1410' }, length: 0, price: 180, stock: 50, isAvailable: true },
+      { _key: 'v5a', label: 'Beige', color: { name: 'Beige', hexCode: '#F5EDE0' }, length: 0, price: 180, stock: 50, isAvailable: true },
+      { _key: 'v5b', label: 'Noir', color: { name: 'Noir', hexCode: '#1A1410' }, length: 0, price: 180, stock: 50, isAvailable: true },
     ],
     category: { name: 'Accessoires', slug: 'accessoires' },
   },
@@ -148,8 +124,8 @@ export const mockProducts: MockProduct[] = [
     rating: 4.8,
     reviewCount: 99,
     variants: [
-      { label: '45cm - Noir', color: { name: 'Noir', hexCode: '#1A1410' }, length: 45, price: 920, stock: 18, isAvailable: true },
-      { label: '55cm - Brun', color: { name: 'Brun', hexCode: '#3D2B1F' }, length: 55, price: 1020, stock: 6, isAvailable: true },
+      { _key: 'v6a', label: '45cm - Noir', color: { name: 'Noir', hexCode: '#1A1410' }, length: 45, price: 920, stock: 18, isAvailable: true },
+      { _key: 'v6b', label: '55cm - Brun', color: { name: 'Brun', hexCode: '#3D2B1F' }, length: 55, price: 1020, stock: 6, isAvailable: true },
     ],
     category: { name: 'Extensions', slug: 'extensions' },
   },

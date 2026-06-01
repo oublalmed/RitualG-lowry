@@ -8,19 +8,19 @@ const collections = [
   {
     name: 'Extensions Lisses',
     description: 'Soyeuses, légères et naturelles',
-    href: '/boutique/lisses',
+    href: '/boutique?textures=lisse',
     gradient: 'linear-gradient(160deg, #3D2B1F 0%, #5A3D2B 60%, #6B4C35 100%)',
   },
   {
     name: 'Extensions Bouclées',
     description: 'Volume, mouvement et brillance',
-    href: '/boutique/bouclees',
+    href: '/boutique?textures=bouclée',
     gradient: 'linear-gradient(160deg, #4A3528 0%, #B8924B 60%, #C9A875 100%)',
   },
   {
     name: 'Extensions Afro',
     description: 'Authentiques, pour toutes textures',
-    href: '/boutique/afro',
+    href: '/boutique?textures=afro',
     gradient: 'linear-gradient(160deg, #5A3D2B 0%, #3D2B1F 50%, #C9A8A0 100%)',
   },
 ];

@@ -1,9 +1,13 @@
 import { MetadataRoute } from 'next'
-import { mockProducts } from '@/lib/mockData'
-import { mockBlogPosts } from '@/lib/mockData'
+import { getAllProductSlugs, getAllBlogSlugs } from '@/lib/sanity/fetch'
 
-export default function sitemap(): MetadataRoute.Sitemap {
+export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
   const base = process.env.NEXT_PUBLIC_APP_URL || 'https://ritualglowry.ma'
+
+  const [productSlugs, blogSlugs] = await Promise.all([
+    getAllProductSlugs(),
+    getAllBlogSlugs(),
+  ])
 
   const staticPages = [
     { url: base, lastModified: new Date(), changeFrequency: 'weekly' as const, priority: 1 },
@@ -14,16 +18,16 @@ export default function sitemap(): MetadataRoute.Sitemap {
     { url: `${base}/contact`, lastModified: new Date(), changeFrequency: 'monthly' as const, priority: 0.5 },
   ]
 
-  const productPages = mockProducts.map((p) => ({
+  const productPages = (productSlugs ?? []).map((p) => ({
     url: `${base}/produit/${p.slug}`,
     lastModified: new Date(),
     changeFrequency: 'weekly' as const,
     priority: 0.8,
   }))
 
-  const blogPages = mockBlogPosts.map((p) => ({
+  const blogPages = (blogSlugs ?? []).map((p) => ({
     url: `${base}/blog/${p.slug}`,
-    lastModified: new Date(p.publishedAt),
+    lastModified: new Date(),
     changeFrequency: 'monthly' as const,
     priority: 0.7,
   }))

@@ -1,8 +1,9 @@
 import Link from 'next/link';
 import { ArrowRight } from 'lucide-react';
 import { ProductCard } from './ProductCard';
+import { getFeaturedProducts } from '@/lib/sanity/fetch';
 
-const bestSellers = [
+const fallbackProducts = [
   {
     id: '1',
     slug: 'extension-lisse-naturelle',
@@ -50,7 +51,24 @@ const bestSellers = [
   },
 ];
 
-export function FeaturedProducts() {
+export async function FeaturedProducts() {
+  const sanityProducts = await getFeaturedProducts();
+
+  const products =
+    sanityProducts && sanityProducts.length > 0
+      ? sanityProducts.map((p: any) => ({
+          id: p._id,
+          slug: p.slug,
+          name: p.name,
+          price: p.basePrice,
+          comparePrice: p.comparePrice ?? null,
+          isNew: p.isNew ?? false,
+          isBestSeller: p.isBestSeller ?? false,
+          stockStatus: p.stockStatus,
+          imageUrl: p.images?.asset?.url,
+        }))
+      : fallbackProducts;
+
   return (
     <section className="py-24 md:py-32 bg-[#F5EDE0]">
       <div className="container mx-auto px-4 md:px-8 lg:px-12">
@@ -65,7 +83,7 @@ export function FeaturedProducts() {
             </h2>
           </div>
           <Link
-            href="/boutique/best-sellers"
+            href="/boutique?state=bestseller"
             className="flex items-center gap-2 text-sm font-inter font-semibold uppercase tracking-widest text-[#3D2B1F] hover:text-[#C9A875] transition-colors group"
           >
             Voir tout
@@ -75,7 +93,7 @@ export function FeaturedProducts() {
 
         {/* Product grid — horizontally scrollable on mobile */}
         <div className="grid grid-cols-2 lg:grid-cols-4 gap-4 md:gap-6">
-          {bestSellers.map((product) => (
+          {products.map((product) => (
             <ProductCard key={product.id} product={product} />
           ))}
         </div>

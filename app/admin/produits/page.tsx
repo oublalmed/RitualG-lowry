@@ -122,13 +122,13 @@ export default function AdminProduitsPage() {
                         className="px-2 py-1 rounded-full text-xs font-medium"
                         style={{ background: '#F5EDE0', color: '#3D2B1F' }}
                       >
-                        {product.productType[0] ?? '—'}
+                        {product.productType?.[0] ?? '—'}
                       </span>
                     </td>
 
                     {/* Texture */}
                     <td className="px-4 py-3" style={{ color: '#3D2B1F', opacity: 0.8 }}>
-                      {product.texture.join(', ') || '—'}
+                      {product.texture?.join(', ') || '—'}
                     </td>
 
                     {/* Price */}

@@ -3,13 +3,19 @@
 import { format } from 'date-fns'
 import { fr } from 'date-fns/locale'
 import { Clock, User, Share2 } from 'lucide-react'
-import type { BlogPost } from '@/lib/mockData'
+
+interface BlogPostForArticle {
+  title: string
+  author?: { name?: string; image?: any; bio?: string }
+  publishedAt: string
+  readTime?: number
+}
 
 function formatDate(dateStr: string) {
   return format(new Date(dateStr), 'dd MMMM yyyy', { locale: fr })
 }
 
-export function ArticleClient({ post }: { post: BlogPost }) {
+export function ArticleClient({ post }: { post: BlogPostForArticle }) {
   const shareUrl = typeof window !== 'undefined' ? window.location.href : ''
   const encodedTitle = encodeURIComponent(post.title)
   const encodedUrl = encodeURIComponent(shareUrl)
@@ -22,7 +28,7 @@ export function ArticleClient({ post }: { post: BlogPost }) {
     <div className="flex flex-wrap items-center gap-4">
       <div className="flex items-center gap-2 text-[#FAF6EF]/70 text-sm font-inter">
         <User className="h-4 w-4" />
-        <span>{post.author.name}</span>
+        <span>{post.author?.name}</span>
       </div>
       <span className="text-[#FAF6EF]/30">·</span>
       <div className="flex items-center gap-2 text-[#FAF6EF]/70 text-sm font-inter">

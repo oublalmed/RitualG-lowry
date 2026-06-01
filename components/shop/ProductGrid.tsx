@@ -1,9 +1,26 @@
-import { MockProduct } from '@/lib/mockData';
 import { ProductCard } from '@/components/product/ProductCard';
 import { ProductGridSkeleton } from './ProductSkeleton';
 
+export interface SanityProduct {
+  _id: string;
+  name: string;
+  slug: string;
+  shortDescription?: string;
+  basePrice: number;
+  comparePrice?: number | null;
+  stockStatus?: string;
+  isNew?: boolean;
+  isBestSeller?: boolean;
+  isFeatured?: boolean;
+  productType?: string[];
+  texture?: string[];
+  category?: { _id: string; name: string; slug: string };
+  images?: any;
+  variantCount?: number;
+}
+
 interface ProductGridProps {
-  products: MockProduct[];
+  products: SanityProduct[];
   isLoading?: boolean;
   onResetFilters?: () => void;
 }
@@ -63,11 +80,9 @@ export function ProductGrid({ products, isLoading = false, onResetFilters }: Pro
             comparePrice: product.comparePrice,
             isNew: product.isNew,
             isBestSeller: product.isBestSeller,
-            rating: product.rating,
-            reviewCount: product.reviewCount,
             description: product.shortDescription,
             imagePlaceholder: gradients[index % gradients.length],
-            category: product.category.name,
+            category: product.category?.name,
             stockStatus: product.stockStatus,
           }}
         />

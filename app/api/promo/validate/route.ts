@@ -1,5 +1,6 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { z } from 'zod/v4';
+import { rateLimit, getClientIp, RATE_LIMITS } from '@/lib/rate-limit';
 
 const requestSchema = z.object({
   code: z.string().min(1),
@@ -38,6 +39,15 @@ const MOCK_PROMOS: Record<string, PromoConfig> = {
 };
 
 export async function POST(request: NextRequest) {
+  const ip = getClientIp(request);
+  const limiter = rateLimit(`promo:${ip}`, RATE_LIMITS.promo);
+  if (!limiter.success) {
+    return NextResponse.json(
+      { error: 'Trop de requêtes. Réessayez plus tard.' },
+      { status: 429, headers: { 'Retry-After': String(limiter.resetIn) } }
+    );
+  }
+
   try {
     const body = (await request.json()) as unknown;
     const parsed = requestSchema.safeParse(body);

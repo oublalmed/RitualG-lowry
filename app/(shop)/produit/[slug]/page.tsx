@@ -1,6 +1,6 @@
 import type { Metadata } from 'next';
 import { notFound } from 'next/navigation';
-import { mockProducts } from '@/lib/mockData';
+import { getAllProductSlugs, getProductBySlug, getRelatedProducts } from '@/lib/sanity/fetch';
 import { ProductPageClient } from '@/components/product/ProductPageClient';
 
 export const revalidate = 3600;
@@ -10,29 +10,30 @@ interface PageProps {
 }
 
 export async function generateStaticParams() {
-  return mockProducts.map((p) => ({ slug: p.slug }));
+  const slugs = await getAllProductSlugs();
+  return slugs.map((s) => ({ slug: s.slug }));
 }
 
 export async function generateMetadata({ params }: PageProps): Promise<Metadata> {
   const { slug } = await params;
-  const product = mockProducts.find((p) => p.slug === slug);
+  const product = await getProductBySlug(slug);
   if (!product) return { title: 'Produit introuvable | Ritual Glowry' };
 
   return {
-    title: `${product.name} | Ritual Glowry`,
-    description: product.shortDescription,
+    title: product.seo?.seoTitle ?? `${product.name} | Ritual Glowry`,
+    description: product.seo?.seoDescription ?? product.shortDescription,
   };
 }
 
 export default async function ProductPage({ params }: PageProps) {
   const { slug } = await params;
-  const product = mockProducts.find((p) => p.slug === slug);
+  const product = await getProductBySlug(slug);
 
   if (!product) {
     notFound();
   }
 
-  const related = mockProducts.filter((p) => p._id !== product._id).slice(0, 4);
+  const related = await getRelatedProducts(product._id, product.category?._id ?? '');
 
   return <ProductPageClient product={product} relatedProducts={related} />;
 }

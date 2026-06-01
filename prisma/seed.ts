@@ -11,9 +11,14 @@
 // eslint-disable-next-line @typescript-eslint/no-require-imports
 const { PrismaClient } = require("@prisma/client");
 // eslint-disable-next-line @typescript-eslint/no-require-imports
+const { PrismaBetterSqlite3 } = require("@prisma/adapter-better-sqlite3");
+// eslint-disable-next-line @typescript-eslint/no-require-imports
 const bcrypt = require("bcryptjs");
 
-const prisma = new PrismaClient();
+const path = require("path");
+const dbPath = path.resolve(__dirname, "..", "dev.db");
+const adapter = new PrismaBetterSqlite3({ url: "file:" + dbPath });
+const prisma = new PrismaClient({ adapter });
 
 // ─────────────────────────────────────────────────────────────────────────────
 // Helpers
@@ -52,7 +57,7 @@ async function main(): Promise<void> {
     create: {
       email: "admin@ritualglowry.ma",
       name: "Fatima Admin",
-      hashedPassword: adminHash,
+      password: adminHash,
       emailVerified: new Date(),
       role: "ADMIN",
       loyaltyPoints: 0,
@@ -68,7 +73,7 @@ async function main(): Promise<void> {
     create: {
       email: "sara.benali@example.ma",
       name: "Sara Benali",
-      hashedPassword: customer1Hash,
+      password: customer1Hash,
       emailVerified: new Date(),
       role: "CUSTOMER",
       loyaltyPoints: 750,
@@ -84,7 +89,7 @@ async function main(): Promise<void> {
     create: {
       email: "nadia.alaoui@example.ma",
       name: "Nadia Alaoui",
-      hashedPassword: customer2Hash,
+      password: customer2Hash,
       emailVerified: new Date(),
       role: "CUSTOMER",
       loyaltyPoints: 150,
@@ -315,7 +320,7 @@ async function main(): Promise<void> {
   // ── 7. Newsletter subscribers ────────────────────────────────────────────
 
   await prisma.newsletter.createMany({
-    skipDuplicates: true,
+
     data: [
       { email: "sara.benali@example.ma", source: "checkout", isActive: true },
       { email: "newsletter1@example.ma", source: "popup", isActive: true },
@@ -335,7 +340,7 @@ async function main(): Promise<void> {
   // ── 8. Promo codes ────────────────────────────────────────────────────────
 
   await prisma.promoCode.createMany({
-    skipDuplicates: true,
+
     data: [
       {
         code: "BIENVENUE10",
@@ -368,7 +373,7 @@ async function main(): Promise<void> {
         currentUses: 45,
         isActive: false,
         expiresAt: new Date("2024-09-01"),
-        conditions: { productTypes: ["perruque", "extensions"] },
+        conditions: JSON.stringify({ productTypes: ["perruque", "extensions"] }),
       },
       {
         code: "VIPPLATINUM",
@@ -378,7 +383,7 @@ async function main(): Promise<void> {
         maxUses: 50,
         currentUses: 3,
         isActive: true,
-        conditions: { loyaltyTier: "PLATINUM" },
+        conditions: JSON.stringify({ loyaltyTier: "PLATINUM" }),
       },
     ],
   });
@@ -393,7 +398,7 @@ async function main(): Promise<void> {
         adminId: adminUser.id,
         action: "CREATE",
         resourceType: "PromoCode",
-        metadata: { code: "BIENVENUE10" },
+        metadata: JSON.stringify({ code: "BIENVENUE10" }),
         createdAt: new Date("2024-01-01"),
       },
       {
@@ -401,7 +406,7 @@ async function main(): Promise<void> {
         action: "UPDATE",
         resourceType: "Order",
         resourceId: order1.id,
-        metadata: { previousStatus: "SHIPPED", newStatus: "DELIVERED" },
+        metadata: JSON.stringify({ previousStatus: "SHIPPED", newStatus: "DELIVERED" }),
         createdAt: new Date(Date.now() - 10 * 24 * 60 * 60 * 1000),
       },
     ],

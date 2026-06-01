@@ -3,7 +3,7 @@
 import { useCallback, useRef, useState } from 'react';
 import { motion } from 'framer-motion';
 import { ShieldCheck, Truck, RotateCcw, Award, Heart, Minus, Plus } from 'lucide-react';
-import type { MockProduct, MockVariant } from '@/lib/mockData';
+import type { Product, ProductVariant } from '@/lib/types';
 import { useCartStore } from '@/stores/cartStore';
 import { Breadcrumb } from '@/components/common/Breadcrumb';
 import { StarRating } from '@/components/common/StarRating';
@@ -17,8 +17,8 @@ import { Tabs, TabsList, TabsTrigger, TabsContent } from '@/components/ui/tabs';
 import { fadeInLeft, fadeInRight, fadeInUp, staggerContainer } from '@/lib/animations';
 
 interface ProductPageClientProps {
-  product: MockProduct;
-  relatedProducts: MockProduct[];
+  product: Product;
+  relatedProducts: Product[];
 }
 
 const TRUST_BADGES = [
@@ -57,7 +57,7 @@ export function ProductPageClient({ product, relatedProducts }: ProductPageClien
   const { addItem } = useCartStore();
   const galleryRef = useRef<HTMLDivElement>(null);
 
-  const [selectedVariant, setSelectedVariant] = useState<MockVariant>(
+  const [selectedVariant, setSelectedVariant] = useState<ProductVariant>(
     product.variants[0] ?? null
   );
   const [quantity, setQuantity] = useState(1);
@@ -91,7 +91,7 @@ export function ProductPageClient({ product, relatedProducts }: ProductPageClien
           items={[
             { label: 'Accueil', href: '/' },
             { label: 'Boutique', href: '/boutique' },
-            { label: product.category.name, href: `/boutique?types=${product.productType[0] ?? ''}` },
+            { label: product.category?.name ?? '', href: `/boutique?types=${product.productType?.[0] ?? ''}` },
             { label: product.name },
           ]}
         />
@@ -122,7 +122,7 @@ export function ProductPageClient({ product, relatedProducts }: ProductPageClien
               variants={fadeInUp}
               className="font-inter font-semibold text-xs uppercase tracking-[0.14em] text-[#C9A875]"
             >
-              {product.category.name}
+              {product.category?.name}
             </motion.span>
 
             {/* Title */}
@@ -135,12 +135,12 @@ export function ProductPageClient({ product, relatedProducts }: ProductPageClien
 
             {/* Rating */}
             <motion.div variants={fadeInUp} className="flex items-center gap-3">
-              <StarRating rating={product.rating} size="sm" />
+              <StarRating rating={product.rating ?? 0} size="sm" />
               <a
                 href="#reviews"
                 className="font-inter text-sm text-[#3D2B1F]/60 hover:text-[#C9A875] transition-colors"
               >
-                ({product.reviewCount} avis)
+                ({product.reviewCount ?? 0} avis)
               </a>
             </motion.div>
 
@@ -379,7 +379,7 @@ export function ProductPageClient({ product, relatedProducts }: ProductPageClien
 
       {/* Reviews section */}
       <div className="max-w-screen-xl mx-auto px-6 md:px-12">
-        <ReviewSection rating={product.rating} reviewCount={product.reviewCount} />
+        <ReviewSection rating={product.rating ?? 0} reviewCount={product.reviewCount ?? 0} />
       </div>
 
       {/* Related products */}

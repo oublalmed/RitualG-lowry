@@ -3,9 +3,22 @@
 import { useState } from 'react'
 import Link from 'next/link'
 import { motion } from 'framer-motion'
-import { mockBlogPosts, BlogPost } from '@/lib/mockData'
 import { format } from 'date-fns'
 import { fr } from 'date-fns/locale'
+
+interface BlogPost {
+  _id: string
+  _createdAt?: string
+  title: string
+  slug: string
+  excerpt?: string
+  featuredImage?: any
+  author?: { name?: string; image?: any; bio?: string }
+  publishedAt: string
+  readTime?: number
+  categories?: string[]
+  tags?: string[]
+}
 
 const CATEGORIES = ['Tous', 'Entretien', 'Tendances', 'Avant/Après', 'Tutos', 'Guides']
 const PER_PAGE = 6
@@ -31,9 +44,11 @@ function PostCard({ post }: { post: BlogPost }) {
 
       <div className="flex flex-col flex-1 p-5">
         {/* Category */}
+        {post.categories?.[0] && (
         <span className="inline-block bg-[#C9A875]/20 text-[#B8924B] text-[11px] font-inter font-semibold uppercase tracking-[0.1em] px-2 py-1 mb-3 self-start">
           {post.categories[0]}
         </span>
+        )}
 
         {/* Title */}
         <h2 className="font-playfair italic text-[#3D2B1F] text-lg leading-snug mb-2 group-hover:text-[#C9A875] transition-colors line-clamp-2">
@@ -47,7 +62,7 @@ function PostCard({ post }: { post: BlogPost }) {
 
         {/* Footer */}
         <div className="flex items-center gap-2 text-xs font-inter text-[#3D2B1F]/50 border-t border-[#F5EDE0] pt-3 mt-auto">
-          <span>{post.author.name}</span>
+          <span>{post.author?.name}</span>
           <span>·</span>
           <span>{formatDate(post.publishedAt)}</span>
           <span>·</span>
@@ -58,14 +73,18 @@ function PostCard({ post }: { post: BlogPost }) {
   )
 }
 
-export function BlogClientPage() {
+interface BlogClientPageProps {
+  posts: BlogPost[]
+}
+
+export function BlogClientPage({ posts }: BlogClientPageProps) {
   const [activeCategory, setActiveCategory] = useState('Tous')
   const [page, setPage] = useState(1)
 
   const filtered = activeCategory === 'Tous'
-    ? mockBlogPosts
-    : mockBlogPosts.filter((p) =>
-        p.categories.some((c) => c.toLowerCase() === activeCategory.toLowerCase())
+    ? posts
+    : posts.filter((p) =>
+        p.categories?.some((c) => c.toLowerCase() === activeCategory.toLowerCase())
       )
 
   const totalPages = Math.ceil(filtered.length / PER_PAGE)

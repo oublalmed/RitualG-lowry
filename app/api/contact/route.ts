@@ -1,6 +1,8 @@
 import { NextResponse } from 'next/server'
 import { z } from 'zod'
 import { Resend } from 'resend'
+import { rateLimit, getClientIp, RATE_LIMITS } from '@/lib/rate-limit'
+import { escapeHtml } from '@/lib/sanitize'
 
 const contactSchema = z.object({
   firstName: z.string().min(2),
@@ -18,6 +20,15 @@ const subjectLabels: Record<string, string> = {
 }
 
 export async function POST(request: Request) {
+  const ip = getClientIp(request);
+  const limiter = rateLimit(`contact:${ip}`, RATE_LIMITS.contact);
+  if (!limiter.success) {
+    return NextResponse.json(
+      { error: 'Trop de requêtes. Réessayez plus tard.' },
+      { status: 429, headers: { 'Retry-After': String(limiter.resetIn) } }
+    );
+  }
+
   try {
     const body = await request.json() as unknown
     const parsed = contactSchema.safeParse(body)
@@ -39,7 +50,7 @@ export async function POST(request: Request) {
       from: fromEmail,
       to: adminEmail,
       replyTo: email,
-      subject: `[Contact] ${subjectLabels[subject]} — ${firstName} ${lastName}`,
+      subject: `[Contact] ${escapeHtml(subjectLabels[subject])} — ${escapeHtml(firstName)} ${escapeHtml(lastName)}`,
       html: `
         <div style="font-family: Inter, sans-serif; max-width: 600px; margin: 0 auto; padding: 40px; background: #FAF6EF;">
           <h1 style="font-family: Georgia, serif; font-style: italic; color: #3D2B1F; font-size: 24px; margin-bottom: 24px;">
@@ -48,21 +59,21 @@ export async function POST(request: Request) {
           <table style="width: 100%; border-collapse: collapse;">
             <tr>
               <td style="padding: 8px 0; color: #3D2B1F; font-weight: 600; width: 120px;">Nom :</td>
-              <td style="padding: 8px 0; color: #3D2B1F;">${firstName} ${lastName}</td>
+              <td style="padding: 8px 0; color: #3D2B1F;">${escapeHtml(firstName)} ${escapeHtml(lastName)}</td>
             </tr>
             <tr>
               <td style="padding: 8px 0; color: #3D2B1F; font-weight: 600;">Email :</td>
               <td style="padding: 8px 0; color: #3D2B1F;">
-                <a href="mailto:${email}" style="color: #C9A875;">${email}</a>
+                <a href="mailto:${escapeHtml(email)}" style="color: #C9A875;">${escapeHtml(email)}</a>
               </td>
             </tr>
             <tr>
               <td style="padding: 8px 0; color: #3D2B1F; font-weight: 600;">Sujet :</td>
-              <td style="padding: 8px 0; color: #3D2B1F;">${subjectLabels[subject]}</td>
+              <td style="padding: 8px 0; color: #3D2B1F;">${escapeHtml(subjectLabels[subject])}</td>
             </tr>
           </table>
           <div style="margin-top: 24px; padding: 20px; background: #F5EDE0; border-left: 4px solid #C9A875;">
-            <p style="color: #3D2B1F; font-size: 14px; line-height: 1.6; margin: 0; white-space: pre-wrap;">${message}</p>
+            <p style="color: #3D2B1F; font-size: 14px; line-height: 1.6; margin: 0; white-space: pre-wrap;">${escapeHtml(message)}</p>
           </div>
           <p style="color: #3D2B1F; font-size: 12px; margin-top: 24px; opacity: 0.6;">
             Message reçu le ${new Date().toLocaleString('fr-FR')}

@@ -3,7 +3,7 @@
 import { useRef } from 'react';
 import { motion } from 'framer-motion';
 import { ChevronLeft, ChevronRight } from 'lucide-react';
-import type { MockProduct } from '@/lib/mockData';
+import type { Product } from '@/lib/types';
 import { ProductCard } from '@/components/product/ProductCard';
 import { fadeInUp } from '@/lib/animations';
 
@@ -15,7 +15,7 @@ const gradients = [
 ];
 
 interface RelatedProductsProps {
-  products: MockProduct[];
+  products: Product[];
 }
 
 export function RelatedProducts({ products }: RelatedProductsProps) {
@@ -83,7 +83,7 @@ export function RelatedProducts({ products }: RelatedProductsProps) {
                 reviewCount: product.reviewCount,
                 description: product.shortDescription,
                 imagePlaceholder: gradients[idx % gradients.length],
-                category: product.category.name,
+                category: product.category?.name,
               }}
             />
           </div>
