@@ -61,9 +61,9 @@ export const authOptions: NextAuthOptions = {
             where: { email },
           });
 
-          if (!user || !user.hashedPassword) return null;
+          if (!user || !user.password) return null;
 
-          const isValid = await bcrypt.compare(password, user.hashedPassword);
+          const isValid = await bcrypt.compare(password, user.password);
           if (!isValid) return null;
 
           return {
