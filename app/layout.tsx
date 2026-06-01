@@ -4,6 +4,8 @@ import './globals.css';
 import { QueryProvider } from '@/components/providers/QueryProvider';
 import { SessionProvider } from '@/components/providers/SessionProvider';
 import { CartDrawer } from '@/components/cart/CartDrawer';
+import { CookieBanner } from '@/components/common/CookieBanner';
+import { GoogleAnalytics } from '@/components/common/GoogleAnalytics';
 
 const playfair = Playfair_Display({
   variable: '--font-playfair',
@@ -127,6 +129,8 @@ export default function RootLayout({
           <QueryProvider>
             {children}
             <CartDrawer />
+            <CookieBanner />
+            <GoogleAnalytics />
           </QueryProvider>
         </SessionProvider>
       </body>

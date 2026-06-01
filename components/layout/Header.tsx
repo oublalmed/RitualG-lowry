@@ -5,6 +5,7 @@ import Link from 'next/link';
 import { ShoppingBag, Search, User, Heart, Menu, ChevronRight } from 'lucide-react';
 import { Sheet, SheetContent, SheetTrigger } from '@/components/ui/sheet';
 import { useCartStore } from '@/stores/cartStore';
+import { SearchModal } from '@/components/common/SearchModal';
 
 const announcements = [
   'Livraison offerte dès 1 200 MAD',
@@ -47,7 +48,20 @@ export function Header() {
   const [announcementIndex, setAnnouncementIndex] = useState(0);
   const [megaMenuOpen, setMegaMenuOpen] = useState(false);
   const [mobileOpen, setMobileOpen] = useState(false);
+  const [searchOpen, setSearchOpen] = useState(false);
   const megaMenuTimer = useRef<ReturnType<typeof setTimeout> | null>(null);
+
+  // Cmd+K / Ctrl+K shortcut
+  useEffect(() => {
+    const handleKeydown = (e: KeyboardEvent) => {
+      if ((e.metaKey || e.ctrlKey) && e.key === 'k') {
+        e.preventDefault();
+        setSearchOpen(true);
+      }
+    };
+    window.addEventListener('keydown', handleKeydown);
+    return () => window.removeEventListener('keydown', handleKeydown);
+  }, []);
 
   const { getItemCount, openCart } = useCartStore();
   const cartCount = getItemCount();
@@ -77,6 +91,8 @@ export function Header() {
   };
 
   return (
+    <>
+    <SearchModal open={searchOpen} onClose={() => setSearchOpen(false)} />
     <div className="fixed top-0 left-0 right-0 z-50">
       {/* Announcement bar */}
       <div className="bg-[#C9A875] text-[#1A1410] py-2 text-center overflow-hidden">
@@ -211,6 +227,7 @@ export function Header() {
             {/* Right actions */}
             <div className="flex items-center gap-1">
               <button
+                onClick={() => setSearchOpen(true)}
                 className="p-2 text-[#3D2B1F] hover:text-[#C9A875] transition-colors"
                 aria-label="Rechercher"
               >
@@ -288,5 +305,6 @@ export function Header() {
         )}
       </header>
     </div>
+    </>
   );
 }
