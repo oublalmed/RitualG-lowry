@@ -160,3 +160,75 @@ export const mockCategories = [
   { name: 'Perruques', slug: 'perruques', description: 'Perruques premium lace front' },
   { name: 'Accessoires', slug: 'accessoires', description: 'Accessoires cheveux premium' },
 ];
+
+export const mockBlogPosts = [
+  {
+    _id: 'post-1',
+    slug: 'comment-choisir-ses-extensions',
+    title: 'Comment choisir ses extensions selon sa texture naturelle',
+    excerpt: 'Guide complet pour trouver les extensions parfaites qui se fondent naturellement avec vos cheveux.',
+    featuredImage: null,
+    author: { name: 'Équipe Ritual Glowry', image: null },
+    categories: ['conseils', 'extensions'],
+    publishedAt: '2026-05-15T10:00:00Z',
+    readTime: 7,
+    tags: ['extensions', 'guide', 'texture'],
+    body: [
+      { type: 'paragraph', text: 'Choisir des extensions qui se fondent parfaitement avec vos cheveux naturels est un art. Dans ce guide complet, nous vous expliquons comment sélectionner la texture, la couleur et la longueur idéales.' },
+      { type: 'heading', text: 'Comprendre votre texture naturelle' },
+      { type: 'paragraph', text: 'Avant tout achat, identifiez votre type de cheveux : lisse (type 1), ondulé (type 2), bouclé (type 3), ou crépu (type 4). Cette classification vous guidera vers les extensions les plus adaptées.' },
+      { type: 'tip', text: 'Conseil pro : Prenez une photo de vos cheveux mouillés et secs pour comparer avec nos guides de texture disponibles sur notre site.' },
+      { type: 'heading', text: 'La longueur idéale' },
+      { type: 'paragraph', text: 'La longueur des extensions dépend de votre longueur naturelle actuelle et de l\'effet désiré. Pour un résultat naturel, ne dépassez pas 20cm de plus que votre longueur actuelle.' },
+    ]
+  },
+  {
+    _id: 'post-2',
+    slug: 'entretien-extensions-naturelles',
+    title: 'Entretien des extensions naturelles : les gestes indispensables',
+    excerpt: 'Prolongez la durée de vie de vos extensions avec nos conseils d\'entretien professionnels.',
+    featuredImage: null,
+    author: { name: 'Équipe Ritual Glowry', image: null },
+    categories: ['conseils', 'entretien'],
+    publishedAt: '2026-05-08T10:00:00Z',
+    readTime: 5,
+    tags: ['entretien', 'cheveux', 'conseils'],
+    body: [
+      { type: 'paragraph', text: 'Des extensions bien entretenues peuvent durer jusqu\'à 12 mois. Voici les gestes essentiels pour les garder belles et brillantes.' },
+      { type: 'heading', text: 'Le lavage' },
+      { type: 'paragraph', text: 'Lavez vos extensions avec un shampooing doux, sans sulfates, à l\'eau tiède. Évitez les produits contenant des alcools forts qui assèchent les fibres.' },
+    ]
+  },
+  {
+    _id: 'post-3',
+    slug: 'tendances-couleurs-2026',
+    title: 'Tendances couleurs cheveux 2026 : ce que les stars portent',
+    excerpt: 'Du chocolate brown au sandy blonde, découvrez les teintes phares de cette année.',
+    featuredImage: null,
+    author: { name: 'Équipe Ritual Glowry', image: null },
+    categories: ['tendances', 'inspiration'],
+    publishedAt: '2026-04-20T10:00:00Z',
+    readTime: 4,
+    tags: ['tendances', 'couleurs', '2026'],
+    body: [
+      { type: 'paragraph', text: 'Cette année, les tendances capillaires s\'orientent vers des teintes riches et naturelles. Focus sur les couleurs incontournables de 2026.' },
+    ]
+  },
+  {
+    _id: 'post-4',
+    slug: 'guide-perruques-lace-front',
+    title: 'Tout savoir sur les perruques lace front : guide débutante',
+    excerpt: 'Application, entretien, durée de vie... On vous dit tout sur les perruques lace front.',
+    featuredImage: null,
+    author: { name: 'Équipe Ritual Glowry', image: null },
+    categories: ['guides', 'perruques'],
+    publishedAt: '2026-04-05T10:00:00Z',
+    readTime: 9,
+    tags: ['perruques', 'lace front', 'guide'],
+    body: [
+      { type: 'paragraph', text: 'Les perruques lace front révolutionnent le monde de la coiffure. Leur rendu ultra-naturel en fait la solution idéale pour changer de look sans compromis.' },
+    ]
+  },
+]
+
+export type BlogPost = typeof mockBlogPosts[0]

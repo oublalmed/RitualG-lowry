@@ -28,28 +28,29 @@ const inter = Inter({
 });
 
 export const metadata: Metadata = {
+  metadataBase: new URL(process.env.NEXT_PUBLIC_APP_URL || 'https://ritualglowry.ma'),
   title: {
     default: 'Ritual Glowry | Extensions & Perruques Premium au Maroc',
     template: '%s | Ritual Glowry',
   },
   description:
-    'Découvrez nos extensions et perruques 100% naturelles cheveux Remy. Qualité premium pour toutes les textures — lisses, bouclées, afro. Livraison au Maroc.',
+    'Découvrez nos extensions capillaires et perruques 100% naturelles Remy. Livraison au Maroc. Paiement sécurisé.',
   keywords: [
     'extensions cheveux',
-    'perruques naturelles',
-    'extensions premium Maroc',
+    'perruques',
+    'extensions naturelles',
+    'Maroc',
+    'Ritual Glowry',
     'cheveux Remy',
     'extensions lisses',
     'extensions bouclées',
     'extensions afro',
-    'Ritual Glowry',
   ],
   authors: [{ name: 'Ritual Glowry' }],
   creator: 'Ritual Glowry',
   openGraph: {
     type: 'website',
     locale: 'fr_MA',
-    url: 'https://ritualglowry.com',
     siteName: 'Ritual Glowry',
     title: 'Ritual Glowry | Extensions & Perruques Premium au Maroc',
     description:
