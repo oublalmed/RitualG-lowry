@@ -3,14 +3,20 @@
 import { useState, useEffect, useCallback, useRef } from 'react'
 import { useRouter } from 'next/navigation'
 import { motion, AnimatePresence } from 'framer-motion'
-import { Search, X, Package, BookOpen, ArrowRight } from 'lucide-react'
-import { mockProducts, mockBlogPosts } from '@/lib/mockData'
-import { format } from 'date-fns'
-import { fr } from 'date-fns/locale'
+import { Search, X, Package, ArrowRight, Loader2 } from 'lucide-react'
 
 interface SearchModalProps {
   open: boolean
   onClose: () => void
+}
+
+interface SearchProduct {
+  _id: string
+  name: string
+  slug: string
+  basePrice: number
+  image?: string | null
+  category?: string | null
 }
 
 const POPULAR_SUGGESTIONS = [
@@ -35,31 +41,45 @@ function highlight(text: string, query: string) {
 export function SearchModal({ open, onClose }: SearchModalProps) {
   const [query, setQuery] = useState('')
   const [cursor, setCursor] = useState(0)
+  const [productResults, setProductResults] = useState<SearchProduct[]>([])
+  const [loading, setLoading] = useState(false)
   const router = useRouter()
   const inputRef = useRef<HTMLInputElement>(null)
+  const debounceRef = useRef<ReturnType<typeof setTimeout> | null>(null)
 
-  const productResults = query.length >= 2
-    ? mockProducts.filter(
-        (p) =>
-          p.name.toLowerCase().includes(query.toLowerCase()) ||
-          p.shortDescription?.toLowerCase().includes(query.toLowerCase()) ||
-          p.category.name.toLowerCase().includes(query.toLowerCase())
-      ).slice(0, 4)
-    : []
+  // Debounced search
+  useEffect(() => {
+    if (debounceRef.current) clearTimeout(debounceRef.current)
 
-  const blogResults = query.length >= 2
-    ? mockBlogPosts.filter(
-        (p) =>
-          p.title.toLowerCase().includes(query.toLowerCase()) ||
-          p.tags.some((t) => t.toLowerCase().includes(query.toLowerCase())) ||
-          p.excerpt.toLowerCase().includes(query.toLowerCase())
-      ).slice(0, 3)
-    : []
+    if (query.length < 2) {
+      setProductResults([])
+      setLoading(false)
+      return
+    }
 
-  const allResults: Array<{ href: string }> = [
-    ...productResults.map((p) => ({ href: `/produit/${p.slug}` })),
-    ...blogResults.map((p) => ({ href: `/blog/${p.slug}` })),
-  ]
+    setLoading(true)
+    debounceRef.current = setTimeout(async () => {
+      try {
+        const res = await fetch(`/api/search?q=${encodeURIComponent(query)}`)
+        if (res.ok) {
+          const json = await res.json()
+          setProductResults(json.data ?? [])
+        } else {
+          setProductResults([])
+        }
+      } catch {
+        setProductResults([])
+      } finally {
+        setLoading(false)
+      }
+    }, 300)
+
+    return () => {
+      if (debounceRef.current) clearTimeout(debounceRef.current)
+    }
+  }, [query])
+
+  const allResults = productResults.map((p) => ({ href: `/produit/${p.slug}` }))
 
   const navigate = useCallback(
     (href: string) => {
@@ -73,6 +93,7 @@ export function SearchModal({ open, onClose }: SearchModalProps) {
     if (open) {
       setQuery('')
       setCursor(0)
+      setProductResults([])
       setTimeout(() => inputRef.current?.focus(), 50)
     }
   }, [open])
@@ -102,7 +123,7 @@ export function SearchModal({ open, onClose }: SearchModalProps) {
 
   useEffect(() => {
     setCursor(0)
-  }, [query])
+  }, [productResults])
 
   return (
     <AnimatePresence>
@@ -131,13 +152,17 @@ export function SearchModal({ open, onClose }: SearchModalProps) {
             <div className="bg-[#FAF6EF] border border-[#C9A875]/30 shadow-2xl overflow-hidden">
               {/* Input */}
               <div className="flex items-center gap-3 px-4 py-3 border-b border-[#F5EDE0]">
-                <Search className="h-5 w-5 text-[#3D2B1F]/50 flex-shrink-0" />
+                {loading ? (
+                  <Loader2 className="h-5 w-5 text-[#C9A875] flex-shrink-0 animate-spin" />
+                ) : (
+                  <Search className="h-5 w-5 text-[#3D2B1F]/50 flex-shrink-0" />
+                )}
                 <input
                   ref={inputRef}
                   type="text"
                   value={query}
                   onChange={(e) => setQuery(e.target.value)}
-                  placeholder="Rechercher un produit, un article..."
+                  placeholder="Rechercher un produit..."
                   className="flex-1 bg-transparent text-[#3D2B1F] placeholder:text-[#3D2B1F]/40 font-inter text-sm focus:outline-none"
                 />
                 {query && (
@@ -183,7 +208,11 @@ export function SearchModal({ open, onClose }: SearchModalProps) {
                       </button>
                     </p>
                   </div>
-                ) : productResults.length === 0 && blogResults.length === 0 ? (
+                ) : loading ? (
+                  <div className="flex items-center justify-center py-10">
+                    <Loader2 className="h-6 w-6 animate-spin text-[#C9A875]" />
+                  </div>
+                ) : productResults.length === 0 ? (
                   <div className="px-4 py-10 text-center">
                     <p className="font-inter text-sm text-[#3D2B1F]/60">
                       Aucun résultat pour &quot;{query}&quot;
@@ -196,73 +225,48 @@ export function SearchModal({ open, onClose }: SearchModalProps) {
                     </button>
                   </div>
                 ) : (
-                  <>
-                    {/* Products */}
-                    {productResults.length > 0 && (
-                      <div className="px-4 py-3">
-                        <div className="flex items-center gap-2 mb-2">
-                          <Package className="h-3.5 w-3.5 text-[#C9A875]" />
-                          <p className="text-xs font-inter font-semibold uppercase tracking-[0.1em] text-[#3D2B1F]/50">
-                            Produits
+                  <div className="px-4 py-3">
+                    <div className="flex items-center gap-2 mb-2">
+                      <Package className="h-3.5 w-3.5 text-[#C9A875]" />
+                      <p className="text-xs font-inter font-semibold uppercase tracking-[0.1em] text-[#3D2B1F]/50">
+                        Produits
+                      </p>
+                    </div>
+                    {productResults.map((p, i) => (
+                      <button
+                        key={p._id}
+                        onClick={() => navigate(`/produit/${p.slug}`)}
+                        className={`w-full flex items-center gap-3 px-3 py-2.5 text-left transition-colors ${
+                          cursor === i ? 'bg-[#F5EDE0]' : 'hover:bg-[#F5EDE0]/60'
+                        }`}
+                      >
+                        {p.image ? (
+                          // eslint-disable-next-line @next/next/no-img-element
+                          <img
+                            src={p.image}
+                            alt={p.name}
+                            className="w-10 h-10 object-cover flex-shrink-0"
+                          />
+                        ) : (
+                          <div
+                            className="w-10 h-10 flex-shrink-0"
+                            style={{ background: 'linear-gradient(135deg, #3D2B1F 0%, #C9A875 100%)' }}
+                          />
+                        )}
+                        <div className="flex-1 min-w-0">
+                          <p className="font-inter text-sm text-[#3D2B1F] truncate">
+                            {highlight(p.name, query)}
                           </p>
+                          {p.category && (
+                            <p className="text-xs text-[#3D2B1F]/50">{p.category}</p>
+                          )}
                         </div>
-                        {productResults.map((p, i) => (
-                          <button
-                            key={p._id}
-                            onClick={() => navigate(`/produit/${p.slug}`)}
-                            className={`w-full flex items-center gap-3 px-3 py-2.5 text-left transition-colors ${
-                              cursor === i ? 'bg-[#F5EDE0]' : 'hover:bg-[#F5EDE0]/60'
-                            }`}
-                          >
-                            <div
-                              className="w-10 h-10 flex-shrink-0"
-                              style={{ background: 'linear-gradient(135deg, #3D2B1F 0%, #C9A875 100%)' }}
-                            />
-                            <div className="flex-1 min-w-0">
-                              <p className="font-inter text-sm text-[#3D2B1F] truncate">
-                                {highlight(p.name, query)}
-                              </p>
-                              <p className="text-xs text-[#3D2B1F]/50">{p.category.name}</p>
-                            </div>
-                            <p className="text-sm font-inter font-semibold text-[#C9A875] flex-shrink-0">
-                              {p.basePrice} MAD
-                            </p>
-                          </button>
-                        ))}
-                      </div>
-                    )}
-
-                    {/* Blog posts */}
-                    {blogResults.length > 0 && (
-                      <div className="px-4 py-3 border-t border-[#F5EDE0]">
-                        <div className="flex items-center gap-2 mb-2">
-                          <BookOpen className="h-3.5 w-3.5 text-[#C9A875]" />
-                          <p className="text-xs font-inter font-semibold uppercase tracking-[0.1em] text-[#3D2B1F]/50">
-                            Articles
-                          </p>
-                        </div>
-                        {blogResults.map((p, i) => (
-                          <button
-                            key={p._id}
-                            onClick={() => navigate(`/blog/${p.slug}`)}
-                            className={`w-full flex items-center gap-3 px-3 py-2.5 text-left transition-colors ${
-                              cursor === productResults.length + i ? 'bg-[#F5EDE0]' : 'hover:bg-[#F5EDE0]/60'
-                            }`}
-                          >
-                            <div className="flex-1 min-w-0">
-                              <p className="font-inter text-sm text-[#3D2B1F] truncate">
-                                {highlight(p.title, query)}
-                              </p>
-                              <p className="text-xs text-[#3D2B1F]/50">
-                                {format(new Date(p.publishedAt), 'dd/MM/yyyy', { locale: fr })}
-                              </p>
-                            </div>
-                            <ArrowRight className="h-4 w-4 text-[#C9A875]/60 flex-shrink-0" />
-                          </button>
-                        ))}
-                      </div>
-                    )}
-                  </>
+                        <p className="text-sm font-inter font-semibold text-[#C9A875] flex-shrink-0">
+                          {p.basePrice} MAD
+                        </p>
+                      </button>
+                    ))}
+                  </div>
                 )}
               </div>
             </div>

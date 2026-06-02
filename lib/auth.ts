@@ -17,10 +17,14 @@ declare module 'next-auth' {
       email?: string | null;
       image?: string | null;
       role: string;
+      loyaltyPoints?: number;
+      loyaltyTier?: string;
     };
   }
   interface User {
     role?: string;
+    loyaltyPoints?: number;
+    loyaltyTier?: string;
   }
 }
 
@@ -28,6 +32,8 @@ declare module 'next-auth/jwt' {
   interface JWT {
     id: string;
     role: string;
+    loyaltyPoints?: number;
+    loyaltyTier?: string;
   }
 }
 
@@ -74,6 +80,8 @@ export const authOptions: NextAuthOptions = {
             name: user.name ?? '',
             image: user.image ?? '',
             role: user.role,
+            loyaltyPoints: user.loyaltyPoints ?? 0,
+            loyaltyTier: user.loyaltyTier ?? 'BRONZE',
           };
         } catch {
           return null;
@@ -82,10 +90,26 @@ export const authOptions: NextAuthOptions = {
     }),
   ],
   callbacks: {
-    async jwt({ token, user }) {
+    async jwt({ token, user, trigger }) {
       if (user) {
         token.id = user.id as string;
         token.role = (user.role as string) ?? 'CUSTOMER';
+        token.loyaltyPoints = user.loyaltyPoints ?? 0;
+        token.loyaltyTier = user.loyaltyTier ?? 'BRONZE';
+      }
+      // Refresh loyalty data on session update
+      if (trigger === 'update' && token.id) {
+        try {
+          const { prisma } = await import('./prisma');
+          const dbUser = await prisma.user.findUnique({
+            where: { id: token.id },
+            select: { loyaltyPoints: true, loyaltyTier: true },
+          });
+          if (dbUser) {
+            token.loyaltyPoints = dbUser.loyaltyPoints;
+            token.loyaltyTier = dbUser.loyaltyTier;
+          }
+        } catch { /* ignore */ }
       }
       return token;
     },
@@ -93,6 +117,8 @@ export const authOptions: NextAuthOptions = {
       if (token && session.user) {
         session.user.id = token.id;
         session.user.role = token.role;
+        session.user.loyaltyPoints = token.loyaltyPoints;
+        session.user.loyaltyTier = token.loyaltyTier;
       }
       return session;
     },

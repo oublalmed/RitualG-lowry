@@ -2,37 +2,45 @@
 
 import { useSession } from 'next-auth/react';
 import Link from 'next/link';
-import { Package, TrendingDown, Star, Trophy, Eye } from 'lucide-react';
+import { useEffect, useState } from 'react';
+import { Package, TrendingDown, Star, Trophy, Eye, Loader2 } from 'lucide-react';
 import { ProductCard } from '@/components/product/ProductCard';
-import { mockProducts } from '@/lib/mockData';
-import { Badge } from '@/components/ui/badge';
 
-const mockOrders = [
-  {
-    id: 'ORD-001',
-    number: '#2024-001',
-    date: '15 Jan 2025',
-    status: 'DELIVERED' as const,
-    total: 1890,
-    items: ['Extension Lisse Naturelle', 'Serre-tête Satin'],
-  },
-  {
-    id: 'ORD-002',
-    number: '#2024-002',
-    date: '02 Fév 2025',
-    status: 'SHIPPED' as const,
-    total: 950,
-    items: ['Extension Bouclée Sublime'],
-  },
-  {
-    id: 'ORD-003',
-    number: '#2024-003',
-    date: '20 Fév 2025',
-    status: 'PROCESSING' as const,
-    total: 1450,
-    items: ['Perruque Lace Front Premium'],
-  },
-];
+// ── Types ─────────────────────────────────────────────────────────────────────
+
+interface OrderItem {
+  id: string;
+  productName: string;
+  quantity: number;
+  unitPrice: number;
+  totalPrice: number;
+}
+
+interface Order {
+  id: string;
+  orderNumber: string;
+  status: keyof typeof statusConfig;
+  total: number | string;
+  createdAt: string;
+  items: OrderItem[];
+}
+
+interface UserProfile {
+  loyaltyPoints: number;
+  loyaltyTier: 'BRONZE' | 'SILVER' | 'GOLD' | 'PLATINUM';
+  referralCode: string;
+  createdAt: string;
+}
+
+interface SuggestedProduct {
+  id: string;
+  slug: string;
+  name: string;
+  price: number;
+  comparePrice?: number | null;
+}
+
+// ── Helpers ───────────────────────────────────────────────────────────────────
 
 const statusConfig = {
   PAID: { label: 'Payée', className: 'bg-green-100 text-green-700' },
@@ -44,28 +52,34 @@ const statusConfig = {
   REFUNDED: { label: 'Remboursée', className: 'bg-orange-100 text-orange-700' },
 };
 
-const stats = [
-  { icon: Package, label: 'Commandes', value: '3', color: 'text-[#C9A875]' },
-  { icon: TrendingDown, label: 'Économies', value: '450 MAD', color: 'text-green-600' },
-  { icon: Star, label: 'Points', value: '127', color: 'text-[#B8924B]' },
-  { icon: Trophy, label: 'Tier', value: 'Bronze', color: 'text-[#C9A875]' },
-];
+function getTierLabel(tier: UserProfile['loyaltyTier']) {
+  const labels: Record<UserProfile['loyaltyTier'], string> = {
+    BRONZE: 'Bronze',
+    SILVER: 'Argent',
+    GOLD: 'Or',
+    PLATINUM: 'Platine',
+  };
+  return labels[tier] ?? 'Bronze';
+}
 
-const suggestedProducts = mockProducts.slice(0, 3).map((p) => ({
-  id: p._id,
-  slug: p.slug,
-  name: p.name,
-  price: p.basePrice,
-  comparePrice: p.comparePrice,
-  isNew: p.isNew,
-  isBestSeller: p.isBestSeller,
-  rating: p.rating,
-  reviewCount: p.reviewCount,
-}));
+function formatDate(iso: string) {
+  return new Date(iso).toLocaleDateString('fr-FR', {
+    day: '2-digit',
+    month: 'short',
+    year: 'numeric',
+  });
+}
+
+// ── Component ─────────────────────────────────────────────────────────────────
 
 export default function CompteDashboard() {
   const { data: session } = useSession();
   const firstName = session?.user?.name?.split(' ')[0] ?? 'Cliente';
+
+  const [orders, setOrders] = useState<Order[]>([]);
+  const [profile, setProfile] = useState<UserProfile | null>(null);
+  const [suggestedProducts, setSuggestedProducts] = useState<SuggestedProduct[]>([]);
+  const [loading, setLoading] = useState(true);
 
   const today = new Date().toLocaleDateString('fr-FR', {
     weekday: 'long',
@@ -73,6 +87,60 @@ export default function CompteDashboard() {
     month: 'long',
     day: 'numeric',
   });
+
+  useEffect(() => {
+    if (!session?.user?.id) return;
+
+    async function loadData() {
+      setLoading(true);
+      try {
+        const [ordersRes, profileRes, productsRes] = await Promise.all([
+          fetch('/api/account/orders'),
+          fetch('/api/account/profile'),
+          fetch('/api/products/featured').catch(() => null),
+        ]);
+
+        if (ordersRes.ok) {
+          const json = await ordersRes.json();
+          setOrders(json.data ?? []);
+        }
+
+        if (profileRes.ok) {
+          const json = await profileRes.json();
+          setProfile(json.data ?? null);
+        }
+
+        // Featured products endpoint may not exist yet — fall back to empty
+        if (productsRes?.ok) {
+          const json = await productsRes.json();
+          const raw: any[] = json.data ?? [];
+          setSuggestedProducts(
+            raw.slice(0, 3).map((p: any) => ({
+              id: p._id,
+              slug: p.slug,
+              name: p.name,
+              price: p.basePrice,
+              comparePrice: p.comparePrice ?? null,
+            }))
+          );
+        }
+      } finally {
+        setLoading(false);
+      }
+    }
+
+    loadData();
+  }, [session?.user?.id]);
+
+  const loyaltyPoints = profile?.loyaltyPoints ?? 0;
+  const loyaltyTier = profile?.loyaltyTier ?? 'BRONZE';
+
+  const stats = [
+    { icon: Package, label: 'Commandes', value: String(orders.length), color: 'text-[#C9A875]' },
+    { icon: TrendingDown, label: 'Économies', value: '— MAD', color: 'text-green-600' },
+    { icon: Star, label: 'Points', value: String(loyaltyPoints), color: 'text-[#B8924B]' },
+    { icon: Trophy, label: 'Tier', value: getTierLabel(loyaltyTier), color: 'text-[#C9A875]' },
+  ];
 
   return (
     <div className="max-w-5xl mx-auto space-y-10">
@@ -96,7 +164,11 @@ export default function CompteDashboard() {
           >
             <Icon className={`h-5 w-5 ${color}`} />
             <div>
-              <p className="text-2xl font-inter font-bold text-[#1A1410]">{value}</p>
+              {loading ? (
+                <Loader2 className="h-5 w-5 animate-spin text-[#C9A875]/60" />
+              ) : (
+                <p className="text-2xl font-inter font-bold text-[#1A1410]">{value}</p>
+              )}
               <p className="text-xs font-inter text-[#3D2B1F]/50 mt-0.5">{label}</p>
             </div>
           </div>
@@ -120,73 +192,95 @@ export default function CompteDashboard() {
           </Link>
         </div>
         <div className="bg-[#F5EDE0] rounded-xl border border-[#C9A875]/10 overflow-hidden">
-          <div className="overflow-x-auto">
-            <table className="w-full">
-              <thead>
-                <tr className="border-b border-[#C9A875]/15">
-                  {['N° Commande', 'Date', 'Statut', 'Total', 'Action'].map((h) => (
-                    <th
-                      key={h}
-                      className="text-left px-4 py-3 text-xs font-inter font-semibold uppercase tracking-wider text-[#3D2B1F]/50"
-                    >
-                      {h}
-                    </th>
-                  ))}
-                </tr>
-              </thead>
-              <tbody className="divide-y divide-[#C9A875]/10">
-                {mockOrders.map((order) => {
-                  const cfg = statusConfig[order.status] ?? statusConfig.PENDING;
-                  return (
-                    <tr key={order.id} className="hover:bg-[#FAF6EF]/50 transition-colors">
-                      <td className="px-4 py-3 font-inter text-sm font-medium text-[#3D2B1F]">
-                        {order.number}
-                      </td>
-                      <td className="px-4 py-3 font-inter text-sm text-[#3D2B1F]/60">
-                        {order.date}
-                      </td>
-                      <td className="px-4 py-3">
-                        <span
-                          className={`inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-inter font-medium ${cfg.className}`}
-                        >
-                          {cfg.label}
-                        </span>
-                      </td>
-                      <td className="px-4 py-3 font-inter text-sm font-semibold text-[#1A1410]">
-                        {order.total.toLocaleString('fr-MA')} MAD
-                      </td>
-                      <td className="px-4 py-3">
-                        <Link
-                          href={`/compte/commandes/${order.id}`}
-                          className="inline-flex items-center gap-1 text-xs text-[#C9A875] hover:text-[#B8924B] font-inter transition-colors"
-                        >
-                          <Eye className="h-3 w-3" />
-                          Voir
-                        </Link>
-                      </td>
-                    </tr>
-                  );
-                })}
-              </tbody>
-            </table>
-          </div>
+          {loading ? (
+            <div className="flex items-center justify-center py-12">
+              <Loader2 className="h-6 w-6 animate-spin text-[#C9A875]" />
+            </div>
+          ) : orders.length === 0 ? (
+            <div className="py-12 text-center">
+              <Package className="h-10 w-10 text-[#C9A875]/40 mx-auto mb-3" />
+              <p className="font-inter text-sm text-[#3D2B1F]/60">Aucune commande pour l&apos;instant.</p>
+              <Link
+                href="/boutique"
+                className="mt-3 inline-block text-xs font-inter font-semibold text-[#C9A875] hover:underline"
+              >
+                Découvrir la boutique →
+              </Link>
+            </div>
+          ) : (
+            <div className="overflow-x-auto">
+              <table className="w-full">
+                <thead>
+                  <tr className="border-b border-[#C9A875]/15">
+                    {['N° Commande', 'Date', 'Statut', 'Total', 'Action'].map((h) => (
+                      <th
+                        key={h}
+                        className="text-left px-4 py-3 text-xs font-inter font-semibold uppercase tracking-wider text-[#3D2B1F]/50"
+                      >
+                        {h}
+                      </th>
+                    ))}
+                  </tr>
+                </thead>
+                <tbody className="divide-y divide-[#C9A875]/10">
+                  {orders.slice(0, 5).map((order) => {
+                    const cfg = statusConfig[order.status] ?? statusConfig.PENDING;
+                    const total = typeof order.total === 'number'
+                      ? order.total
+                      : parseFloat(String(order.total));
+                    return (
+                      <tr key={order.id} className="hover:bg-[#FAF6EF]/50 transition-colors">
+                        <td className="px-4 py-3 font-inter text-sm font-medium text-[#3D2B1F]">
+                          {order.orderNumber}
+                        </td>
+                        <td className="px-4 py-3 font-inter text-sm text-[#3D2B1F]/60">
+                          {formatDate(order.createdAt)}
+                        </td>
+                        <td className="px-4 py-3">
+                          <span
+                            className={`inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-inter font-medium ${cfg.className}`}
+                          >
+                            {cfg.label}
+                          </span>
+                        </td>
+                        <td className="px-4 py-3 font-inter text-sm font-semibold text-[#1A1410]">
+                          {total.toLocaleString('fr-MA')} MAD
+                        </td>
+                        <td className="px-4 py-3">
+                          <Link
+                            href={`/compte/commandes/${order.id}`}
+                            className="inline-flex items-center gap-1 text-xs text-[#C9A875] hover:text-[#B8924B] font-inter transition-colors"
+                          >
+                            <Eye className="h-3 w-3" />
+                            Voir
+                          </Link>
+                        </td>
+                      </tr>
+                    );
+                  })}
+                </tbody>
+              </table>
+            </div>
+          )}
         </div>
       </div>
 
       {/* Personalized suggestions */}
-      <div>
-        <h2
-          className="text-xl text-[#3D2B1F] mb-4"
-          style={{ fontFamily: 'var(--font-playfair)' }}
-        >
-          Basé sur vos achats
-        </h2>
-        <div className="grid grid-cols-1 sm:grid-cols-3 gap-6">
-          {suggestedProducts.map((product) => (
-            <ProductCard key={product.id} product={product} />
-          ))}
+      {suggestedProducts.length > 0 && (
+        <div>
+          <h2
+            className="text-xl text-[#3D2B1F] mb-4"
+            style={{ fontFamily: 'var(--font-playfair)' }}
+          >
+            Basé sur vos achats
+          </h2>
+          <div className="grid grid-cols-1 sm:grid-cols-3 gap-6">
+            {suggestedProducts.map((product) => (
+              <ProductCard key={product.id} product={product} />
+            ))}
+          </div>
         </div>
-      </div>
+      )}
     </div>
   );
 }

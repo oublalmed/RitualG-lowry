@@ -1,6 +1,6 @@
 'use client';
 
-import { useState } from 'react';
+import { useState, useEffect, useCallback } from 'react';
 import { Check, X, MessageSquare, Star } from 'lucide-react';
 import { Tabs, TabsList, TabsTrigger, TabsContent } from '@/components/ui/tabs';
 import { Button } from '@/components/ui/button';
@@ -13,22 +13,17 @@ import {
 
 interface Review {
   id: string;
-  product: string;
-  client: string;
+  sanityProductId: string;
+  title: string | null;
   rating: number;
-  date: string;
   comment: string;
   status: 'PENDING' | 'APPROVED' | 'REJECTED';
+  createdAt: string;
+  adminReply: string | null;
+  user: { id: string; name: string | null; email: string } | null;
 }
 
-const mockReviews: Review[] = [
-  { id: '1', product: 'Extension Lisse Naturelle', client: 'Fatima Z.', rating: 5, date: '28 Mar 2025', comment: 'Qualité exceptionnelle, je recommande vivement ! Les extensions tiennent très bien et sont indétectables.', status: 'PENDING' },
-  { id: '2', product: 'Perruque Lace Front Premium', client: 'Houda M.', rating: 4, date: '27 Mar 2025', comment: 'Très belle perruque, livraison rapide. Je suis très satisfaite de mon achat.', status: 'PENDING' },
-  { id: '3', product: 'Extension Bouclée Sublime', client: 'Sara B.', rating: 3, date: '25 Mar 2025', comment: 'Bonne qualité mais la couleur était légèrement différente de la photo.', status: 'PENDING' },
-  { id: '4', product: 'Extension Ondulée Body Wave', client: 'Nadia O.', rating: 5, date: '20 Mar 2025', comment: 'Magnifique ! Je suis fan, déjà ma 3ème commande !', status: 'APPROVED' },
-  { id: '5', product: 'Serre-tête Satin', client: 'Salma T.', rating: 5, date: '18 Mar 2025', comment: 'Excellent produit, très doux pour les cheveux.', status: 'APPROVED' },
-  { id: '6', product: 'Extension Afro Naturelle', client: 'Rim K.', rating: 2, date: '15 Mar 2025', comment: 'Pas satisfaite, la texture ne correspond pas à ce qui était annoncé.', status: 'REJECTED' },
-];
+type ReviewTab = 'PENDING' | 'APPROVED' | 'REJECTED';
 
 function StarRating({ rating }: { rating: number }) {
   return (
@@ -46,19 +41,33 @@ function ReviewCard({ review, onApprove, onReject, onReply }: {
   onReject?: () => void;
   onReply?: () => void;
 }) {
+  const clientName = review.user?.name ?? review.user?.email ?? 'Anonyme';
+  const reviewDate = new Date(review.createdAt).toLocaleDateString('fr-MA', {
+    day: 'numeric',
+    month: 'short',
+    year: 'numeric',
+  });
+
   return (
     <div className="bg-[#F5EDE0] rounded-xl border border-[#C9A875]/10 p-4">
       <div className="flex items-start justify-between gap-3">
         <div className="flex-1 min-w-0">
           <div className="flex items-center gap-2 mb-1">
-            <p className="font-inter font-semibold text-[#3D2B1F] text-sm">{review.product}</p>
+            <p className="font-inter font-semibold text-[#3D2B1F] text-sm">
+              {review.title ?? review.sanityProductId}
+            </p>
           </div>
           <div className="flex items-center gap-3 mb-2">
             <StarRating rating={review.rating} />
-            <span className="text-xs font-inter text-[#3D2B1F]/50">{review.client}</span>
-            <span className="text-xs font-inter text-[#3D2B1F]/40">{review.date}</span>
+            <span className="text-xs font-inter text-[#3D2B1F]/50">{clientName}</span>
+            <span className="text-xs font-inter text-[#3D2B1F]/40">{reviewDate}</span>
           </div>
           <p className="text-sm font-inter text-[#3D2B1F]/70 leading-relaxed">{review.comment}</p>
+          {review.adminReply && (
+            <div className="mt-2 pl-3 border-l-2 border-[#C9A875]/40">
+              <p className="text-xs font-inter text-[#3D2B1F]/60 italic">{review.adminReply}</p>
+            </div>
+          )}
         </div>
         {review.status === 'PENDING' && (
           <div className="flex gap-1 flex-shrink-0">
@@ -89,19 +98,71 @@ function ReviewCard({ review, onApprove, onReject, onReply }: {
 }
 
 export default function AvisPage() {
-  const [reviews, setReviews] = useState<Review[]>(mockReviews);
+  const [reviews, setReviews] = useState<Review[]>([]);
+  const [total, setTotal] = useState(0);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState<string | null>(null);
+  const [activeTab, setActiveTab] = useState<ReviewTab>('PENDING');
+
   const [replyDialog, setReplyDialog] = useState(false);
   const [replyText, setReplyText] = useState('');
   const [selectedId, setSelectedId] = useState<string | null>(null);
+  const [submitting, setSubmitting] = useState(false);
 
-  const pending = reviews.filter((r) => r.status === 'PENDING');
-  const approved = reviews.filter((r) => r.status === 'APPROVED');
-  const rejected = reviews.filter((r) => r.status === 'REJECTED');
+  const fetchReviews = useCallback(async (status: ReviewTab) => {
+    try {
+      setLoading(true);
+      setError(null);
+      const res = await fetch(`/api/admin/reviews?status=${status}&limit=50`);
+      if (!res.ok) throw new Error('Erreur lors du chargement des avis');
+      const json = await res.json();
+      setReviews(json.data);
+      setTotal(json.total);
+    } catch (err) {
+      setError(err instanceof Error ? err.message : 'Erreur inconnue');
+    } finally {
+      setLoading(false);
+    }
+  }, []);
 
-  const approve = (id: string) => setReviews((prev) => prev.map((r) => r.id === id ? { ...r, status: 'APPROVED' } : r));
-  const reject = (id: string) => setReviews((prev) => prev.map((r) => r.id === id ? { ...r, status: 'REJECTED' } : r));
+  useEffect(() => {
+    fetchReviews(activeTab);
+  }, [fetchReviews, activeTab]);
+
+  const handleTabChange = (value: string) => {
+    setActiveTab(value as ReviewTab);
+  };
+
+  const updateReviewStatus = async (id: string, status: 'APPROVED' | 'REJECTED', adminReply?: string) => {
+    try {
+      setSubmitting(true);
+      const body: { status: string; adminReply?: string } = { status };
+      if (adminReply) body.adminReply = adminReply;
+
+      const res = await fetch(`/api/admin/reviews/${id}`, {
+        method: 'PATCH',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(body),
+      });
+      if (!res.ok) throw new Error('Erreur lors de la mise à jour');
+      await fetchReviews(activeTab);
+    } catch (err) {
+      setError(err instanceof Error ? err.message : 'Erreur inconnue');
+    } finally {
+      setSubmitting(false);
+    }
+  };
+
+  const approve = (id: string) => updateReviewStatus(id, 'APPROVED');
+  const reject = (id: string) => updateReviewStatus(id, 'REJECTED');
 
   const openReply = (id: string) => { setSelectedId(id); setReplyText(''); setReplyDialog(true); };
+
+  const sendReply = async () => {
+    if (!selectedId || !replyText.trim()) return;
+    await updateReviewStatus(selectedId, 'APPROVED', replyText.trim());
+    setReplyDialog(false);
+  };
 
   return (
     <div className="max-w-4xl mx-auto space-y-6">
@@ -112,45 +173,53 @@ export default function AvisPage() {
         Avis clientes
       </h1>
 
-      <Tabs defaultValue="pending">
+      {error && (
+        <div className="bg-red-50 border border-red-200 rounded-xl p-4 text-red-700 font-inter text-sm">
+          {error}
+        </div>
+      )}
+
+      <Tabs value={activeTab} onValueChange={handleTabChange}>
         <TabsList className="bg-[#F5EDE0] border border-[#C9A875]/15 p-1">
-          <TabsTrigger value="pending" className="data-[state=active]:bg-[#C9A875] data-[state=active]:text-[#1A1410] font-inter text-sm gap-1.5">
+          <TabsTrigger value="PENDING" className="data-[state=active]:bg-[#C9A875] data-[state=active]:text-[#1A1410] font-inter text-sm gap-1.5">
             En attente
-            {pending.length > 0 && (
+            {activeTab === 'PENDING' && total > 0 && (
               <span className="h-4 w-4 bg-[#3D2B1F] text-[#FAF6EF] text-[10px] rounded-full flex items-center justify-center">
-                {pending.length}
+                {total}
               </span>
             )}
           </TabsTrigger>
-          <TabsTrigger value="approved" className="data-[state=active]:bg-[#C9A875] data-[state=active]:text-[#1A1410] font-inter text-sm">
-            Approuvés ({approved.length})
+          <TabsTrigger value="APPROVED" className="data-[state=active]:bg-[#C9A875] data-[state=active]:text-[#1A1410] font-inter text-sm">
+            Approuvés {activeTab === 'APPROVED' ? `(${total})` : ''}
           </TabsTrigger>
-          <TabsTrigger value="rejected" className="data-[state=active]:bg-[#C9A875] data-[state=active]:text-[#1A1410] font-inter text-sm">
-            Rejetés ({rejected.length})
+          <TabsTrigger value="REJECTED" className="data-[state=active]:bg-[#C9A875] data-[state=active]:text-[#1A1410] font-inter text-sm">
+            Rejetés {activeTab === 'REJECTED' ? `(${total})` : ''}
           </TabsTrigger>
         </TabsList>
 
-        <TabsContent value="pending" className="mt-4 space-y-3">
-          {pending.length === 0 ? (
-            <p className="text-center py-10 text-[#3D2B1F]/40 font-inter text-sm">Aucun avis en attente</p>
-          ) : (
-            pending.map((r) => (
-              <ReviewCard key={r.id} review={r} onApprove={() => approve(r.id)} onReject={() => reject(r.id)} onReply={() => openReply(r.id)} />
-            ))
-          )}
-        </TabsContent>
-
-        <TabsContent value="approved" className="mt-4 space-y-3">
-          {approved.map((r) => (
-            <ReviewCard key={r.id} review={r} onReply={() => openReply(r.id)} />
-          ))}
-        </TabsContent>
-
-        <TabsContent value="rejected" className="mt-4 space-y-3">
-          {rejected.map((r) => (
-            <ReviewCard key={r.id} review={r} />
-          ))}
-        </TabsContent>
+        {(['PENDING', 'APPROVED', 'REJECTED'] as ReviewTab[]).map((tab) => (
+          <TabsContent key={tab} value={tab} className="mt-4 space-y-3">
+            {loading ? (
+              <div className="flex items-center justify-center py-16">
+                <div className="h-6 w-6 rounded-full border-2 border-[#C9A875] border-t-transparent animate-spin" />
+              </div>
+            ) : reviews.length === 0 ? (
+              <p className="text-center py-10 text-[#3D2B1F]/40 font-inter text-sm">
+                {tab === 'PENDING' ? 'Aucun avis en attente' : tab === 'APPROVED' ? 'Aucun avis approuvé' : 'Aucun avis rejeté'}
+              </p>
+            ) : (
+              reviews.map((r) => (
+                <ReviewCard
+                  key={r.id}
+                  review={r}
+                  onApprove={tab === 'PENDING' ? () => approve(r.id) : undefined}
+                  onReject={tab === 'PENDING' ? () => reject(r.id) : undefined}
+                  onReply={tab !== 'REJECTED' ? () => openReply(r.id) : undefined}
+                />
+              ))
+            )}
+          </TabsContent>
+        ))}
       </Tabs>
 
       <Dialog open={replyDialog} onOpenChange={setReplyDialog}>
@@ -168,7 +237,13 @@ export default function AvisPage() {
             />
             <div className="flex gap-2">
               <Button variant="outline" className="flex-1 border-[#C9A875]/30" onClick={() => setReplyDialog(false)}>Annuler</Button>
-              <Button className="flex-1 bg-[#C9A875] hover:bg-[#B8924B] text-[#1A1410] font-semibold" onClick={() => setReplyDialog(false)}>Envoyer</Button>
+              <Button
+                className="flex-1 bg-[#C9A875] hover:bg-[#B8924B] text-[#1A1410] font-semibold"
+                onClick={sendReply}
+                disabled={submitting || !replyText.trim()}
+              >
+                {submitting ? 'Envoi...' : 'Envoyer'}
+              </Button>
             </div>
           </div>
         </DialogContent>

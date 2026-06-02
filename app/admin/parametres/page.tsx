@@ -20,13 +20,30 @@ const defaultSettings: Settings = {
   maintenance: { enabled: false, message: 'Notre boutique est temporairement en maintenance. Revenez très bientôt !' },
 };
 
+type SaveState = 'idle' | 'saving' | 'saved' | 'error';
+
 export default function ParametresPage() {
   const [settings, setSettings] = useState<Settings>(defaultSettings);
-  const [saved, setSaved] = useState(false);
+  const [saveState, setSaveState] = useState<SaveState>('idle');
+  const [saveError, setSaveError] = useState<string | null>(null);
 
-  const handleSave = () => {
-    setSaved(true);
-    setTimeout(() => setSaved(false), 2500);
+  const handleSave = async () => {
+    try {
+      setSaveState('saving');
+      setSaveError(null);
+      const res = await fetch('/api/admin/settings', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(settings),
+      });
+      if (!res.ok) throw new Error('Erreur lors de la sauvegarde');
+      setSaveState('saved');
+      setTimeout(() => setSaveState('idle'), 2500);
+    } catch (err) {
+      setSaveError(err instanceof Error ? err.message : 'Erreur inconnue');
+      setSaveState('error');
+      setTimeout(() => setSaveState('idle'), 3000);
+    }
   };
 
   const updateBoutique = (key: keyof Settings['boutique'], value: string) =>
@@ -41,6 +58,15 @@ export default function ParametresPage() {
   const updateMaintenance = (key: keyof Settings['maintenance'], value: boolean | string) =>
     setSettings((prev) => ({ ...prev, maintenance: { ...prev.maintenance, [key]: value } }));
 
+  const saveLabel =
+    saveState === 'saving'
+      ? 'Enregistrement...'
+      : saveState === 'saved'
+      ? '✓ Paramètres enregistrés !'
+      : saveState === 'error'
+      ? 'Erreur — réessayer'
+      : 'Enregistrer les paramètres';
+
   return (
     <div className="max-w-3xl mx-auto space-y-6">
       <h1
@@ -49,6 +75,18 @@ export default function ParametresPage() {
       >
         Paramètres
       </h1>
+
+      {saveState === 'error' && saveError && (
+        <div className="bg-red-50 border border-red-200 rounded-xl p-4 text-red-700 font-inter text-sm">
+          {saveError}
+        </div>
+      )}
+
+      {saveState === 'saved' && (
+        <div className="bg-green-50 border border-green-200 rounded-xl p-4 text-green-700 font-inter text-sm">
+          Paramètres enregistrés avec succès. En production, les paramètres de contenu sont gérés via Sanity Studio.
+        </div>
+      )}
 
       <Tabs defaultValue="boutique">
         <TabsList className="bg-[#F5EDE0] border border-[#C9A875]/15 p-1">
@@ -208,9 +246,14 @@ export default function ParametresPage() {
 
       <Button
         onClick={handleSave}
-        className="bg-[#C9A875] hover:bg-[#B8924B] text-[#1A1410] font-inter font-semibold"
+        disabled={saveState === 'saving'}
+        className={`font-inter font-semibold ${
+          saveState === 'error'
+            ? 'bg-red-500 hover:bg-red-600 text-white'
+            : 'bg-[#C9A875] hover:bg-[#B8924B] text-[#1A1410]'
+        }`}
       >
-        {saved ? '✓ Paramètres enregistrés !' : 'Enregistrer les paramètres'}
+        {saveLabel}
       </Button>
     </div>
   );
