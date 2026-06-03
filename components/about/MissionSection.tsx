@@ -1,5 +1,6 @@
 'use client';
 
+import Image from 'next/image';
 import { motion } from 'framer-motion';
 import { fadeInLeft, fadeInRight, staggerContainer } from '@/lib/animations';
 
@@ -47,11 +48,7 @@ export function MissionSection() {
 
             <motion.div variants={staggerContainer} className="mt-8 space-y-4">
               {differentiators.map((d) => (
-                <motion.div
-                  key={d.label}
-                  variants={fadeInLeft}
-                  className="flex items-start gap-3"
-                >
+                <motion.div key={d.label} variants={fadeInLeft} className="flex items-start gap-3">
                   <span className="mt-1 text-[#C9A875] font-bold text-sm flex-shrink-0">✓</span>
                   <div>
                     <p className="font-inter font-semibold text-sm text-[#3D2B1F]">{d.label}</p>
@@ -62,20 +59,24 @@ export function MissionSection() {
             </motion.div>
           </motion.div>
 
-          {/* Visual */}
+          {/* Photo */}
           <motion.div
             variants={fadeInRight}
             initial="hidden"
             whileInView="visible"
             viewport={{ once: true }}
-            className="relative aspect-[4/5]"
+            className="relative aspect-[4/5] overflow-hidden"
           >
-            <div
-              className="absolute inset-0"
-              style={{ background: 'linear-gradient(135deg, #C9A875 0%, #3D2B1F 100%)' }}
+            <Image
+              src="https://images.unsplash.com/photo-1596003906949-67221c37965c?w=900&q=85&auto=format&fit=crop&crop=top"
+              alt="Expérience Ritual Glowry — beauté naturelle"
+              fill
+              className="object-cover"
+              sizes="(max-width: 768px) 100vw, 50vw"
             />
-            <div className="absolute inset-0 flex items-end p-8">
-              <div className="bg-[#FAF6EF]/95 p-6 w-full">
+            <div className="absolute inset-0 bg-gradient-to-t from-[#1A1410]/50 to-transparent" />
+            <div className="absolute bottom-0 left-0 right-0 p-8">
+              <div className="bg-[#FAF6EF]/95 p-6">
                 <p className="font-inter text-xs uppercase tracking-[0.12em] text-[#C9A875] mb-2">
                   Notre ambition
                 </p>

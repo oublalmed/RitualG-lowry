@@ -1,8 +1,9 @@
 'use client';
 
+import Image from 'next/image';
 import Link from 'next/link';
 import { motion } from 'framer-motion';
-import { fadeInUp, fadeInLeft, fadeInRight, staggerContainer } from '@/lib/animations';
+import { fadeInLeft, fadeInRight, staggerContainer } from '@/lib/animations';
 
 export function StoryPreview() {
   return (
@@ -10,21 +11,24 @@ export function StoryPreview() {
       <div className="container mx-auto px-4 md:px-8 lg:px-12">
         <div className="grid grid-cols-1 md:grid-cols-2 gap-12 md:gap-20 items-center">
 
-          {/* Left — visual block with quote overlay */}
+          {/* Left — photo with quote overlay */}
           <motion.div
             variants={fadeInLeft}
             initial="hidden"
             whileInView="visible"
             viewport={{ once: true }}
-            className="relative aspect-[4/5] w-full"
+            className="relative aspect-[4/5] w-full overflow-hidden"
           >
-            <div
-              className="absolute inset-0"
-              style={{
-                background: 'linear-gradient(135deg, #2a1f18 0%, #C9A875 100%)',
-              }}
+            <Image
+              src="https://images.unsplash.com/photo-1594744803329-e58b31de8bf5?w=900&q=85&auto=format&fit=crop"
+              alt="Femme confiante et élégante avec extensions Ritual Glowry"
+              fill
+              className="object-cover object-top"
+              sizes="(max-width: 768px) 100vw, 50vw"
             />
-            {/* Floating quote card */}
+            {/* Dark overlay */}
+            <div className="absolute inset-0 bg-[#1A1410]/30" />
+            {/* Floating quote */}
             <div className="absolute bottom-8 left-6 right-6 bg-[#1A1410]/80 backdrop-blur-sm p-6 border-l-2 border-[#C9A875]">
               <p className="font-cormorant italic text-lg text-white/90 leading-snug">
                 &ldquo;Ritual Glowry n&apos;est pas seulement une boutique d&apos;extensions.

@@ -1,5 +1,6 @@
 'use client';
 
+import Image from 'next/image';
 import { motion } from 'framer-motion';
 import { fadeInLeft, fadeInRight, staggerContainer } from '@/lib/animations';
 
@@ -9,18 +10,22 @@ export function FounderSection() {
       <div className="container mx-auto px-4 md:px-8 lg:px-12">
         <div className="grid grid-cols-1 md:grid-cols-2 gap-12 md:gap-20 items-center">
 
-          {/* Visual */}
+          {/* Photo */}
           <motion.div
             variants={fadeInLeft}
             initial="hidden"
             whileInView="visible"
             viewport={{ once: true }}
-            className="relative aspect-[4/5]"
+            className="relative aspect-[4/5] overflow-hidden"
           >
-            <div
-              className="absolute inset-0"
-              style={{ background: 'linear-gradient(135deg, #3D2B1F 0%, #C9A875 100%)' }}
+            <Image
+              src="https://images.unsplash.com/photo-1580489944761-15a19d654956?w=900&q=85&auto=format&fit=crop&crop=top"
+              alt="Fondatrice Ritual Glowry"
+              fill
+              className="object-cover"
+              sizes="(max-width: 768px) 100vw, 50vw"
             />
+            <div className="absolute inset-0 bg-gradient-to-t from-[#1A1410]/40 to-transparent" />
             <div className="absolute bottom-8 left-6 right-6 bg-[#FAF6EF]/95 p-5 border-l-2 border-[#C9A875]">
               <p className="font-cormorant italic text-base text-[#3D2B1F] leading-snug">
                 &ldquo;Votre beauté, notre rituel.&rdquo;

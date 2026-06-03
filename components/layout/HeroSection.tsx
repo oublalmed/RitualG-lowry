@@ -1,5 +1,6 @@
 'use client';
 
+import Image from 'next/image';
 import Link from 'next/link';
 import { ChevronDown, Star } from 'lucide-react';
 import { motion } from 'framer-motion';
@@ -8,17 +9,30 @@ import { fadeInUp, staggerContainer } from '@/lib/animations';
 export function HeroSection() {
   return (
     <section className="relative min-h-screen flex flex-col overflow-hidden">
-      {/* Background */}
+      {/* Background photo */}
+      <div className="absolute inset-0">
+        <Image
+          src="https://images.unsplash.com/photo-1522337360788-8b13dee7a37e?w=1600&q=85&auto=format&fit=crop"
+          alt="Ritual Glowry — femme élégante avec extensions premium"
+          fill
+          priority
+          className="object-cover object-center"
+          sizes="100vw"
+        />
+        {/* Dark overlay for text readability */}
+        <div
+          className="absolute inset-0"
+          style={{
+            background: 'linear-gradient(100deg, rgba(26,20,16,0.88) 0%, rgba(61,43,31,0.70) 55%, rgba(26,20,16,0.45) 100%)',
+          }}
+        />
+      </div>
+
+      {/* Subtle gold glow */}
       <div
-        className="absolute inset-0"
+        className="absolute inset-0 opacity-15 pointer-events-none"
         style={{
-          background: 'linear-gradient(160deg, #3D2B1F 0%, #2a1f18 40%, #1A1410 100%)',
-        }}
-      />
-      <div
-        className="absolute inset-0 opacity-20"
-        style={{
-          background: 'radial-gradient(ellipse 80% 60% at 60% 50%, #C9A875 0%, transparent 70%)',
+          background: 'radial-gradient(ellipse 60% 50% at 70% 50%, #C9A875 0%, transparent 70%)',
         }}
       />
 
@@ -38,7 +52,7 @@ export function HeroSection() {
             Extensions &amp; Perruques Premium
           </motion.p>
 
-          {/* H1 — emotional */}
+          {/* H1 */}
           <motion.h1
             variants={fadeInUp}
             className="font-playfair font-bold italic text-white leading-[1.05]"
@@ -48,7 +62,7 @@ export function HeroSection() {
             <span className="block text-5xl md:text-6xl lg:text-7xl">l&apos;excellence.</span>
           </motion.h1>
 
-          {/* Subtitle — transformation focused */}
+          {/* Subtitle */}
           <motion.p
             variants={fadeInUp}
             className="mt-6 text-lg md:text-xl font-cormorant italic text-white/75 leading-relaxed max-w-xl"
@@ -78,7 +92,6 @@ export function HeroSection() {
             variants={fadeInUp}
             className="flex flex-wrap items-center gap-6 mt-12 pt-10 border-t border-white/10"
           >
-            {/* Stars + rating */}
             <div className="flex items-center gap-2">
               <div className="flex">
                 {[...Array(5)].map((_, i) => (
@@ -88,15 +101,11 @@ export function HeroSection() {
               <span className="font-inter text-sm font-semibold text-white">4,9/5</span>
               <span className="font-inter text-xs text-white/50">· +500 clientes</span>
             </div>
-            {/* Divider */}
             <div className="hidden sm:block w-px h-5 bg-white/20" />
-            {/* Shipping */}
             <span className="font-inter text-xs text-white/60 uppercase tracking-[0.1em]">
               ✓ Livraison rapide au Maroc
             </span>
-            {/* Divider */}
             <div className="hidden sm:block w-px h-5 bg-white/20" />
-            {/* Guarantee */}
             <span className="font-inter text-xs text-white/60 uppercase tracking-[0.1em]">
               ✓ Retours 30 jours
             </span>
