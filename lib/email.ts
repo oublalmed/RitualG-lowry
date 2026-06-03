@@ -7,7 +7,7 @@ import OrderDeliveredEmail from '@/emails/OrderDeliveredEmail';
 
 const resend = new Resend(process.env.RESEND_API_KEY ?? '');
 
-const FROM_EMAIL = process.env.EMAIL_FROM ?? 'Ritual Glowry <noreply@ritualglowry.com>';
+const FROM_EMAIL = process.env.EMAIL_FROM ?? 'Ritual Glowry <onboarding@resend.dev>';
 
 // ─── Types ─────────────────────────────────────────────────────────────────────
 
