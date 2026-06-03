@@ -1,87 +1,86 @@
 'use client';
 
 import { motion } from 'framer-motion';
-import { Sparkles, ShieldCheck, Leaf, Heart } from 'lucide-react';
-import { fadeInUp, staggerContainer } from '@/lib/animations';
+import { fadeInUp, fadeInLeft, fadeInRight, staggerContainer } from '@/lib/animations';
 
-const pillars = [
-  {
-    icon: Sparkles,
-    title: 'Qualité Premium',
-    description: 'Extensions 100% naturelles, certifiées Remy',
-  },
-  {
-    icon: ShieldCheck,
-    title: 'Effet Naturel',
-    description: 'Mélange parfait avec vos cheveux',
-  },
-  {
-    icon: Leaf,
-    title: 'Confort Absolu',
-    description: 'Légères et respirantes, portez les toute la journée',
-  },
-  {
-    icon: Heart,
-    title: 'Toutes Textures',
-    description: 'Lisses, bouclées, afro — pour toutes les femmes',
-  },
+const reasons = [
+  { check: '✓', title: 'Cheveux premium', desc: 'Extensions 100% naturelles Remy, sélectionnées avec exigence' },
+  { check: '✓', title: 'Effet naturel', desc: 'Se fondent parfaitement avec vos cheveux' },
+  { check: '✓', title: 'Longue durée', desc: 'Conçues pour durer, faciles à entretenir' },
+  { check: '✓', title: 'Livraison rapide', desc: 'Expédition sous 24h au Maroc' },
+  { check: '✓', title: 'Garantie satisfaction', desc: 'Retours gratuits sous 30 jours' },
 ];
 
 export function BrandManifesto() {
   return (
-    <section className="py-24 md:py-32 bg-[#3D2B1F]">
+    <section className="py-20 md:py-28 bg-[#FAF6EF]">
       <div className="container mx-auto px-4 md:px-8 lg:px-12">
-        {/* Header */}
-        <motion.div
-          className="text-center mb-16"
-          variants={staggerContainer}
-          initial="hidden"
-          whileInView="visible"
-          viewport={{ once: true }}
-        >
-          <motion.p
-            variants={fadeInUp}
-            className="text-xs font-inter font-semibold uppercase tracking-[0.15em] text-[#C9A875] mb-4"
-          >
-            Notre Engagement
-          </motion.p>
-          <motion.h2
-            variants={fadeInUp}
-            className="text-4xl md:text-5xl lg:text-6xl font-playfair font-bold italic text-[#FAF6EF] leading-tight max-w-2xl mx-auto"
-          >
-            L&apos;Excellence à Votre Service
-          </motion.h2>
-        </motion.div>
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-12 md:gap-20 items-center">
 
-        {/* Pillars */}
-        <motion.div
-          className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-8 md:gap-6"
-          variants={staggerContainer}
-          initial="hidden"
-          whileInView="visible"
-          viewport={{ once: true }}
-        >
-          {pillars.map((pillar) => {
-            const Icon = pillar.icon;
-            return (
+          {/* Left — emotional quote block */}
+          <motion.div
+            variants={staggerContainer}
+            initial="hidden"
+            whileInView="visible"
+            viewport={{ once: true }}
+          >
+            <motion.p
+              variants={fadeInLeft}
+              className="text-xs font-inter font-semibold uppercase tracking-[0.15em] text-[#C9A875] mb-4"
+            >
+              Pourquoi nous choisissent
+            </motion.p>
+            <motion.h2
+              variants={fadeInLeft}
+              className="text-3xl md:text-4xl lg:text-5xl font-playfair font-bold italic text-[#3D2B1F] leading-tight"
+            >
+              Pourquoi Ritual Glowry ?
+            </motion.h2>
+            <motion.p
+              variants={fadeInLeft}
+              className="mt-5 text-sm font-inter text-[#3D2B1F]/65 leading-relaxed max-w-md"
+            >
+              Nous ne proposons pas simplement des extensions. Nous proposons une transformation —
+              la confiance de vous sentir belle, élégante et profondément vous-même.
+            </motion.p>
+
+            {/* Brand tagline */}
+            <motion.blockquote
+              variants={fadeInLeft}
+              className="mt-8 pl-5 border-l-2 border-[#C9A875]"
+            >
+              <p className="text-xl font-cormorant italic text-[#3D2B1F]/80">
+                &ldquo;Votre beauté, notre rituel.&rdquo;
+              </p>
+            </motion.blockquote>
+          </motion.div>
+
+          {/* Right — checklist */}
+          <motion.div
+            variants={staggerContainer}
+            initial="hidden"
+            whileInView="visible"
+            viewport={{ once: true }}
+            className="space-y-5"
+          >
+            {reasons.map((r) => (
               <motion.div
-                key={pillar.title}
-                variants={fadeInUp}
-                className="flex flex-col items-center text-center border-t border-[#C9A875]/20 pt-8"
+                key={r.title}
+                variants={fadeInRight}
+                className="flex items-start gap-4 p-4 border border-[#C9A875]/20 hover:border-[#C9A875]/50 transition-colors duration-300"
               >
-                <div className="w-12 h-12 flex items-center justify-center mb-4">
-                  <Icon className="h-8 w-8 text-[#C9A875]" />
+                <span className="mt-0.5 text-[#C9A875] font-inter font-bold text-base flex-shrink-0">
+                  {r.check}
+                </span>
+                <div>
+                  <p className="font-inter font-semibold text-sm text-[#3D2B1F]">{r.title}</p>
+                  <p className="font-inter text-xs text-[#3D2B1F]/55 mt-0.5 leading-relaxed">{r.desc}</p>
                 </div>
-                <h3 className="text-lg font-playfair font-bold italic text-[#FAF6EF] mb-2">
-                  {pillar.title}
-                </h3>
-                <p className="text-sm font-inter text-[#FAF6EF]/60 leading-relaxed">
-                  {pillar.description}
-                </p>
               </motion.div>
-            );
-          })}
-        </motion.div>
+            ))}
+          </motion.div>
+
+        </div>
       </div>
     </section>
   );

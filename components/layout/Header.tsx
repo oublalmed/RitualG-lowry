@@ -36,11 +36,11 @@ const megaMenuCategories = [
 
 const navLinks = [
   { href: '/boutique', label: 'Boutique', hasMegaMenu: true },
-  { href: '/boutique?state=new', label: 'Nouveautés', hasMegaMenu: false },
-  { href: '/boutique?state=bestseller', label: 'Best-sellers', hasMegaMenu: false },
+  { href: '/boutique?textures=lisse', label: 'Lisses', hasMegaMenu: false },
+  { href: '/boutique?textures=bouclée', label: 'Bouclées', hasMegaMenu: false },
+  { href: '/boutique?types=perruque', label: 'Perruques', hasMegaMenu: false },
+  { href: '/blog', label: 'Conseils', hasMegaMenu: false },
   { href: '/a-propos', label: 'À propos', hasMegaMenu: false },
-  { href: '/blog', label: 'Blog', hasMegaMenu: false },
-  { href: '/faq', label: 'FAQ', hasMegaMenu: false },
 ];
 
 export function Header() {

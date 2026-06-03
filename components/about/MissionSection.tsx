@@ -3,19 +3,20 @@
 import { motion } from 'framer-motion';
 import { fadeInLeft, fadeInRight, staggerContainer } from '@/lib/animations';
 
-const values = [
-  { label: 'Authenticité', description: 'Des produits qui respectent votre identité' },
-  { label: 'Qualité', description: 'Certifiées Remy, 100% naturelles' },
-  { label: 'Inclusivité', description: 'Pour toutes les textures et tous les styles' },
-  { label: 'Durabilité', description: 'Produits conçus pour durer' },
+const differentiators = [
+  { label: 'Qualité rigoureusement sélectionnée', desc: 'Chaque produit passe par une sélection exigeante avant d\'arriver jusqu\'à vous' },
+  { label: 'Expérience d\'achat rassurante', desc: 'Simple, claire et conçue pour la femme qui sait ce qu\'elle veut' },
+  { label: 'Accompagnement personnalisé', desc: 'Nous sommes là à chaque étape, du choix jusqu\'à la pose' },
+  { label: 'Univers raffiné et féminin', desc: 'Une marque construite autour de la confiance et de l\'estime de soi' },
 ];
 
 export function MissionSection() {
   return (
     <section className="py-24 md:py-32 bg-[#F5EDE0]">
       <div className="container mx-auto px-4 md:px-8 lg:px-12">
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-12 md:gap-16 items-center">
-          {/* Text — reversed layout */}
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-12 md:gap-20 items-center">
+
+          {/* Text */}
           <motion.div
             variants={staggerContainer}
             initial="hidden"
@@ -26,46 +27,66 @@ export function MissionSection() {
               variants={fadeInLeft}
               className="text-xs font-inter font-semibold uppercase tracking-[0.15em] text-[#C9A875] mb-4"
             >
-              Mission & Valeurs
+              Notre Différence
             </motion.p>
             <motion.h2
               variants={fadeInLeft}
-              className="text-3xl md:text-4xl font-playfair font-bold italic text-[#3D2B1F]"
+              className="text-3xl md:text-4xl font-playfair font-bold italic text-[#3D2B1F] leading-tight"
             >
-              Sublimer votre beauté naturelle
+              Bien plus que des extensions
             </motion.h2>
             <motion.p
               variants={fadeInLeft}
-              className="mt-6 text-sm font-inter text-[#3D2B1F]/70 leading-relaxed"
+              className="mt-5 text-sm font-inter text-[#3D2B1F]/65 leading-relaxed"
             >
-              Notre mission est simple : vous offrir des extensions premium qui s&apos;intègrent
-              parfaitement à vos cheveux naturels, sans compromis sur la qualité ni sur
-              l&apos;authenticité.
+              Dans un marché où de nombreuses boutiques vendent simplement des cheveux,
+              Ritual Glowry choisit de créer une véritable expérience. Notre ambition est
+              de devenir une communauté de femmes qui osent rayonner, s&apos;affirmer et
+              révéler leur beauté avec élégance.
             </motion.p>
 
-            <motion.div variants={staggerContainer} className="mt-8 grid grid-cols-2 gap-6">
-              {values.map((v) => (
-                <motion.div key={v.label} variants={fadeInLeft}>
-                  <h4 className="font-playfair font-bold italic text-base text-[#1A1410]">
-                    {v.label}
-                  </h4>
-                  <p className="mt-1 text-xs font-inter text-[#3D2B1F]/60">{v.description}</p>
+            <motion.div variants={staggerContainer} className="mt-8 space-y-4">
+              {differentiators.map((d) => (
+                <motion.div
+                  key={d.label}
+                  variants={fadeInLeft}
+                  className="flex items-start gap-3"
+                >
+                  <span className="mt-1 text-[#C9A875] font-bold text-sm flex-shrink-0">✓</span>
+                  <div>
+                    <p className="font-inter font-semibold text-sm text-[#3D2B1F]">{d.label}</p>
+                    <p className="font-inter text-xs text-[#3D2B1F]/55 mt-0.5">{d.desc}</p>
+                  </div>
                 </motion.div>
               ))}
             </motion.div>
           </motion.div>
 
-          {/* Image block */}
+          {/* Visual */}
           <motion.div
             variants={fadeInRight}
             initial="hidden"
             whileInView="visible"
             viewport={{ once: true }}
-            className="aspect-[4/5]"
-            style={{
-              background: 'linear-gradient(135deg, #C9A875 0%, #3D2B1F 100%)',
-            }}
-          />
+            className="relative aspect-[4/5]"
+          >
+            <div
+              className="absolute inset-0"
+              style={{ background: 'linear-gradient(135deg, #C9A875 0%, #3D2B1F 100%)' }}
+            />
+            <div className="absolute inset-0 flex items-end p-8">
+              <div className="bg-[#FAF6EF]/95 p-6 w-full">
+                <p className="font-inter text-xs uppercase tracking-[0.12em] text-[#C9A875] mb-2">
+                  Notre ambition
+                </p>
+                <p className="font-cormorant italic text-lg text-[#3D2B1F] leading-snug">
+                  &ldquo;Parce qu&apos;au-delà des cheveux, ce que nous célébrons avant tout,
+                  c&apos;est la femme qui les porte.&rdquo;
+                </p>
+              </div>
+            </div>
+          </motion.div>
+
         </div>
       </div>
     </section>

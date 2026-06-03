@@ -37,28 +37,28 @@ export default function HomePage() {
     <>
       <Header />
       <main>
-        {/* Section 1 — Hero */}
+        {/* 1 — Hero : émotion + preuve sociale */}
         <HeroSection />
 
-        {/* Section 2 — Collections */}
-        <CollectionsSection />
-
-        {/* Section 3 — Best Sellers */}
-        <FeaturedProducts />
-
-        {/* Section 4 — Pourquoi Nous */}
+        {/* 2 — Pourquoi Ritual Glowry (haut de page, avant les produits) */}
         <BrandManifesto />
 
-        {/* Section 5 — Témoignages */}
-        <TestimonialsSection />
+        {/* 3 — Collections */}
+        <CollectionsSection />
 
-        {/* Section 5b — Avant/Après */}
-        <BeforeAfterSection />
+        {/* 4 — Best Sellers */}
+        <FeaturedProducts />
 
-        {/* Section 6 — Notre Histoire */}
+        {/* 5 — Notre Histoire : âme de la marque */}
         <StoryPreview />
 
-        {/* Section 7 — Newsletter */}
+        {/* 6 — Témoignages clientes */}
+        <TestimonialsSection />
+
+        {/* 7 — Avant / Après */}
+        <BeforeAfterSection />
+
+        {/* 8 — Newsletter */}
         <NewsletterSection />
       </main>
       <Footer />
