@@ -13,7 +13,8 @@ const testimonials = [
     product: 'Extension Lisse Naturelle',
     location: 'Casablanca',
     rating: 5,
-    avatar: 'https://images.unsplash.com/photo-1531746020798-e6953c6e8e04?w=200&q=80&auto=format&fit=crop&crop=face',
+    // Radiant woman portrait glow
+    avatar: 'https://images.pexels.com/photos/4668513/pexels-photo-4668513.jpeg?auto=compress&cs=tinysrgb&w=100&h=100&fit=crop&crop=face',
   },
   {
     id: 2,
@@ -22,7 +23,8 @@ const testimonials = [
     product: 'Extension Afro 40cm',
     location: 'Marrakech',
     rating: 5,
-    avatar: 'https://images.unsplash.com/photo-1508214751196-bcfd4ca60f91?w=200&q=80&auto=format&fit=crop&crop=face',
+    // Beautiful woman with afro hair
+    avatar: 'https://images.pexels.com/photos/20185478/pexels-photo-20185478.jpeg?auto=compress&cs=tinysrgb&w=100&h=100&fit=crop&crop=face',
   },
   {
     id: 3,
@@ -31,7 +33,8 @@ const testimonials = [
     product: 'Perruque Lace Front',
     location: 'Rabat',
     rating: 5,
-    avatar: 'https://images.unsplash.com/photo-1494790108377-be9c29b29330?w=200&q=80&auto=format&fit=crop&crop=face',
+    // Serene portrait warm light
+    avatar: 'https://images.pexels.com/photos/33461159/pexels-photo-33461159.jpeg?auto=compress&cs=tinysrgb&w=100&h=100&fit=crop&crop=face',
   },
 ];
 
@@ -49,7 +52,6 @@ export function TestimonialsSection() {
   return (
     <section className="py-24 md:py-32 bg-[#FAF6EF]">
       <div className="container mx-auto px-4 md:px-8 lg:px-12">
-        {/* Header */}
         <motion.div
           className="text-center mb-16"
           variants={staggerContainer}
@@ -69,7 +71,6 @@ export function TestimonialsSection() {
           >
             Ce Qu&apos;Elles Disent
           </motion.h2>
-          {/* Aggregate rating */}
           <motion.div variants={fadeInUp} className="flex items-center justify-center gap-2 mt-4">
             <div className="flex">
               {[...Array(5)].map((_, i) => (
@@ -81,7 +82,6 @@ export function TestimonialsSection() {
           </motion.div>
         </motion.div>
 
-        {/* Cards */}
         <motion.div
           className="grid grid-cols-1 md:grid-cols-3 gap-6"
           variants={staggerContainer}
@@ -113,7 +113,7 @@ export function TestimonialsSection() {
                 </div>
                 <div>
                   <p className="font-inter font-semibold text-sm text-[#1A1410]">{t.author}</p>
-                  <p className="font-inter text-xs text-[#C9A875] mt-0.5">{t.product}</p>
+                  <p className="font-inter text-xs text-[#C9A875] mt-0.5">{t.product} · {t.location}</p>
                 </div>
               </footer>
             </motion.div>

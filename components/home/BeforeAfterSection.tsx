@@ -9,22 +9,25 @@ const transformations = [
     name: 'Yasmine M.',
     product: 'Extension Lisse 50cm',
     quote: 'Méconnaissable ! Mes cheveux semblent deux fois plus volumineux.',
-    before: 'https://images.unsplash.com/photo-1488426862026-3ee34a7d66df?w=600&q=80&auto=format&fit=crop&crop=top',
-    after:  'https://images.unsplash.com/photo-1522337360788-8b13dee7a37e?w=600&q=80&auto=format&fit=crop&crop=top',
+    // Before: back view natural hair / After: long straight styled hair
+    before: 'https://images.pexels.com/photos/4923123/pexels-photo-4923123.jpeg?auto=compress&cs=tinysrgb&w=600&h=800&fit=crop',
+    after:  'https://images.pexels.com/photos/18348405/pexels-photo-18348405.jpeg?auto=compress&cs=tinysrgb&w=600&h=800&fit=crop',
   },
   {
     name: 'Aïcha B.',
     product: 'Extension Afro 40cm',
     quote: 'Exactement ma texture. On ne voit pas la différence !',
-    before: 'https://images.unsplash.com/photo-1531384441138-2736e62e0919?w=600&q=80&auto=format&fit=crop&crop=top',
-    after:  'https://images.unsplash.com/photo-1531746020798-e6953c6e8e04?w=600&q=80&auto=format&fit=crop&crop=top',
+    // Before: natural simple portrait / After: beautiful afro volume
+    before: 'https://images.pexels.com/photos/14737308/pexels-photo-14737308.jpeg?auto=compress&cs=tinysrgb&w=600&h=800&fit=crop',
+    after:  'https://images.pexels.com/photos/20185478/pexels-photo-20185478.jpeg?auto=compress&cs=tinysrgb&w=600&h=800&fit=crop',
   },
   {
     name: 'Fatima Z.',
     product: 'Perruque Lace Front',
     quote: 'La pose est simple et le rendu est incroyable.',
-    before: 'https://images.unsplash.com/photo-1543610892-0b1f7e6d8ac1?w=600&q=80&auto=format&fit=crop&crop=top',
-    after:  'https://images.unsplash.com/photo-1524504388940-b1c1722653e1?w=600&q=80&auto=format&fit=crop&crop=top',
+    // Before: confident natural look / After: styled fashion portrait
+    before: 'https://images.pexels.com/photos/5885752/pexels-photo-5885752.jpeg?auto=compress&cs=tinysrgb&w=600&h=800&fit=crop',
+    after:  'https://images.pexels.com/photos/17359824/pexels-photo-17359824.jpeg?auto=compress&cs=tinysrgb&w=600&h=800&fit=crop',
   },
 ];
 
@@ -32,7 +35,6 @@ export function BeforeAfterSection() {
   return (
     <section className="py-24 md:py-32 bg-[#F5EDE0]">
       <div className="container mx-auto px-4 md:px-8 lg:px-12">
-        {/* Header */}
         <motion.div
           initial="hidden"
           whileInView="visible"
@@ -52,15 +54,11 @@ export function BeforeAfterSection() {
           >
             Transformations Réelles
           </motion.h2>
-          <motion.p
-            variants={fadeInUp}
-            className="mt-3 text-xl font-cormorant italic text-[#C9A875]"
-          >
+          <motion.p variants={fadeInUp} className="mt-3 text-xl font-cormorant italic text-[#C9A875]">
             Avant · Après
           </motion.p>
         </motion.div>
 
-        {/* Cards */}
         <motion.div
           initial="hidden"
           whileInView="visible"
@@ -82,18 +80,18 @@ export function BeforeAfterSection() {
                     src={item.before}
                     alt={`Avant — ${item.name}`}
                     fill
-                    className="object-cover object-top grayscale group-hover:grayscale-0 transition-all duration-500"
+                    className="object-cover object-top grayscale-[60%] group-hover:grayscale-0 transition-all duration-700"
                     sizes="(max-width: 768px) 50vw, 17vw"
                   />
-                  <div className="absolute inset-0 bg-[#1A1410]/20" />
-                  <span className="absolute bottom-3 left-0 right-0 text-center text-xs font-inter font-semibold uppercase tracking-[0.15em] text-white/90">
+                  <div className="absolute inset-0 bg-[#1A1410]/15" />
+                  <span className="absolute bottom-3 left-0 right-0 text-center text-xs font-inter font-semibold uppercase tracking-[0.12em] text-white drop-shadow">
                     Avant
                   </span>
                 </div>
 
-                {/* Gold divider */}
+                {/* Gold divider + arrow badge */}
                 <div className="absolute left-1/2 top-0 bottom-0 w-0.5 bg-[#C9A875] z-10 -translate-x-1/2" />
-                <div className="absolute left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2 z-20 w-7 h-7 bg-[#C9A875] flex items-center justify-center">
+                <div className="absolute left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2 z-20 w-7 h-7 bg-[#C9A875] flex items-center justify-center shadow-lg">
                   <span className="text-[#1A1410] font-inter font-bold text-xs">→</span>
                 </div>
 
@@ -107,7 +105,7 @@ export function BeforeAfterSection() {
                     sizes="(max-width: 768px) 50vw, 17vw"
                   />
                   <div className="absolute inset-0 bg-[#C9A875]/5" />
-                  <span className="absolute bottom-3 left-0 right-0 text-center text-xs font-inter font-semibold uppercase tracking-[0.15em] text-white/90">
+                  <span className="absolute bottom-3 left-0 right-0 text-center text-xs font-inter font-semibold uppercase tracking-[0.12em] text-white drop-shadow">
                     Après
                   </span>
                 </div>

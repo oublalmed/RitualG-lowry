@@ -4,6 +4,9 @@ import Image from 'next/image';
 import { motion } from 'framer-motion';
 import { fadeInLeft, fadeInRight, staggerContainer } from '@/lib/animations';
 
+// Portrait beautiful woman outdoors — authentic and natural
+const FOUNDER_IMG = 'https://images.pexels.com/photos/14737308/pexels-photo-14737308.jpeg?auto=compress&cs=tinysrgb&w=900&h=1125&fit=crop';
+
 export function FounderSection() {
   return (
     <section className="py-24 md:py-32 bg-[#FAF6EF]">
@@ -19,13 +22,13 @@ export function FounderSection() {
             className="relative aspect-[4/5] overflow-hidden"
           >
             <Image
-              src="https://images.unsplash.com/photo-1580489944761-15a19d654956?w=900&q=85&auto=format&fit=crop&crop=top"
-              alt="Fondatrice Ritual Glowry"
+              src={FOUNDER_IMG}
+              alt="Histoire de la marque Ritual Glowry"
               fill
-              className="object-cover"
+              className="object-cover object-top"
               sizes="(max-width: 768px) 100vw, 50vw"
             />
-            <div className="absolute inset-0 bg-gradient-to-t from-[#1A1410]/40 to-transparent" />
+            <div className="absolute inset-0 bg-gradient-to-t from-[#1A1410]/45 to-transparent" />
             <div className="absolute bottom-8 left-6 right-6 bg-[#FAF6EF]/95 p-5 border-l-2 border-[#C9A875]">
               <p className="font-cormorant italic text-base text-[#3D2B1F] leading-snug">
                 &ldquo;Votre beauté, notre rituel.&rdquo;
@@ -77,10 +80,7 @@ export function FounderSection() {
               sa force et sa confiance intérieure.
             </motion.p>
 
-            <motion.blockquote
-              variants={fadeInRight}
-              className="mt-8 pl-5 border-l-2 border-[#C9A875]"
-            >
+            <motion.blockquote variants={fadeInRight} className="mt-8 pl-5 border-l-2 border-[#C9A875]">
               <p className="text-lg font-cormorant italic text-[#3D2B1F]">
                 &ldquo;Au-delà des cheveux, ce que nous célébrons avant tout, c&apos;est
                 la femme qui les porte.&rdquo;

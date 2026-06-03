@@ -6,37 +6,38 @@ import { ChevronDown, Star } from 'lucide-react';
 import { motion } from 'framer-motion';
 import { fadeInUp, staggerContainer } from '@/lib/animations';
 
+const HERO_IMG = 'https://images.pexels.com/photos/33461159/pexels-photo-33461159.jpeg?auto=compress&cs=tinysrgb&w=1600&h=900&fit=crop';
+
 export function HeroSection() {
   return (
     <section className="relative min-h-screen flex flex-col overflow-hidden">
       {/* Background photo */}
       <div className="absolute inset-0">
         <Image
-          src="https://images.unsplash.com/photo-1522337360788-8b13dee7a37e?w=1600&q=85&auto=format&fit=crop"
-          alt="Ritual Glowry — femme élégante avec extensions premium"
+          src={HERO_IMG}
+          alt="Ritual Glowry — femme élégante avec extensions cheveux premium"
           fill
           priority
           className="object-cover object-center"
           sizes="100vw"
         />
-        {/* Dark overlay for text readability */}
         <div
           className="absolute inset-0"
           style={{
-            background: 'linear-gradient(100deg, rgba(26,20,16,0.88) 0%, rgba(61,43,31,0.70) 55%, rgba(26,20,16,0.45) 100%)',
+            background: 'linear-gradient(100deg, rgba(26,20,16,0.92) 0%, rgba(61,43,31,0.75) 55%, rgba(26,20,16,0.50) 100%)',
           }}
         />
       </div>
 
-      {/* Subtle gold glow */}
+      {/* Gold glow accent */}
       <div
         className="absolute inset-0 opacity-15 pointer-events-none"
         style={{
-          background: 'radial-gradient(ellipse 60% 50% at 70% 50%, #C9A875 0%, transparent 70%)',
+          background: 'radial-gradient(ellipse 55% 45% at 75% 50%, #C9A875 0%, transparent 70%)',
         }}
       />
 
-      {/* Main content */}
+      {/* Content */}
       <div className="relative flex-1 container mx-auto px-4 md:px-8 lg:px-12 pt-28 md:pt-32 pb-16 flex items-center">
         <motion.div
           className="max-w-3xl"
@@ -44,7 +45,6 @@ export function HeroSection() {
           initial="hidden"
           animate="visible"
         >
-          {/* Pre-title */}
           <motion.p
             variants={fadeInUp}
             className="text-xs font-inter font-semibold uppercase tracking-[0.15em] text-[#C9A875] mb-6"
@@ -52,7 +52,6 @@ export function HeroSection() {
             Extensions &amp; Perruques Premium
           </motion.p>
 
-          {/* H1 */}
           <motion.h1
             variants={fadeInUp}
             className="font-playfair font-bold italic text-white leading-[1.05]"
@@ -62,7 +61,6 @@ export function HeroSection() {
             <span className="block text-5xl md:text-6xl lg:text-7xl">l&apos;excellence.</span>
           </motion.h1>
 
-          {/* Subtitle */}
           <motion.p
             variants={fadeInUp}
             className="mt-6 text-lg md:text-xl font-cormorant italic text-white/75 leading-relaxed max-w-xl"
@@ -71,7 +69,6 @@ export function HeroSection() {
             sélectionnées avec exigence, pour les femmes qui ne font aucun compromis.
           </motion.p>
 
-          {/* CTAs */}
           <motion.div variants={fadeInUp} className="flex flex-col sm:flex-row gap-4 mt-10">
             <Link
               href="/boutique"
@@ -102,18 +99,13 @@ export function HeroSection() {
               <span className="font-inter text-xs text-white/50">· +500 clientes</span>
             </div>
             <div className="hidden sm:block w-px h-5 bg-white/20" />
-            <span className="font-inter text-xs text-white/60 uppercase tracking-[0.1em]">
-              ✓ Livraison rapide au Maroc
-            </span>
+            <span className="font-inter text-xs text-white/60 uppercase tracking-[0.1em]">✓ Livraison rapide au Maroc</span>
             <div className="hidden sm:block w-px h-5 bg-white/20" />
-            <span className="font-inter text-xs text-white/60 uppercase tracking-[0.1em]">
-              ✓ Retours 30 jours
-            </span>
+            <span className="font-inter text-xs text-white/60 uppercase tracking-[0.1em]">✓ Retours 30 jours</span>
           </motion.div>
         </motion.div>
       </div>
 
-      {/* Scroll indicator */}
       <div className="relative pb-8 flex flex-col items-center gap-1">
         <motion.div
           animate={{ y: [0, 8, 0] }}

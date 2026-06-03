@@ -10,22 +10,25 @@ const collections = [
     name: 'Extensions Lisses',
     description: 'Soyeuses, légères et naturelles',
     href: '/boutique?textures=lisse',
-    image: 'https://images.unsplash.com/photo-1519699047748-de8e457a634e?w=800&q=85&auto=format&fit=crop',
-    alt: 'Extensions lisses premium',
+    // Woman with long straight black hair
+    image: 'https://images.pexels.com/photos/18348405/pexels-photo-18348405.jpeg?auto=compress&cs=tinysrgb&w=800&h=1067&fit=crop',
+    alt: 'Extension lisse — cheveux longs droits naturels',
   },
   {
     name: 'Extensions Bouclées',
     description: 'Volume, mouvement et brillance',
     href: '/boutique?textures=bouclée',
-    image: 'https://images.unsplash.com/photo-1531746020798-e6953c6e8e04?w=800&q=85&auto=format&fit=crop',
-    alt: 'Extensions bouclées naturelles',
+    // Beautiful woman with afro/curly hair
+    image: 'https://images.pexels.com/photos/20185478/pexels-photo-20185478.jpeg?auto=compress&cs=tinysrgb&w=800&h=1067&fit=crop',
+    alt: 'Extension bouclée — volume et mouvement naturel',
   },
   {
     name: 'Perruques',
     description: 'Lace front, full lace, naturelles',
     href: '/boutique?types=perruque',
-    image: 'https://images.unsplash.com/photo-1524504388940-b1c1722653e1?w=800&q=85&auto=format&fit=crop',
-    alt: 'Perruques premium naturelles',
+    // Fashion portrait woman
+    image: 'https://images.pexels.com/photos/17359824/pexels-photo-17359824.jpeg?auto=compress&cs=tinysrgb&w=800&h=1067&fit=crop',
+    alt: 'Perruque naturelle premium — lace front',
   },
 ];
 
@@ -33,7 +36,6 @@ export function CollectionsSection() {
   return (
     <section className="py-24 md:py-32 bg-[#FAF6EF]">
       <div className="container mx-auto px-4 md:px-8 lg:px-12">
-        {/* Header */}
         <motion.div
           className="text-center mb-14"
           variants={staggerContainer}
@@ -61,7 +63,6 @@ export function CollectionsSection() {
           </motion.p>
         </motion.div>
 
-        {/* Cards */}
         <motion.div
           className="grid grid-cols-1 md:grid-cols-3 gap-6"
           variants={staggerContainer}
@@ -71,11 +72,7 @@ export function CollectionsSection() {
         >
           {collections.map((col) => (
             <motion.div key={col.name} variants={fadeInUp}>
-              <Link
-                href={col.href}
-                className="group block relative overflow-hidden aspect-[3/4]"
-              >
-                {/* Photo */}
+              <Link href={col.href} className="group block relative overflow-hidden aspect-[3/4]">
                 <Image
                   src={col.image}
                   alt={col.alt}
@@ -83,12 +80,8 @@ export function CollectionsSection() {
                   className="object-cover object-top transition-transform duration-700 group-hover:scale-105"
                   sizes="(max-width: 768px) 100vw, 33vw"
                 />
-                {/* Gradient overlay */}
-                <div className="absolute inset-0 bg-gradient-to-t from-[#1A1410]/85 via-[#1A1410]/20 to-transparent" />
-                {/* Hover overlay */}
+                <div className="absolute inset-0 bg-gradient-to-t from-[#1A1410]/85 via-[#1A1410]/25 to-transparent" />
                 <div className="absolute inset-0 bg-[#C9A875]/0 group-hover:bg-[#C9A875]/10 transition-colors duration-300" />
-
-                {/* Content */}
                 <div className="absolute bottom-0 left-0 right-0 p-6 md:p-8">
                   <h3 className="font-playfair font-bold italic text-2xl md:text-3xl text-white leading-tight">
                     {col.name}
