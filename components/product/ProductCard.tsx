@@ -29,36 +29,41 @@ interface ProductCardProps {
   product: ProductCardProduct;
 }
 
-// Curated Pexels fallback images keyed by product name keywords
+// Studio dark-background portraits matched to each product type (matches reference style)
 const FALLBACK_IMAGES: { keywords: string[]; url: string; alt: string }[] = [
   {
-    keywords: ['lisse', 'lisses', 'straight', 'naturelle'],
-    url: 'https://images.pexels.com/photos/18348405/pexels-photo-18348405.jpeg?auto=compress&cs=tinysrgb&w=600&h=800&fit=crop',
+    keywords: ['lisse', 'lisses', 'straight', 'indien', 'naturelle'],
+    // Beautiful woman in black halter top — straight hair
+    url: 'https://images.pexels.com/photos/11701602/pexels-photo-11701602.jpeg?auto=compress&cs=tinysrgb&w=600&h=800&fit=crop',
     alt: 'Extension lisse naturelle',
   },
   {
-    keywords: ['bouclée', 'bouclé', 'bouclee', 'boucle', 'sublime'],
-    url: 'https://images.pexels.com/photos/20185478/pexels-photo-20185478.jpeg?auto=compress&cs=tinysrgb&w=600&h=800&fit=crop',
+    keywords: ['bouclée', 'bouclé', 'bouclee', 'boucle', 'sublime', 'curly'],
+    // Black fashion model with curly/voluminous hair
+    url: 'https://images.pexels.com/photos/20417302/pexels-photo-20417302.jpeg?auto=compress&cs=tinysrgb&w=600&h=800&fit=crop',
     alt: 'Extension bouclée naturelle',
   },
   {
     keywords: ['afro'],
-    url: 'https://images.pexels.com/photos/5885752/pexels-photo-5885752.jpeg?auto=compress&cs=tinysrgb&w=600&h=800&fit=crop',
+    // Editorial Black woman afro
+    url: 'https://images.pexels.com/photos/22690356/pexels-photo-22690356.jpeg?auto=compress&cs=tinysrgb&w=600&h=800&fit=crop',
     alt: 'Extension afro naturelle',
   },
   {
-    keywords: ['ondulée', 'ondule', 'wavy', 'wave', 'body'],
-    url: 'https://images.pexels.com/photos/7527607/pexels-photo-7527607.jpeg?auto=compress&cs=tinysrgb&w=600&h=800&fit=crop',
-    alt: 'Extension ondulée luxe',
+    keywords: ['ondulée', 'ondule', 'wavy', 'wave', 'body', 'deep'],
+    // Woman posing on black background — wavy hair
+    url: 'https://images.pexels.com/photos/17433078/pexels-photo-17433078.jpeg?auto=compress&cs=tinysrgb&w=600&h=800&fit=crop',
+    alt: 'Extension ondulée body wave',
   },
   {
     keywords: ['perruque', 'wig', 'lace', 'full'],
-    url: 'https://images.pexels.com/photos/17359824/pexels-photo-17359824.jpeg?auto=compress&cs=tinysrgb&w=600&h=800&fit=crop',
-    alt: 'Perruque premium naturelle',
+    // Model in dress against black backdrop
+    url: 'https://images.pexels.com/photos/9927983/pexels-photo-9927983.jpeg?auto=compress&cs=tinysrgb&w=600&h=800&fit=crop',
+    alt: 'Perruque lace front premium',
   },
 ];
 
-const DEFAULT_FALLBACK = 'https://images.pexels.com/photos/4906289/pexels-photo-4906289.jpeg?auto=compress&cs=tinysrgb&w=600&h=800&fit=crop';
+const DEFAULT_FALLBACK = 'https://images.pexels.com/photos/2757422/pexels-photo-2757422.jpeg?auto=compress&cs=tinysrgb&w=600&h=800&fit=crop';
 
 function getFallbackImage(name: string): { url: string; alt: string } {
   const lower = name.toLowerCase();
