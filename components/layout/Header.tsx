@@ -49,7 +49,10 @@ export function Header() {
   const [megaMenuOpen, setMegaMenuOpen] = useState(false);
   const [mobileOpen, setMobileOpen] = useState(false);
   const [searchOpen, setSearchOpen] = useState(false);
+  const [mounted, setMounted] = useState(false);
   const megaMenuTimer = useRef<ReturnType<typeof setTimeout> | null>(null);
+
+  useEffect(() => { setMounted(true); }, []);
 
   // Cmd+K / Ctrl+K shortcut
   useEffect(() => {
@@ -64,7 +67,7 @@ export function Header() {
   }, []);
 
   const { getItemCount, openCart } = useCartStore();
-  const cartCount = getItemCount();
+  const cartCount = mounted ? getItemCount() : 0;
 
   useEffect(() => {
     const handleScroll = () => {
