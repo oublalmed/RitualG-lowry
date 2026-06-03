@@ -1,6 +1,5 @@
 'use client';
 
-import Image from 'next/image';
 import Link from 'next/link';
 import { motion } from 'framer-motion';
 import { fadeInUp, staggerContainer } from '@/lib/animations';
@@ -8,35 +7,27 @@ import { fadeInUp, staggerContainer } from '@/lib/animations';
 const collections = [
   {
     name: 'Lisses',
-    label: 'Voir la collection',
+    description: 'Soyeuses, légères et naturelles',
     href: '/boutique?textures=lisse',
-    // Beautiful woman in black halter top, straight hair
-    image: 'https://images.pexels.com/photos/11701602/pexels-photo-11701602.jpeg?auto=compress&cs=tinysrgb&w=800&h=1067&fit=crop',
-    alt: 'Extensions lisses premium',
+    gradient: 'linear-gradient(160deg, #3D2B1F 0%, #5A3D2B 60%, #6B4C35 100%)',
   },
   {
     name: 'Bouclées',
-    label: 'Voir la collection',
+    description: 'Volume, mouvement et brillance',
     href: '/boutique?textures=bouclée',
-    // Black fashion model
-    image: 'https://images.pexels.com/photos/20417302/pexels-photo-20417302.jpeg?auto=compress&cs=tinysrgb&w=800&h=1067&fit=crop',
-    alt: 'Extensions bouclées naturelles',
+    gradient: 'linear-gradient(160deg, #4A3528 0%, #B8924B 60%, #C9A875 100%)',
   },
   {
     name: 'Afro & Curly',
-    label: 'Voir la collection',
+    description: 'Authentiques, pour toutes textures',
     href: '/boutique?textures=afro',
-    // Editorial Black woman
-    image: 'https://images.pexels.com/photos/22690356/pexels-photo-22690356.jpeg?auto=compress&cs=tinysrgb&w=800&h=1067&fit=crop',
-    alt: 'Extensions afro et curly',
+    gradient: 'linear-gradient(160deg, #5A3D2B 0%, #3D2B1F 50%, #C9A8A0 100%)',
   },
   {
     name: 'Perruques',
-    label: 'Voir la collection',
+    description: 'Lace front, full lace, naturelles',
     href: '/boutique?types=perruque',
-    // Model in dress against black backdrop
-    image: 'https://images.pexels.com/photos/9927983/pexels-photo-9927983.jpeg?auto=compress&cs=tinysrgb&w=800&h=1067&fit=crop',
-    alt: 'Perruques lace front premium',
+    gradient: 'linear-gradient(160deg, #2C1F17 0%, #7A5435 50%, #C9A875 100%)',
   },
 ];
 
@@ -44,7 +35,6 @@ export function CollectionsSection() {
   return (
     <section className="py-20 md:py-28 bg-[#FAF6EF]">
       <div className="container mx-auto px-4 md:px-8 lg:px-12">
-        {/* Header */}
         <motion.div
           className="flex items-end justify-between mb-10"
           initial="hidden"
@@ -67,7 +57,6 @@ export function CollectionsSection() {
           </motion.p>
         </motion.div>
 
-        {/* 4-column cards */}
         <motion.div
           className="grid grid-cols-2 md:grid-cols-4 gap-3 md:gap-4"
           variants={staggerContainer}
@@ -78,24 +67,18 @@ export function CollectionsSection() {
           {collections.map((col) => (
             <motion.div key={col.name} variants={fadeInUp}>
               <Link href={col.href} className="group block relative overflow-hidden aspect-[3/4]">
-                <Image
-                  src={col.image}
-                  alt={col.alt}
-                  fill
-                  className="object-cover object-top transition-transform duration-700 group-hover:scale-105"
-                  sizes="(max-width: 768px) 50vw, 25vw"
+                <div
+                  className="absolute inset-0 transition-transform duration-500 group-hover:scale-105"
+                  style={{ background: col.gradient }}
                 />
-                {/* Dark gradient bottom */}
-                <div className="absolute inset-0 bg-gradient-to-t from-[#1A1410]/80 via-[#1A1410]/15 to-transparent" />
-                <div className="absolute inset-0 bg-[#C9A875]/0 group-hover:bg-[#C9A875]/8 transition-colors duration-300" />
-
-                {/* Text */}
+                <div className="absolute inset-0 bg-[#C9A875]/0 group-hover:bg-[#C9A875]/10 transition-colors duration-300" />
                 <div className="absolute bottom-0 left-0 right-0 p-4 md:p-5">
                   <h3 className="font-playfair font-bold italic text-xl md:text-2xl text-white leading-tight">
                     {col.name}
                   </h3>
-                  <span className="mt-1 block text-xs font-inter text-white/65 group-hover:text-[#C9A875] transition-colors">
-                    {col.label}
+                  <p className="mt-1 text-xs font-inter text-white/65">{col.description}</p>
+                  <span className="mt-2 block text-xs font-inter font-semibold uppercase tracking-[0.08em] text-[#C9A875] group-hover:translate-x-1 transition-transform">
+                    Voir la collection →
                   </span>
                 </div>
               </Link>

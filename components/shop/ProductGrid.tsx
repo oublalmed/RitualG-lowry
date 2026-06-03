@@ -81,7 +81,7 @@ export function ProductGrid({ products, isLoading = false, onResetFilters }: Pro
             isNew: product.isNew,
             isBestSeller: product.isBestSeller,
             description: product.shortDescription,
-            image: (product.images as any)?.[0]?.asset?.url ?? null,
+            imagePlaceholder: gradients[index % gradients.length],
             category: product.category?.name,
             stockStatus: product.stockStatus,
           }}

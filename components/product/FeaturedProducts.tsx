@@ -65,7 +65,6 @@ export async function FeaturedProducts() {
           isNew: p.isNew ?? false,
           isBestSeller: p.isBestSeller ?? false,
           stockStatus: p.stockStatus,
-          image: p.images?.[0]?.asset?.url ?? p.images?.asset?.url ?? null,
         }))
       : fallbackProducts;
 

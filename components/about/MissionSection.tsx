@@ -1,11 +1,7 @@
 'use client';
 
-import Image from 'next/image';
 import { motion } from 'framer-motion';
 import { fadeInLeft, fadeInRight, staggerContainer } from '@/lib/animations';
-
-// Woman getting hair done in a salon — beauty transformation
-const MISSION_IMG = 'https://images.pexels.com/photos/7984818/pexels-photo-7984818.jpeg?auto=compress&cs=tinysrgb&w=900&h=1125&fit=crop';
 
 const differentiators = [
   { label: 'Qualité rigoureusement sélectionnée', desc: 'Chaque produit passe par une sélection exigeante avant d\'arriver jusqu\'à vous' },
@@ -21,12 +17,7 @@ export function MissionSection() {
         <div className="grid grid-cols-1 md:grid-cols-2 gap-12 md:gap-20 items-center">
 
           {/* Text */}
-          <motion.div
-            variants={staggerContainer}
-            initial="hidden"
-            whileInView="visible"
-            viewport={{ once: true }}
-          >
+          <motion.div variants={staggerContainer} initial="hidden" whileInView="visible" viewport={{ once: true }}>
             <motion.p variants={fadeInLeft} className="text-xs font-inter font-semibold uppercase tracking-[0.15em] text-[#C9A875] mb-4">
               Notre Différence
             </motion.p>
@@ -39,7 +30,6 @@ export function MissionSection() {
               de devenir une communauté de femmes qui osent rayonner, s&apos;affirmer et
               révéler leur beauté avec élégance.
             </motion.p>
-
             <motion.div variants={staggerContainer} className="mt-8 space-y-4">
               {differentiators.map((d) => (
                 <motion.div key={d.label} variants={fadeInLeft} className="flex items-start gap-3">
@@ -53,24 +43,20 @@ export function MissionSection() {
             </motion.div>
           </motion.div>
 
-          {/* Photo */}
+          {/* Gradient block */}
           <motion.div
             variants={fadeInRight}
             initial="hidden"
             whileInView="visible"
             viewport={{ once: true }}
-            className="relative aspect-[4/5] overflow-hidden"
+            className="relative aspect-[4/5]"
           >
-            <Image
-              src={MISSION_IMG}
-              alt="Expérience Ritual Glowry — beauté et transformation"
-              fill
-              className="object-cover object-center"
-              sizes="(max-width: 768px) 100vw, 50vw"
+            <div
+              className="absolute inset-0"
+              style={{ background: 'linear-gradient(135deg, #C9A875 0%, #3D2B1F 100%)' }}
             />
-            <div className="absolute inset-0 bg-gradient-to-t from-[#1A1410]/55 to-transparent" />
-            <div className="absolute bottom-0 left-0 right-0 p-8">
-              <div className="bg-[#FAF6EF]/95 p-6">
+            <div className="absolute inset-0 flex items-end p-8">
+              <div className="bg-[#FAF6EF]/95 p-6 w-full">
                 <p className="font-inter text-xs uppercase tracking-[0.12em] text-[#C9A875] mb-2">Notre ambition</p>
                 <p className="font-cormorant italic text-lg text-[#3D2B1F] leading-snug">
                   &ldquo;Parce qu&apos;au-delà des cheveux, ce que nous célébrons avant tout,
