@@ -1,5 +1,6 @@
 'use client';
 
+import Image from 'next/image';
 import Link from 'next/link';
 import { ShoppingBag, Star } from 'lucide-react';
 import { useCartStore } from '@/stores/cartStore';
@@ -15,6 +16,7 @@ interface ProductCardProduct {
   rating?: number;
   reviewCount?: number;
   stockStatus?: string;
+  image?: string | null;       // real image URL (Sanity CDN)
   // legacy fields
   category?: string;
   originalPrice?: number | null;
@@ -27,32 +29,59 @@ interface ProductCardProps {
   product: ProductCardProduct;
 }
 
-// Gradient placeholder colors — picked deterministically by product id
-const gradients = [
-  'linear-gradient(135deg, #3D2B1F 0%, #5A3D2B 100%)',
-  'linear-gradient(135deg, #4A3528 0%, #C9A875 100%)',
-  'linear-gradient(135deg, #5A3D2B 0%, #B8924B 100%)',
-  'linear-gradient(135deg, #3D2B1F 0%, #C9A8A0 100%)',
+// Curated Pexels fallback images keyed by product name keywords
+const FALLBACK_IMAGES: { keywords: string[]; url: string; alt: string }[] = [
+  {
+    keywords: ['lisse', 'lisses', 'straight', 'naturelle'],
+    url: 'https://images.pexels.com/photos/18348405/pexels-photo-18348405.jpeg?auto=compress&cs=tinysrgb&w=600&h=800&fit=crop',
+    alt: 'Extension lisse naturelle',
+  },
+  {
+    keywords: ['bouclée', 'bouclé', 'bouclee', 'boucle', 'sublime'],
+    url: 'https://images.pexels.com/photos/20185478/pexels-photo-20185478.jpeg?auto=compress&cs=tinysrgb&w=600&h=800&fit=crop',
+    alt: 'Extension bouclée naturelle',
+  },
+  {
+    keywords: ['afro'],
+    url: 'https://images.pexels.com/photos/5885752/pexels-photo-5885752.jpeg?auto=compress&cs=tinysrgb&w=600&h=800&fit=crop',
+    alt: 'Extension afro naturelle',
+  },
+  {
+    keywords: ['ondulée', 'ondule', 'wavy', 'wave', 'body'],
+    url: 'https://images.pexels.com/photos/7527607/pexels-photo-7527607.jpeg?auto=compress&cs=tinysrgb&w=600&h=800&fit=crop',
+    alt: 'Extension ondulée luxe',
+  },
+  {
+    keywords: ['perruque', 'wig', 'lace', 'full'],
+    url: 'https://images.pexels.com/photos/17359824/pexels-photo-17359824.jpeg?auto=compress&cs=tinysrgb&w=600&h=800&fit=crop',
+    alt: 'Perruque premium naturelle',
+  },
 ];
 
-function stableIndex(id: string) {
-  let hash = 0;
-  for (let i = 0; i < id.length; i++) {
-    hash = (hash * 31 + id.charCodeAt(i)) | 0;
+const DEFAULT_FALLBACK = 'https://images.pexels.com/photos/4906289/pexels-photo-4906289.jpeg?auto=compress&cs=tinysrgb&w=600&h=800&fit=crop';
+
+function getFallbackImage(name: string): { url: string; alt: string } {
+  const lower = name.toLowerCase();
+  for (const entry of FALLBACK_IMAGES) {
+    if (entry.keywords.some((kw) => lower.includes(kw))) {
+      return { url: entry.url, alt: entry.alt };
+    }
   }
-  return Math.abs(hash) % gradients.length;
+  return { url: DEFAULT_FALLBACK, alt: name };
 }
 
 export function ProductCard({ product }: ProductCardProps) {
   const { addItem } = useCartStore();
   const slug = product.slug ?? product.name.toLowerCase().replace(/\s+/g, '-');
-  const gradientBg = product.imagePlaceholder
-    ? undefined
-    : gradients[stableIndex(product.id)];
 
   const badge = product.badge ?? (product.isBestSeller ? 'Best-seller' : product.isNew ? 'Nouveau' : null);
   const displayPrice = product.price;
   const comparePrice = product.comparePrice ?? product.originalPrice;
+
+  // Resolve image: Sanity → Pexels fallback by keyword → default
+  const resolvedImage = product.image ?? getFallbackImage(product.name);
+  const imgSrc = typeof resolvedImage === 'string' ? resolvedImage : resolvedImage.url;
+  const imgAlt = typeof resolvedImage === 'string' ? product.name : resolvedImage.alt;
 
   const handleAddToCart = (e: React.MouseEvent) => {
     e.preventDefault();
@@ -63,7 +92,7 @@ export function ProductCard({ product }: ProductCardProps) {
       name: product.name,
       variantLabel: 'Standard',
       slug,
-      imageUrl: undefined,
+      imageUrl: imgSrc,
       price: product.price,
     });
   };
@@ -72,14 +101,15 @@ export function ProductCard({ product }: ProductCardProps) {
     <article className="group flex flex-col">
       {/* Image container */}
       <Link href={`/produit/${slug}`} className="block overflow-hidden">
-        <div
-          className="relative aspect-[3/4] w-full overflow-hidden"
-          style={
-            product.imagePlaceholder
-              ? { backgroundColor: product.imagePlaceholder }
-              : { background: gradientBg }
-          }
-        >
+        <div className="relative aspect-[3/4] w-full overflow-hidden bg-[#F5EDE0]">
+          <Image
+            src={imgSrc}
+            alt={imgAlt}
+            fill
+            className="object-cover object-top transition-transform duration-700 group-hover:scale-105"
+            sizes="(max-width: 640px) 50vw, (max-width: 1024px) 33vw, 25vw"
+          />
+
           {/* Badge */}
           {badge && (
             <div className="absolute top-3 left-3 z-10">
@@ -107,7 +137,7 @@ export function ProductCard({ product }: ProductCardProps) {
           {/* Quick-add overlay */}
           <div className="absolute bottom-0 left-0 right-0 translate-y-full group-hover:translate-y-0 transition-transform duration-300 ease-in-out">
             <button
-              className="w-full bg-[#1A1410] hover:bg-[#3D2B1F] text-[#FAF6EF] font-inter font-semibold uppercase tracking-[0.08em] text-xs py-4 flex items-center justify-center gap-2 transition-colors duration-300"
+              className="w-full bg-[#1A1410]/90 hover:bg-[#3D2B1F] text-[#FAF6EF] font-inter font-semibold uppercase tracking-[0.08em] text-xs py-4 flex items-center justify-center gap-2 transition-colors duration-300"
               onClick={handleAddToCart}
             >
               <ShoppingBag className="h-3.5 w-3.5" />

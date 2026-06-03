@@ -58,14 +58,14 @@ export async function FeaturedProducts() {
     sanityProducts && sanityProducts.length > 0
       ? sanityProducts.map((p: any) => ({
           id: p._id,
-          slug: p.slug,
+          slug: p.slug?.current ?? p.slug,
           name: p.name,
           price: p.basePrice,
           comparePrice: p.comparePrice ?? null,
           isNew: p.isNew ?? false,
           isBestSeller: p.isBestSeller ?? false,
           stockStatus: p.stockStatus,
-          imageUrl: p.images?.asset?.url,
+          image: p.images?.[0]?.asset?.url ?? p.images?.asset?.url ?? null,
         }))
       : fallbackProducts;
 
