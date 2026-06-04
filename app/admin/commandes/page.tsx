@@ -28,6 +28,62 @@ const statusConfig: Record<string, { label: string; className: string }> = {
   PENDING: { label: 'En attente', className: 'bg-yellow-100 text-yellow-700' },
 };
 
+function exportToCSV(orders: AdminOrder[]) {
+  const headers = ['N° Commande', 'Date', 'Cliente', 'Total (MAD)', 'Statut'];
+  const rows = orders.map((o) => [
+    o.orderNumber,
+    new Date(o.createdAt).toLocaleDateString('fr-MA'),
+    o.user?.name ?? o.user?.email ?? o.guestEmail ?? '—',
+    Number(o.total).toFixed(2),
+    o.status,
+  ]);
+  const csv = [headers, ...rows].map((r) => r.map((c) => `"${c}"`).join(',')).join('\n');
+  const blob = new Blob(['﻿' + csv], { type: 'text/csv;charset=utf-8;' });
+  const url = URL.createObjectURL(blob);
+  const a = document.createElement('a');
+  a.href = url;
+  a.download = `commandes-${new Date().toISOString().slice(0, 10)}.csv`;
+  a.click();
+  URL.revokeObjectURL(url);
+}
+
+async function sendOrderEmail(orderId: string) {
+  const res = await fetch(`/api/admin/orders/${orderId}`, {
+    method: 'PATCH',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify({ sendEmail: true }),
+  });
+  if (res.ok) alert('Email envoyé avec succès');
+  else alert('Erreur lors de l\'envoi de l\'email');
+}
+
+function printInvoice(order: AdminOrder) {
+  const clientLabel = order.user?.name ?? order.user?.email ?? order.guestEmail ?? '—';
+  const date = new Date(order.createdAt).toLocaleDateString('fr-MA', { day: '2-digit', month: 'long', year: 'numeric' });
+  const win = window.open('', '_blank');
+  if (!win) return;
+  win.document.write(`
+    <html><head><title>Facture ${order.orderNumber}</title>
+    <style>body{font-family:Arial,sans-serif;padding:40px;color:#1A1410}
+    .header{border-bottom:2px solid #C9A875;padding-bottom:20px;margin-bottom:30px}
+    .brand{font-size:24px;font-weight:bold;color:#C9A875}
+    .row{display:flex;justify-content:space-between;padding:8px 0;border-bottom:1px solid #eee}
+    .total{font-weight:bold;font-size:18px;margin-top:20px}
+    </style></head><body>
+    <div class="header">
+      <div class="brand">Ritual Glowry</div>
+      <div>FACTURE — ${order.orderNumber}</div>
+      <div>Date : ${date}</div>
+      <div>Cliente : ${clientLabel}</div>
+    </div>
+    <div class="row"><span>Statut</span><span>${order.status}</span></div>
+    <div class="row total"><span>TOTAL</span><span>${Number(order.total).toLocaleString('fr-MA')} MAD</span></div>
+    <script>window.onload=()=>{window.print()}</script>
+    </body></html>
+  `);
+  win.document.close();
+}
+
 export default function AdminCommandesPage() {
   const [orders, setOrders] = useState<AdminOrder[]>([]);
   const [total, setTotal] = useState(0);
@@ -101,9 +157,14 @@ export default function AdminCommandesPage() {
         >
           Commandes
         </h1>
-        <Button variant="outline" className="border-[#C9A875]/30 text-[#3D2B1F] font-inter text-sm gap-2">
+        <Button
+          variant="outline"
+          className="border-[#C9A875]/30 text-[#3D2B1F] font-inter text-sm gap-2"
+          onClick={() => exportToCSV(sortedOrders)}
+          disabled={sortedOrders.length === 0}
+        >
           <Download className="h-4 w-4" />
-          Export Excel
+          Export CSV
         </Button>
       </div>
 
@@ -195,10 +256,18 @@ export default function AdminCommandesPage() {
                             >
                               <Eye className="h-3.5 w-3.5" />
                             </Link>
-                            <button className="p-1.5 rounded-lg bg-blue-50 text-blue-600 hover:bg-blue-100 transition-colors" title="Email">
+                            <button
+                              className="p-1.5 rounded-lg bg-blue-50 text-blue-600 hover:bg-blue-100 transition-colors"
+                              title="Envoyer email"
+                              onClick={() => sendOrderEmail(order.id)}
+                            >
                               <Mail className="h-3.5 w-3.5" />
                             </button>
-                            <button className="p-1.5 rounded-lg bg-gray-100 text-gray-600 hover:bg-gray-200 transition-colors" title="Facture">
+                            <button
+                              className="p-1.5 rounded-lg bg-gray-100 text-gray-600 hover:bg-gray-200 transition-colors"
+                              title="Imprimer facture"
+                              onClick={() => printInvoice(order)}
+                            >
                               <Printer className="h-3.5 w-3.5" />
                             </button>
                           </div>

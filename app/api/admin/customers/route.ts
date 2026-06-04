@@ -46,27 +46,35 @@ export async function GET(req: Request) {
       prisma.user.count({ where }),
     ]);
 
-    // Compute total spent per customer
+    // Compute total spent per customer (include guest orders matched by email)
     const customerIds = customers.map((c) => c.id);
-    const spentAgg = await prisma.order.groupBy({
-      by: ['userId'],
+    const customerEmails = customers.map((c) => c.email);
+
+    const allOrders = await prisma.order.findMany({
       where: {
-        userId: { in: customerIds },
-        status: { in: ['PAID', 'DELIVERED'] },
+        status: { in: ['PAID', 'DELIVERED', 'PROCESSING', 'SHIPPED'] },
+        OR: [
+          { userId: { in: customerIds } },
+          { guestEmail: { in: customerEmails } },
+        ],
       },
-      _sum: { total: true },
+      select: { userId: true, guestEmail: true, total: true },
     });
 
+    // Build maps by userId and by email
     const spentMap: Record<string, number> = {};
-    for (const row of spentAgg) {
-      if (row.userId) {
-        spentMap[row.userId] = Math.round(Number(row._sum.total ?? 0));
-      }
+    const orderCountMap: Record<string, number> = {};
+
+    for (const order of allOrders) {
+      const key = order.userId ?? customers.find((c) => c.email === order.guestEmail)?.id;
+      if (!key) continue;
+      spentMap[key] = (spentMap[key] ?? 0) + Math.round(Number(order.total ?? 0));
+      orderCountMap[key] = (orderCountMap[key] ?? 0) + 1;
     }
 
     const data = customers.map((c) => ({
       ...c,
-      totalOrders: c._count.orders,
+      totalOrders: orderCountMap[c.id] ?? c._count.orders,
       totalSpent: spentMap[c.id] ?? 0,
     }));
 

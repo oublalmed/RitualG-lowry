@@ -910,13 +910,27 @@ function StepPayment({ shippingData, guestEmail, onBack, onPromoChange }: StepPa
     }
   };
 
+  // Create payment intent on mount
   useEffect(() => {
-    // Guard against React 18 StrictMode double-invocation which would create 2 orders
     if (hasCreatedRef.current) return;
     hasCreatedRef.current = true;
     void createPaymentIntent();
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
+
+  // Re-create payment intent when promo changes (to get correct server-side total)
+  const prevPromoRef = useRef<string | null>(null);
+  useEffect(() => {
+    const newCode = promo?.code ?? null;
+    if (prevPromoRef.current === newCode) return; // no change
+    prevPromoRef.current = newCode;
+    if (!hasCreatedRef.current) return; // not yet created
+    // Reset and recreate with new promo
+    setClientSecret(null);
+    setOrderId(null);
+    void createPaymentIntent();
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [promo]);
 
   return (
     <motion.div
@@ -1004,7 +1018,7 @@ function StepPayment({ shippingData, guestEmail, onBack, onPromoChange }: StepPa
               disabled
               className="flex-1 bg-[#C9A875]/50 text-[#1A1410] font-inter font-semibold uppercase tracking-widest text-sm py-3 cursor-not-allowed"
             >
-              Payer {computedTotal.toLocaleString('fr-MA')} MAD
+              Payer {(total || computedTotal).toLocaleString('fr-MA')} MAD
             </button>
           </div>
         </div>
