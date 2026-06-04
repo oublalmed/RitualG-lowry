@@ -54,7 +54,7 @@ describe('Authentification par identifiants (CredentialsProvider)', () => {
   describe('TC-AUTH-010 : identifiants corrects', () => {
     it("devrait retourner l'objet utilisateur avec id, email et role pour des identifiants valides", async () => {
       const rawPassword = 'Test1234!';
-      const hashedPassword = await bcrypt.hash(rawPassword, 10);
+      const hashedPassword = await bcrypt.hash(rawPassword, 1);
       const fakeUser = createUser({ password: hashedPassword, role: 'CUSTOMER' });
       mockFindUnique.mockResolvedValue(fakeUser);
 
@@ -70,7 +70,7 @@ describe('Authentification par identifiants (CredentialsProvider)', () => {
   // TC-AUTH-011 : Mauvais mot de passe → retourne null
   describe('TC-AUTH-011 : mot de passe incorrect', () => {
     it('devrait retourner null si le mot de passe ne correspond pas au hash stocké', async () => {
-      const hashedPassword = await bcrypt.hash('CorrectPassword1!', 10);
+      const hashedPassword = await bcrypt.hash('CorrectPassword1!', 1);
       const fakeUser = createUser({ password: hashedPassword });
       mockFindUnique.mockResolvedValue(fakeUser);
 

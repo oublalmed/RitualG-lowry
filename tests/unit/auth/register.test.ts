@@ -5,6 +5,15 @@ import { createUser } from '@/tests/factories/userFactory';
 // Mock @/lib/prisma via the shared helper (already set up in dbCleanup)
 vi.mock('@/lib/prisma', () => ({ prisma: prismaMock }));
 
+// Mock bcrypt to avoid slow hashing in tests (rounds=10 ≈ 300ms per hash)
+vi.mock('bcryptjs', () => ({
+  default: {
+    hash: vi.fn((password: string) => Promise.resolve(`$2a$01$hashed_${password}`)),
+    compare: vi.fn((plain: string, hash: string) => Promise.resolve(hash === `$2a$01$hashed_${plain}`)),
+    genSalt: vi.fn(() => Promise.resolve('$2a$01$fakesalt')),
+  },
+}));
+
 // Mock @/lib/email so no real emails are sent
 vi.mock('@/lib/email', () => ({
   sendWelcomeEmail: vi.fn().mockResolvedValue({ success: true }),
