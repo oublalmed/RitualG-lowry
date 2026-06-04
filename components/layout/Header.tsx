@@ -133,10 +133,14 @@ export function Header() {
                       <Link
                         href="/"
                         onClick={() => setMobileOpen(false)}
-                        className="hover:opacity-80 transition-opacity"
+                        className="flex items-center gap-2 hover:opacity-80 transition-opacity"
                         aria-label="Ritual Glowry"
                       >
                         <Image src="/logo.png" alt="Ritual Glowry" width={80} height={54} className="h-10 w-auto" />
+                        <div className="flex flex-col leading-none">
+                          <span className="font-playfair font-bold italic text-base text-[#3D2B1F]">Ritual</span>
+                          <span className="font-playfair font-bold italic text-base text-[#C9A875]">Glowry</span>
+                        </div>
                       </Link>
                     </div>
                     <nav className="flex-1 px-6 py-8 space-y-1">
@@ -193,7 +197,7 @@ export function Header() {
             {/* Logo */}
             <Link
               href="/"
-              className="absolute left-1/2 -translate-x-1/2 md:relative md:left-auto md:translate-x-0 hover:opacity-80 transition-opacity"
+              className="absolute left-1/2 -translate-x-1/2 md:relative md:left-auto md:translate-x-0 flex items-center gap-2 hover:opacity-80 transition-opacity"
               aria-label="Ritual Glowry — Accueil"
             >
               <Image
@@ -204,6 +208,10 @@ export function Header() {
                 className="h-12 w-auto object-contain"
                 priority
               />
+              <div className="hidden md:flex flex-col leading-none">
+                <span className="font-playfair font-bold italic text-lg text-[#3D2B1F]">Ritual</span>
+                <span className="font-playfair font-bold italic text-lg text-[#C9A875]">Glowry</span>
+              </div>
             </Link>
 
             {/* Desktop nav */}

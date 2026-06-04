@@ -103,7 +103,7 @@ export function Footer() {
           <div className="py-14 grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-10 lg:gap-8">
             {/* Col 1 — Marque */}
             <div>
-              <Link href="/" className="inline-block hover:opacity-80 transition-opacity" aria-label="Ritual Glowry">
+              <Link href="/" className="inline-flex items-center gap-2.5 hover:opacity-80 transition-opacity" aria-label="Ritual Glowry">
                 <Image
                   src="/logo.png"
                   alt="Ritual Glowry"
@@ -111,6 +111,10 @@ export function Footer() {
                   height={68}
                   className="h-14 w-auto object-contain brightness-0 invert"
                 />
+                <div className="flex flex-col leading-none">
+                  <span className="font-playfair font-bold italic text-xl text-[#FAF6EF]">Ritual</span>
+                  <span className="font-playfair font-bold italic text-xl text-[#C9A875]">Glowry</span>
+                </div>
               </Link>
               <p className="mt-3 text-sm font-cormorant italic text-[#FAF6EF]/60 leading-relaxed max-w-[220px]">
                 Des extensions naturelles qui subliment votre beauté authentique.
