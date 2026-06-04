@@ -1,6 +1,6 @@
 'use client';
 
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useRef } from 'react';
 import { useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { z } from 'zod/v4';
@@ -811,6 +811,7 @@ function StepPayment({ shippingData, guestEmail, onBack }: StepPaymentProps) {
   const [total, setTotal] = useState<number>(0);
   const [loading, setLoading] = useState(false);
   const [apiError, setApiError] = useState<string | null>(null);
+  const hasCreatedRef = useRef(false);
   const { items, getSubtotal } = useCartStore();
 
   const subtotal = getSubtotal();
@@ -874,6 +875,9 @@ function StepPayment({ shippingData, guestEmail, onBack }: StepPaymentProps) {
   };
 
   useEffect(() => {
+    // Guard against React 18 StrictMode double-invocation which would create 2 orders
+    if (hasCreatedRef.current) return;
+    hasCreatedRef.current = true;
     void createPaymentIntent();
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
