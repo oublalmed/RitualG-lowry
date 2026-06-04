@@ -161,7 +161,7 @@ export function Header() {
                         Mon compte
                       </Link>
                       <Link
-                        href="/wishlist"
+                        href="/compte/favoris"
                         onClick={() => setMobileOpen(false)}
                         className="flex items-center gap-2 text-sm font-inter text-[#3D2B1F] hover:text-[#C9A875] transition-colors"
                       >
@@ -244,7 +244,7 @@ export function Header() {
                 <User className="h-5 w-5" />
               </Link>
               <Link
-                href="/wishlist"
+                href="/compte/favoris"
                 className="hidden md:block p-2 text-[#3D2B1F] hover:text-[#C9A875] transition-colors relative"
                 aria-label="Liste de souhaits"
               >
