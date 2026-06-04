@@ -37,9 +37,9 @@ const requestSchema = z.object({
 // ─── Shipping cost ─────────────────────────────────────────────────────────────
 
 function computeShipping(method: 'STANDARD' | 'EXPRESS' | 'PREMIUM', subtotal: number): number {
-  if (method === 'STANDARD') return subtotal >= 1200 ? 0 : 50;
-  if (method === 'EXPRESS') return 100;
-  return 200;
+  if (method === 'STANDARD') return subtotal >= 120 ? 0 : 5;
+  if (method === 'EXPRESS') return 10;
+  return 20;
 }
 
 // ─── Generate order number ─────────────────────────────────────────────────────
@@ -169,7 +169,7 @@ export async function POST(request: NextRequest) {
             shipping: shippingCost,
             discount,
             total,
-            currency: 'MAD',
+            currency: 'EUR',
             shippingMethod,
             guestEmail: email,
             promoCode: promoCode ?? undefined,
@@ -205,7 +205,7 @@ export async function POST(request: NextRequest) {
 
     const paymentIntent = await stripe.paymentIntents.create({
       amount: formatAmountForStripe(total),
-      currency: 'mad',
+      currency: 'eur',
       metadata: {
         orderId: dbOrderId ?? '',
         orderNumber,

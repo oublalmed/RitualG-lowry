@@ -49,7 +49,7 @@ export function MobileStickyBar({
           <div className="flex-1 min-w-0">
             <p className="font-playfair font-bold text-sm text-[#1A1410] truncate">{productName}</p>
             <p className="font-inter font-semibold text-xs text-[#C9A875]">
-              {price.toLocaleString('fr-MA')} MAD
+              {price.toLocaleString('fr-BE')} MAD
             </p>
           </div>
 

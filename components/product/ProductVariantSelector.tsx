@@ -49,7 +49,7 @@ export function ProductVariantSelector({
   const priceDiff = (price: number) => {
     const diff = price - basePrice;
     if (diff === 0) return null;
-    return diff > 0 ? `+${diff} MAD` : `${diff} MAD`;
+    return diff > 0 ? `+${diff} €` : `${diff} €`;
   };
 
   return (

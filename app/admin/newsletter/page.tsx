@@ -63,7 +63,7 @@ export default function NewsletterAdminPage() {
     const csv = [
       'Email,Source,Date inscription,Statut',
       ...filtered.map((s) => {
-        const date = new Date(s.createdAt).toLocaleDateString('fr-MA');
+        const date = new Date(s.createdAt).toLocaleDateString('fr-BE');
         return `${s.email},${s.source ?? ''},${date},${s.isActive ? 'Active' : 'Désabonnée'}`;
       }),
     ].join('\n');
@@ -168,7 +168,7 @@ export default function NewsletterAdminPage() {
                 </thead>
                 <tbody className="divide-y divide-[#C9A875]/10">
                   {filtered.map((sub) => {
-                    const subDate = new Date(sub.createdAt).toLocaleDateString('fr-MA', {
+                    const subDate = new Date(sub.createdAt).toLocaleDateString('fr-BE', {
                       day: 'numeric',
                       month: 'short',
                       year: 'numeric',

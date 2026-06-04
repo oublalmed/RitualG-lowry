@@ -262,7 +262,7 @@ export function SearchModal({ open, onClose }: SearchModalProps) {
                           )}
                         </div>
                         <p className="text-sm font-inter font-semibold text-[#C9A875] flex-shrink-0">
-                          {p.basePrice} MAD
+                          {p.basePrice} €
                         </p>
                       </button>
                     ))}

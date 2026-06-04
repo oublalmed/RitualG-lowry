@@ -133,7 +133,7 @@ export default function AdminDashboard() {
     {
       icon: TrendingUp,
       label: 'CA total',
-      value: `${stats.revenue.total.toLocaleString('fr-MA')} MAD`,
+      value: `${stats.revenue.total.toLocaleString('fr-BE')} €`,
       trend: null,
       trendPositive: true,
     },
@@ -235,7 +235,7 @@ export default function AdminDashboard() {
               <YAxis tick={{ fontSize: 11, fontFamily: 'var(--font-inter)', fill: '#3D2B1F', opacity: 0.5 }} axisLine={false} tickLine={false} tickFormatter={(v) => `${(v / 1000).toFixed(0)}k`} />
               <Tooltip
                 contentStyle={{ background: '#F5EDE0', border: '1px solid #C9A875', borderRadius: 8, fontFamily: 'var(--font-inter)', fontSize: 12 }}
-                formatter={(v) => [`${Number(v).toLocaleString('fr-MA')} MAD`]}
+                formatter={(v) => [`${Number(v).toLocaleString('fr-BE')} €`]}
               />
               <Line type="monotone" dataKey="revenue" stroke="#C9A875" strokeWidth={2.5} dot={false} activeDot={{ r: 4, fill: '#C9A875' }} />
             </LineChart>
@@ -290,7 +290,7 @@ export default function AdminDashboard() {
               {stats.recentOrders.map((order) => {
                 const cfg = statusConfig[order.status] ?? { label: order.status, className: 'bg-gray-100 text-gray-600' };
                 const clientName = order.user?.name ?? order.user?.email ?? order.guestEmail ?? '—';
-                const orderDate = new Date(order.createdAt).toLocaleDateString('fr-MA', {
+                const orderDate = new Date(order.createdAt).toLocaleDateString('fr-BE', {
                   day: 'numeric',
                   month: 'short',
                   year: 'numeric',
@@ -300,7 +300,7 @@ export default function AdminDashboard() {
                     <td className="px-4 py-3 text-sm font-inter font-medium text-[#3D2B1F]">{order.orderNumber}</td>
                     <td className="px-4 py-3 text-xs font-inter text-[#3D2B1F]/50">{orderDate}</td>
                     <td className="px-4 py-3 text-sm font-inter text-[#3D2B1F]/70">{clientName}</td>
-                    <td className="px-4 py-3 text-sm font-inter font-semibold text-[#1A1410]">{order.total.toLocaleString('fr-MA')} MAD</td>
+                    <td className="px-4 py-3 text-sm font-inter font-semibold text-[#1A1410]">{order.total.toLocaleString('fr-BE')} €</td>
                     <td className="px-4 py-3">
                       <span className={`text-xs px-2 py-0.5 rounded-full font-inter font-medium ${cfg.className}`}>{cfg.label}</span>
                     </td>

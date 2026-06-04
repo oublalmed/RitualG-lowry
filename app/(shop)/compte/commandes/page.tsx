@@ -146,7 +146,7 @@ export default function CommandesPage() {
                       <span className="text-[#3D2B1F]/70">
                         {item.qty}× {item.name}
                       </span>
-                      <span className="text-[#3D2B1F]/60">{item.price.toLocaleString('fr-MA')} MAD</span>
+                      <span className="text-[#3D2B1F]/60">{item.price.toLocaleString('fr-BE')} €</span>
                     </div>
                   ))}
                 </div>
@@ -154,7 +154,7 @@ export default function CommandesPage() {
                 {/* Footer */}
                 <div className="flex items-center justify-between px-5 py-4 border-t border-[#C9A875]/10 bg-[#FAF6EF]/40">
                   <span className="font-inter font-bold text-[#1A1410]">
-                    Total : {order.total.toLocaleString('fr-MA')} MAD
+                    Total : {order.total.toLocaleString('fr-BE')} MAD
                   </span>
                   <Link
                     href={`/compte/commandes/${order.id}`}

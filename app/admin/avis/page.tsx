@@ -42,7 +42,7 @@ function ReviewCard({ review, onApprove, onReject, onReply }: {
   onReply?: () => void;
 }) {
   const clientName = review.user?.name ?? review.user?.email ?? 'Anonyme';
-  const reviewDate = new Date(review.createdAt).toLocaleDateString('fr-MA', {
+  const reviewDate = new Date(review.createdAt).toLocaleDateString('fr-BE', {
     day: 'numeric',
     month: 'short',
     year: 'numeric',

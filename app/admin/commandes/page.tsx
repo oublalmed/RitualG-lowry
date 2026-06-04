@@ -32,7 +32,7 @@ function exportToCSV(orders: AdminOrder[]) {
   const headers = ['N° Commande', 'Date', 'Cliente', 'Total (MAD)', 'Statut'];
   const rows = orders.map((o) => [
     o.orderNumber,
-    new Date(o.createdAt).toLocaleDateString('fr-MA'),
+    new Date(o.createdAt).toLocaleDateString('fr-BE'),
     o.user?.name ?? o.user?.email ?? o.guestEmail ?? '—',
     Number(o.total).toFixed(2),
     o.status,
@@ -67,7 +67,7 @@ async function printInvoice(order: AdminOrder) {
 
   const o = fullOrder ?? order;
   const clientLabel = o.user?.name ?? o.user?.email ?? o.guestEmail ?? '—';
-  const date = new Date(o.createdAt).toLocaleDateString('fr-MA', { day: '2-digit', month: 'long', year: 'numeric' });
+  const date = new Date(o.createdAt).toLocaleDateString('fr-BE', { day: '2-digit', month: 'long', year: 'numeric' });
   const statusLabels: Record<string, string> = {
     PENDING: 'En attente', PAID: 'Payée', PROCESSING: 'En préparation',
     SHIPPED: 'Expédiée', DELIVERED: 'Livrée', CANCELLED: 'Annulée', REFUNDED: 'Remboursée',
@@ -78,8 +78,8 @@ async function printInvoice(order: AdminOrder) {
       <td style="padding:8px 4px;border-bottom:1px solid #eee">${item.productName}</td>
       <td style="padding:8px 4px;border-bottom:1px solid #eee;text-align:center">${item.variantLabel ?? '—'}</td>
       <td style="padding:8px 4px;border-bottom:1px solid #eee;text-align:center">${item.quantity}</td>
-      <td style="padding:8px 4px;border-bottom:1px solid #eee;text-align:right">${Number(item.unitPrice).toLocaleString('fr-MA')} MAD</td>
-      <td style="padding:8px 4px;border-bottom:1px solid #eee;text-align:right">${Number(item.totalPrice).toLocaleString('fr-MA')} MAD</td>
+      <td style="padding:8px 4px;border-bottom:1px solid #eee;text-align:right">${Number(item.unitPrice).toLocaleString('fr-BE')} €</td>
+      <td style="padding:8px 4px;border-bottom:1px solid #eee;text-align:right">${Number(item.totalPrice).toLocaleString('fr-BE')} €</td>
     </tr>`).join('');
 
   const win = window.open('', '_blank');
@@ -129,10 +129,10 @@ async function printInvoice(order: AdminOrder) {
     </table>
 
     <div class="totals">
-      <div class="totals-row"><span>Sous-total</span><span>${Number(o.subtotal ?? 0).toLocaleString('fr-MA')} MAD</span></div>
-      <div class="totals-row"><span>Livraison</span><span>${Number(o.shipping ?? 0) === 0 ? 'Offerte' : Number(o.shipping ?? 0).toLocaleString('fr-MA') + ' MAD'}</span></div>
-      ${Number(o.discount ?? 0) > 0 ? `<div class="totals-row" style="color:#c0392b"><span>Code promo${o.promoCode ? ' (' + o.promoCode + ')' : ''}</span><span>-${Number(o.discount).toLocaleString('fr-MA')} MAD</span></div>` : ''}
-      <div class="totals-total"><span>TOTAL</span><span>${Number(o.total).toLocaleString('fr-MA')} MAD</span></div>
+      <div class="totals-row"><span>Sous-total</span><span>${Number(o.subtotal ?? 0).toLocaleString('fr-BE')} €</span></div>
+      <div class="totals-row"><span>Livraison</span><span>${Number(o.shipping ?? 0) === 0 ? 'Offerte' : Number(o.shipping ?? 0).toLocaleString('fr-BE') + ' €'}</span></div>
+      ${Number(o.discount ?? 0) > 0 ? `<div class="totals-row" style="color:#c0392b"><span>Code promo${o.promoCode ? ' (' + o.promoCode + ')' : ''}</span><span>-${Number(o.discount).toLocaleString('fr-BE')} €</span></div>` : ''}
+      <div class="totals-total"><span>TOTAL</span><span>${Number(o.total).toLocaleString('fr-BE')} €</span></div>
     </div>
 
     <div style="margin-top:40px;font-size:11px;color:#aaa;text-align:center;border-top:1px solid #eee;padding-top:20px">
@@ -294,7 +294,7 @@ export default function AdminCommandesPage() {
                   {sortedOrders.map((order) => {
                     const cfg = statusConfig[order.status] ?? { label: order.status, className: 'bg-gray-100 text-gray-600' };
                     const clientLabel = order.user?.name ?? order.user?.email ?? order.guestEmail ?? '—';
-                    const orderDate = new Date(order.createdAt).toLocaleDateString('fr-MA', {
+                    const orderDate = new Date(order.createdAt).toLocaleDateString('fr-BE', {
                       day: 'numeric',
                       month: 'short',
                       year: 'numeric',
@@ -304,7 +304,7 @@ export default function AdminCommandesPage() {
                         <td className="px-4 py-3 font-inter text-sm font-semibold text-[#3D2B1F]">{order.orderNumber}</td>
                         <td className="px-4 py-3 font-inter text-xs text-[#3D2B1F]/50">{orderDate}</td>
                         <td className="px-4 py-3 font-inter text-sm text-[#3D2B1F]/70">{clientLabel}</td>
-                        <td className="px-4 py-3 font-inter text-sm font-semibold text-[#1A1410]">{order.total.toLocaleString('fr-MA')} MAD</td>
+                        <td className="px-4 py-3 font-inter text-sm font-semibold text-[#1A1410]">{order.total.toLocaleString('fr-BE')} €</td>
                         <td className="px-4 py-3">
                           <span className={`text-xs px-2 py-0.5 rounded-full font-inter font-medium ${cfg.className}`}>{cfg.label}</span>
                         </td>

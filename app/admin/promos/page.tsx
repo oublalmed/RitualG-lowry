@@ -126,7 +126,7 @@ export default function PromosPage() {
 
   const formatValidity = (expiresAt: string | null) => {
     if (!expiresAt) return '—';
-    return new Date(expiresAt).toLocaleDateString('fr-MA', {
+    return new Date(expiresAt).toLocaleDateString('fr-BE', {
       day: 'numeric',
       month: 'short',
       year: 'numeric',
@@ -183,7 +183,7 @@ export default function PromosPage() {
                       {promo.type === 'PERCENTAGE' ? 'Pourcentage' : 'Montant fixe'}
                     </td>
                     <td className="px-4 py-3 font-inter font-semibold text-sm text-[#1A1410]">
-                      {promo.type === 'PERCENTAGE' ? `${promo.value}%` : `${promo.value} MAD`}
+                      {promo.type === 'PERCENTAGE' ? `${promo.value}%` : `${promo.value} €`}
                     </td>
                     <td className="px-4 py-3 font-inter text-sm text-[#3D2B1F]/70">
                       {promo.currentUses}{promo.maxUses ? ` / ${promo.maxUses}` : ''}

@@ -38,12 +38,12 @@ export const track = {
     }),
 
   beginCheckout: (total: number) =>
-    trackEvent('begin_checkout', { value: total, currency: 'MAD' }),
+    trackEvent('begin_checkout', { value: total, currency: 'EUR' }),
 
   purchase: (orderId: string, total: number) =>
     trackEvent('purchase', {
       transaction_id: orderId,
       value: total,
-      currency: 'MAD',
+      currency: 'EUR',
     }),
 }

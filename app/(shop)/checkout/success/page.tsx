@@ -6,6 +6,7 @@ import Link from 'next/link';
 import { useSearchParams } from 'next/navigation';
 import { Suspense } from 'react';
 import { useCartStore } from '@/stores/cartStore';
+import { TrustBar } from '@/components/common/TrustBar';
 
 function SuccessContent() {
   const searchParams = useSearchParams();
@@ -102,6 +103,11 @@ function SuccessContent() {
           >
             Accéder à mes commandes →
           </Link>
+        </div>
+
+        {/* Trust bar */}
+        <div className="w-full mt-8">
+          <TrustBar />
         </div>
 
         {/* CTAs */}

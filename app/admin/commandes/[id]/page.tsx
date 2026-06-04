@@ -141,7 +141,7 @@ export default function AdminOrderDetailPage() {
             {order.orderNumber}
           </h1>
           <p className="text-sm text-[#3D2B1F]/50 font-inter">
-            {new Date(order.createdAt).toLocaleDateString('fr-MA', { day: 'numeric', month: 'long', year: 'numeric', hour: '2-digit', minute: '2-digit' })}
+            {new Date(order.createdAt).toLocaleDateString('fr-BE', { day: 'numeric', month: 'long', year: 'numeric', hour: '2-digit', minute: '2-digit' })}
           </p>
         </div>
         <span className={`text-sm px-3 py-1 rounded-full font-inter font-medium ${cfg.className}`}>{cfg.label}</span>
@@ -205,17 +205,17 @@ export default function AdminOrderDetailPage() {
                     {item.variantLabel && <p className="text-xs font-inter text-[#3D2B1F]/50">{item.variantLabel}</p>}
                   </div>
                   <div className="text-right">
-                    <p className="text-sm font-inter font-semibold text-[#1A1410]">{Number(item.totalPrice).toLocaleString('fr-MA')} MAD</p>
+                    <p className="text-sm font-inter font-semibold text-[#1A1410]">{Number(item.totalPrice).toLocaleString('fr-BE')} €</p>
                     <p className="text-xs font-inter text-[#3D2B1F]/50">×{item.quantity}</p>
                   </div>
                 </div>
               ))}
             </div>
             <div className="px-4 py-3 border-t border-[#C9A875]/10 bg-[#FAF6EF]/40 space-y-1">
-              <div className="flex justify-between text-xs font-inter text-[#3D2B1F]/60"><span>Sous-total</span><span>{Number(order.subtotal).toLocaleString('fr-MA')} MAD</span></div>
-              <div className="flex justify-between text-xs font-inter text-[#3D2B1F]/60"><span>Livraison ({order.shippingMethod})</span><span>{Number(order.shipping) === 0 ? 'Offerte' : `${Number(order.shipping)} MAD`}</span></div>
-              {Number(order.discount) > 0 && <div className="flex justify-between text-xs font-inter text-green-600"><span>Réduction</span><span>-{Number(order.discount).toLocaleString('fr-MA')} MAD</span></div>}
-              <div className="flex justify-between font-inter font-bold text-[#1A1410] text-sm pt-1 border-t border-[#C9A875]/10"><span>Total</span><span>{Number(order.total).toLocaleString('fr-MA')} MAD</span></div>
+              <div className="flex justify-between text-xs font-inter text-[#3D2B1F]/60"><span>Sous-total</span><span>{Number(order.subtotal).toLocaleString('fr-BE')} €</span></div>
+              <div className="flex justify-between text-xs font-inter text-[#3D2B1F]/60"><span>Livraison ({order.shippingMethod})</span><span>{Number(order.shipping) === 0 ? 'Offerte' : `${Number(order.shipping)} €`}</span></div>
+              {Number(order.discount) > 0 && <div className="flex justify-between text-xs font-inter text-green-600"><span>Réduction</span><span>-{Number(order.discount).toLocaleString('fr-BE')} €</span></div>}
+              <div className="flex justify-between font-inter font-bold text-[#1A1410] text-sm pt-1 border-t border-[#C9A875]/10"><span>Total</span><span>{Number(order.total).toLocaleString('fr-BE')} €</span></div>
             </div>
           </div>
 
@@ -275,7 +275,7 @@ export default function AdminOrderDetailPage() {
                     <p className={`text-xs font-inter font-medium ${step.done ? 'text-[#3D2B1F]' : 'text-[#3D2B1F]/35'}`}>{step.label}</p>
                     {step.date && (
                       <p className="text-xs font-inter text-[#3D2B1F]/45">
-                        {new Date(step.date).toLocaleDateString('fr-MA', { day: 'numeric', month: 'short', year: 'numeric', hour: '2-digit', minute: '2-digit' })}
+                        {new Date(step.date).toLocaleDateString('fr-BE', { day: 'numeric', month: 'short', year: 'numeric', hour: '2-digit', minute: '2-digit' })}
                       </p>
                     )}
                   </div>
@@ -315,7 +315,7 @@ export default function AdminOrderDetailPage() {
         <DialogContent className="bg-[#FAF6EF] border-[#C9A875]/20 max-w-sm">
           <DialogHeader><DialogTitle className="text-orange-700 font-inter">Rembourser la commande</DialogTitle></DialogHeader>
           <p className="text-sm font-inter text-[#3D2B1F]/70 mt-2">
-            Rembourser {order.orderNumber} ({Number(order.total).toLocaleString('fr-MA')} MAD) ?
+            Rembourser {order.orderNumber} ({Number(order.total).toLocaleString('fr-BE')} MAD) ?
           </p>
           <div className="flex gap-2 mt-4">
             <Button variant="outline" className="flex-1" onClick={() => setRefundDialog(false)}>Annuler</Button>

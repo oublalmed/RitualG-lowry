@@ -141,7 +141,7 @@ export default function CartesCadeauxPage() {
               </h2>
               {selectedAmount && (
                 <p className="font-inter text-sm text-[#C9A875] mt-2">
-                  Montant sélectionné : <strong>{selectedAmount} MAD</strong>
+                  Montant sélectionné : <strong>{selectedAmount} €</strong>
                 </p>
               )}
             </div>

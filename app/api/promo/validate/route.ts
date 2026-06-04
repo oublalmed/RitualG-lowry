@@ -55,7 +55,7 @@ export async function POST(request: NextRequest) {
       return NextResponse.json({
         isValid: false,
         discountAmount: 0,
-        message: `Montant minimum requis : ${minAmount.toLocaleString('fr-MA')} MAD`,
+        message: `Montant minimum requis : ${minAmount.toLocaleString('fr-BE')} €`,
       });
     }
 

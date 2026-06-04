@@ -150,7 +150,7 @@ export default function ClientesPage() {
                 <tbody className="divide-y divide-[#C9A875]/10">
                   {filtered.map((cliente) => {
                     const tierClass = tierConfig[cliente.loyaltyTier] ?? 'bg-gray-100 text-gray-600';
-                    const joinDate = new Date(cliente.createdAt).toLocaleDateString('fr-MA', {
+                    const joinDate = new Date(cliente.createdAt).toLocaleDateString('fr-BE', {
                       day: 'numeric',
                       month: 'short',
                       year: 'numeric',
@@ -168,7 +168,7 @@ export default function ClientesPage() {
                         </td>
                         <td className="px-4 py-3 font-inter text-sm text-[#3D2B1F]/70">{cliente.totalOrders}</td>
                         <td className="px-4 py-3 font-inter text-sm font-semibold text-[#1A1410]">
-                          {cliente.totalSpent.toLocaleString('fr-MA')} MAD
+                          {cliente.totalSpent.toLocaleString('fr-BE')} €
                         </td>
                         <td className="px-4 py-3 font-inter text-xs text-[#3D2B1F]/50">{joinDate}</td>
                         <td className="px-4 py-3">

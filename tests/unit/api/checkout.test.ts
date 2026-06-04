@@ -99,9 +99,9 @@ describe('Paiement — POST /api/checkout/create-payment-intent', () => {
       const data = await res.json();
 
       expect(res.status).toBe(200);
-      // subtotal = 585 * 1 = 585 ; livraison STANDARD sous 1200 MAD = +50
-      // total attendu = 635
-      expect(data.total).toBe(635);
+      // subtotal = 585 * 1 = 585 ; livraison STANDARD gratuite (585 >= 120 €)
+      // total attendu = 585
+      expect(data.total).toBe(585);
     });
   });
 
@@ -165,14 +165,13 @@ describe('Paiement — POST /api/checkout/create-payment-intent', () => {
       const data = await res.json();
 
       expect(res.status).toBe(200);
-      // subtotal = 585 * 2 = 1170 ; livraison STANDARD gratuite car >= 1200 ? non, 1170 < 1200 → +50
-      // total attendu = 1220
-      expect(data.total).toBe(1220);
-      // Le prix unitaire dans l'appel Stripe vient bien du serveur
+      // subtotal = 585 * 2 = 1170 ; livraison STANDARD gratuite (1170 >= 120 €)
+      // total attendu = 1170
+      expect(data.total).toBe(1170);
       const stripeArg = stripeMock.paymentIntents.create.mock.calls[0][0] as {
         amount: number;
       };
-      expect(stripeArg.amount).toBe(122000); // 1220 * 100
+      expect(stripeArg.amount).toBe(117000); // 1170 * 100
     });
   });
 

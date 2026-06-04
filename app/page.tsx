@@ -9,6 +9,7 @@ import { TestimonialsSection } from '@/components/common/TestimonialsSection';
 import { BeforeAfterSection } from '@/components/home/BeforeAfterSection';
 import { StoryPreview } from '@/components/home/StoryPreview';
 import { NewsletterSection } from '@/components/home/NewsletterSection';
+import { TrustBar } from '@/components/common/TrustBar';
 
 export const metadata: Metadata = {
   title: 'Ritual Glowry | Extensions & Perruques Premium au Maroc',
@@ -40,7 +41,10 @@ export default function HomePage() {
         {/* 1 — Hero : émotion + preuve sociale */}
         <HeroSection />
 
-        {/* 2 — Pourquoi Ritual Glowry (haut de page, avant les produits) */}
+        {/* 2 — Barre de confiance */}
+        <TrustBar />
+
+        {/* 3 — Pourquoi Ritual Glowry */}
         <BrandManifesto />
 
         {/* 3 — Collections */}

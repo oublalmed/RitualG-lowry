@@ -8,7 +8,7 @@ import { useCartStore } from '@/stores/cartStore';
 import { SearchModal } from '@/components/common/SearchModal';
 
 const announcements = [
-  'Livraison offerte dès 1 200 MAD',
+  'Livraison offerte dès 120 €',
   'Paiement sécurisé · 100% naturel',
   'Retours gratuits sous 30 jours',
 ];

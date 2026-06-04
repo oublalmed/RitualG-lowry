@@ -237,13 +237,13 @@ export async function sendAdminNotification(
   await resend.emails.send({
     from: FROM_EMAIL,
     to,
-    subject: `[Admin] Nouvelle commande ${data.orderNumber} — ${data.total.toLocaleString('fr-MA')} MAD`,
+    subject: `[Admin] Nouvelle commande ${data.orderNumber} — ${data.total.toLocaleString('fr-BE')} €`,
     html: `
       <div style="font-family: Inter, sans-serif; padding: 24px;">
         <h2>Nouvelle commande reçue</h2>
         <table>
           <tr><td><strong>Numéro :</strong></td><td>${data.orderNumber}</td></tr>
-          <tr><td><strong>Total :</strong></td><td>${data.total.toLocaleString('fr-MA')} MAD</td></tr>
+          <tr><td><strong>Total :</strong></td><td>${data.total.toLocaleString('fr-BE')} €</td></tr>
           <tr><td><strong>Client :</strong></td><td>${data.customerEmail}</td></tr>
           <tr><td><strong>Date :</strong></td><td>${new Date().toLocaleString('fr-FR')}</td></tr>
         </table>

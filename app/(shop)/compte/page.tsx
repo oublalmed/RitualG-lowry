@@ -149,8 +149,8 @@ export default function CompteDashboard() {
   const savingsLabel = loading
     ? '...'
     : totalSavings > 0
-    ? `${totalSavings.toLocaleString('fr-MA')} MAD`
-    : '0 MAD';
+    ? `${totalSavings.toLocaleString('fr-BE')} €`
+    : '0 €';
 
   const stats = [
     { icon: Package, label: 'Commandes', value: String(orders.length), color: 'text-[#C9A875]' },
@@ -261,7 +261,7 @@ export default function CompteDashboard() {
                           </span>
                         </td>
                         <td className="px-4 py-3 font-inter text-sm font-semibold text-[#1A1410]">
-                          {total.toLocaleString('fr-MA')} MAD
+                          {total.toLocaleString('fr-BE')} €
                         </td>
                         <td className="px-4 py-3">
                           <Link

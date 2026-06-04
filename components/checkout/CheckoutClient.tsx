@@ -72,15 +72,15 @@ const SHIPPING_OPTIONS = [
     id: 'STANDARD' as const,
     label: 'Standard',
     days: '5-7',
-    price: 50,
-    freeAbove: 1200,
+    price: 5,
+    freeAbove: 120,
     icon: Truck,
   },
   {
     id: 'EXPRESS' as const,
     label: 'Express',
     days: '2-3',
-    price: 100,
+    price: 10,
     freeAbove: null,
     icon: Zap,
   },
@@ -88,7 +88,7 @@ const SHIPPING_OPTIONS = [
     id: 'PREMIUM' as const,
     label: 'Premium 24h',
     days: '1',
-    price: 200,
+    price: 20,
     freeAbove: null,
     icon: Star,
   },
@@ -370,7 +370,7 @@ function StepShipping({ onNext, onBack, defaultValues }: StepShippingProps) {
   const subtotal = getSubtotal();
 
   const getShippingCost = (method: 'STANDARD' | 'EXPRESS' | 'PREMIUM') => {
-    if (method === 'STANDARD' && subtotal >= 1200) return 0;
+    if (method === 'STANDARD' && subtotal >= 120) return 0;
     return SHIPPING_OPTIONS.find((o) => o.id === method)?.price ?? 0;
   };
 
@@ -552,7 +552,7 @@ function StepShipping({ onNext, onBack, defaultValues }: StepShippingProps) {
                       </p>
                       {option.freeAbove && (
                         <p className="text-xs font-inter text-[#C9A875]">
-                          Gratuit dès {option.freeAbove.toLocaleString('fr-MA')} MAD
+                          Gratuit dès {option.freeAbove.toLocaleString('fr-BE')} MAD
                         </p>
                       )}
                     </div>
@@ -561,7 +561,7 @@ function StepShipping({ onNext, onBack, defaultValues }: StepShippingProps) {
                     {cost === 0 ? (
                       <span className="text-green-600">Offert</span>
                     ) : (
-                      `${cost} MAD`
+                      `${cost} €`
                     )}
                   </span>
                 </label>
@@ -680,7 +680,7 @@ function PromoCodeInput({
       </div>
       {result && (
         <p className={`text-xs font-inter ${result.isValid ? 'text-green-600' : 'text-red-500'}`}>
-          {result.isValid ? `✓ ${result.message} — −${result.discountAmount} MAD` : result.message}
+          {result.isValid ? `✓ ${result.message} — −${result.discountAmount} €` : result.message}
         </p>
       )}
     </div>
@@ -700,7 +700,7 @@ function OrderSummary({ shippingMethod, promo }: OrderSummaryProps) {
 
   const getShippingCost = () => {
     if (!shippingMethod) return 0;
-    if (shippingMethod === 'STANDARD' && subtotal >= 1200) return 0;
+    if (shippingMethod === 'STANDARD' && subtotal >= 120) return 0;
     return SHIPPING_OPTIONS.find((o) => o.id === shippingMethod)?.price ?? 0;
   };
 
@@ -721,7 +721,7 @@ function OrderSummary({ shippingMethod, promo }: OrderSummaryProps) {
               <span className="block text-xs text-[#3D2B1F]/50">{item.variantLabel} × {item.quantity}</span>
             </span>
             <span className="font-inter font-semibold text-[#3D2B1F] whitespace-nowrap">
-              {(item.price * item.quantity).toLocaleString('fr-MA')} MAD
+              {(item.price * item.quantity).toLocaleString('fr-BE')} MAD
             </span>
           </li>
         ))}
@@ -729,24 +729,24 @@ function OrderSummary({ shippingMethod, promo }: OrderSummaryProps) {
       <div className="border-t border-[#3D2B1F]/15 pt-4 space-y-2">
         <div className="flex justify-between text-sm">
           <span className="font-inter text-[#3D2B1F]/60">Sous-total</span>
-          <span className="font-inter text-[#3D2B1F]">{subtotal.toLocaleString('fr-MA')} MAD</span>
+          <span className="font-inter text-[#3D2B1F]">{subtotal.toLocaleString('fr-BE')} €</span>
         </div>
         <div className="flex justify-between text-sm">
           <span className="font-inter text-[#3D2B1F]/60">Livraison</span>
           <span className="font-inter text-[#3D2B1F]">
-            {shipping === 0 ? <span className="text-green-600">Offert</span> : `${shipping} MAD`}
+            {shipping === 0 ? <span className="text-green-600">Offert</span> : `${shipping} €`}
           </span>
         </div>
         {discount > 0 && (
           <div className="flex justify-between text-sm">
             <span className="font-inter text-[#C9A8A0]">Code promo ({promo?.code})</span>
-            <span className="font-inter text-[#C9A8A0] line-through">−{discount} MAD</span>
+            <span className="font-inter text-[#C9A8A0] line-through">−{discount} €</span>
           </div>
         )}
         <div className="border-t border-[#3D2B1F]/15 pt-3 flex justify-between">
           <span className="font-inter font-bold text-[#3D2B1F]">Total</span>
           <span className="font-playfair font-bold text-xl text-[#1A1410]">
-            {total.toLocaleString('fr-MA')} MAD
+            {total.toLocaleString('fr-BE')} MAD
           </span>
         </div>
       </div>
@@ -817,7 +817,7 @@ function StripePaymentForm({ clientSecret: _clientSecret, orderId: _orderId, tot
           disabled={loading || !stripe}
           className="flex-1 bg-[#C9A875] hover:bg-[#B8924B] disabled:opacity-50 text-[#1A1410] font-inter font-semibold uppercase tracking-widest text-sm py-4 transition-colors duration-300 flex items-center justify-center gap-2"
         >
-          {loading ? 'Traitement...' : `Payer ${total.toLocaleString('fr-MA')} MAD`}
+          {loading ? 'Traitement...' : `Payer ${total.toLocaleString('fr-BE')} €`}
         </button>
       </div>
     </div>
@@ -852,7 +852,7 @@ function StepPayment({ shippingData, guestEmail, onBack, onPromoChange }: StepPa
   const subtotal = getSubtotal();
 
   const getShippingCost = () => {
-    if (shippingData.shippingMethod === 'STANDARD' && subtotal >= 1200) return 0;
+    if (shippingData.shippingMethod === 'STANDARD' && subtotal >= 120) return 0;
     return SHIPPING_OPTIONS.find((o) => o.id === shippingData.shippingMethod)?.price ?? 0;
   };
 
@@ -1018,7 +1018,7 @@ function StepPayment({ shippingData, guestEmail, onBack, onPromoChange }: StepPa
               disabled
               className="flex-1 bg-[#C9A875]/50 text-[#1A1410] font-inter font-semibold uppercase tracking-widest text-sm py-3 cursor-not-allowed"
             >
-              Payer {computedTotal.toLocaleString('fr-MA')} MAD
+              Payer {computedTotal.toLocaleString('fr-BE')} MAD
             </button>
           </div>
         </div>

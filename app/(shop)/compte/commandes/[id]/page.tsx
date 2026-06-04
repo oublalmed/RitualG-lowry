@@ -204,7 +204,7 @@ export default function OrderDetailPage() {
               </div>
               <div className="text-right">
                 <p className="font-inter text-sm font-semibold text-[#1A1410]">
-                  {item.price.toLocaleString('fr-MA')} MAD
+                  {item.price.toLocaleString('fr-BE')} MAD
                 </p>
                 <p className="text-xs font-inter text-[#3D2B1F]/50">Qté : {item.qty}</p>
               </div>
@@ -216,15 +216,15 @@ export default function OrderDetailPage() {
         <div className="px-5 py-4 border-t border-[#C9A875]/15 bg-[#FAF6EF]/40 space-y-1.5">
           <div className="flex justify-between text-sm font-inter text-[#3D2B1F]/70">
             <span>Sous-total</span>
-            <span>{order.subtotal.toLocaleString('fr-MA')} MAD</span>
+            <span>{order.subtotal.toLocaleString('fr-BE')} €</span>
           </div>
           <div className="flex justify-between text-sm font-inter text-[#3D2B1F]/70">
             <span>Livraison</span>
-            <span>{order.shipping === 0 ? 'Offerte' : `${order.shipping} MAD`}</span>
+            <span>{order.shipping === 0 ? 'Offerte' : `${order.shipping} €`}</span>
           </div>
           <div className="flex justify-between font-inter font-bold text-[#1A1410] text-base pt-1 border-t border-[#C9A875]/15">
             <span>Total</span>
-            <span>{order.total.toLocaleString('fr-MA')} MAD</span>
+            <span>{order.total.toLocaleString('fr-BE')} €</span>
           </div>
         </div>
       </div>

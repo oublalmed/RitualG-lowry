@@ -147,11 +147,11 @@ export function ProductPageClient({ product, relatedProducts }: ProductPageClien
             {/* Price */}
             <motion.div variants={fadeInUp} className="flex items-baseline gap-3">
               <span className="font-inter font-bold text-3xl text-[#1A1410]">
-                {currentPrice.toLocaleString('fr-MA')} MAD
+                {currentPrice.toLocaleString('fr-BE')} MAD
               </span>
               {product.comparePrice && (
                 <span className="font-inter text-lg text-[#C9A8A0] line-through">
-                  {product.comparePrice.toLocaleString('fr-MA')} MAD
+                  {product.comparePrice.toLocaleString('fr-BE')} MAD
                 </span>
               )}
               {product.comparePrice && (
