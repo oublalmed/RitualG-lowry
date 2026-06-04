@@ -1,6 +1,7 @@
 'use client';
 
 import { useState } from 'react';
+import Image from 'next/image';
 import Link from 'next/link';
 import { Share2, Users, Music2 } from 'lucide-react';
 
@@ -102,12 +103,14 @@ export function Footer() {
           <div className="py-14 grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-10 lg:gap-8">
             {/* Col 1 — Marque */}
             <div>
-              <Link
-                href="/"
-                className="inline-block text-2xl font-playfair font-bold italic hover:opacity-80 transition-opacity"
-              >
-                <span className="text-[#FAF6EF]">Ritual</span>
-                <span className="text-[#C9A875]">Glowry</span>
+              <Link href="/" className="inline-block hover:opacity-80 transition-opacity" aria-label="Ritual Glowry">
+                <Image
+                  src="/logo.png"
+                  alt="Ritual Glowry"
+                  width={100}
+                  height={68}
+                  className="h-14 w-auto object-contain brightness-0 invert"
+                />
               </Link>
               <p className="mt-3 text-sm font-cormorant italic text-[#FAF6EF]/60 leading-relaxed max-w-[220px]">
                 Des extensions naturelles qui subliment votre beauté authentique.

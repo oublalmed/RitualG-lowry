@@ -2,6 +2,7 @@
 
 import { useState, useEffect, useRef } from 'react';
 import Link from 'next/link';
+import Image from 'next/image';
 import { ShoppingBag, Search, User, Heart, Menu, ChevronRight } from 'lucide-react';
 import { Sheet, SheetContent, SheetTrigger } from '@/components/ui/sheet';
 import { useCartStore } from '@/stores/cartStore';
@@ -132,10 +133,10 @@ export function Header() {
                       <Link
                         href="/"
                         onClick={() => setMobileOpen(false)}
-                        className="text-xl font-playfair font-bold italic"
+                        className="hover:opacity-80 transition-opacity"
+                        aria-label="Ritual Glowry"
                       >
-                        <span className="text-[#3D2B1F]">Ritual</span>
-                        <span className="text-[#C9A875]">Glowry</span>
+                        <Image src="/logo.png" alt="Ritual Glowry" width={80} height={54} className="h-10 w-auto" />
                       </Link>
                     </div>
                     <nav className="flex-1 px-6 py-8 space-y-1">
@@ -192,10 +193,17 @@ export function Header() {
             {/* Logo */}
             <Link
               href="/"
-              className="absolute left-1/2 -translate-x-1/2 md:relative md:left-auto md:translate-x-0 text-xl md:text-2xl font-playfair font-bold italic hover:opacity-80 transition-opacity"
+              className="absolute left-1/2 -translate-x-1/2 md:relative md:left-auto md:translate-x-0 hover:opacity-80 transition-opacity"
+              aria-label="Ritual Glowry — Accueil"
             >
-              <span className="text-[#3D2B1F]">Ritual</span>
-              <span className="text-[#C9A875]">Glowry</span>
+              <Image
+                src="/logo.png"
+                alt="Ritual Glowry"
+                width={90}
+                height={60}
+                className="h-12 w-auto object-contain"
+                priority
+              />
             </Link>
 
             {/* Desktop nav */}
