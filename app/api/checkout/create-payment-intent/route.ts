@@ -9,8 +9,8 @@ import { rateLimit, getClientIp, RATE_LIMITS } from '@/lib/rate-limit';
 
 const cartItemSchema = z.object({
   sanityProductId: z.string().min(1),
-  sanityVariantId: z.string().optional(),
-  quantity: z.int().min(1).max(100),
+  sanityVariantId: z.string().nullish(),
+  quantity: z.number().int().min(1).max(100),
   variantLabel: z.string().min(1),
 });
 
