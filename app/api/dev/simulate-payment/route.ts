@@ -20,6 +20,14 @@ export async function POST(req: Request) {
       data: { status: 'PAID', paidAt: new Date(), stripePaymentIntentId: `pi_test_simulated_${Date.now()}` },
     });
 
+    // Increment promo code usage
+    if (order.promoCode) {
+      await prisma.promoCode.update({
+        where: { code: order.promoCode },
+        data: { currentUses: { increment: 1 } },
+      }).catch(() => {});
+    }
+
     // Loyalty points (1 per 10 MAD)
     if (order.userId) {
       const points = Math.floor(Number(order.total) / 10);
