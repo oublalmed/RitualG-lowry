@@ -8,7 +8,6 @@ import { BrandManifesto } from '@/components/common/BrandManifesto';
 import { TestimonialsSection } from '@/components/common/TestimonialsSection';
 import { BeforeAfterSection } from '@/components/home/BeforeAfterSection';
 import { StoryPreview } from '@/components/home/StoryPreview';
-import { NewsletterSection } from '@/components/home/NewsletterSection';
 import { TrustBar } from '@/components/common/TrustBar';
 
 export const metadata: Metadata = {
@@ -62,8 +61,6 @@ export default function HomePage() {
         {/* 7 — Avant / Après */}
         <BeforeAfterSection />
 
-        {/* 8 — Newsletter */}
-        <NewsletterSection />
       </main>
       <Footer />
     </>
