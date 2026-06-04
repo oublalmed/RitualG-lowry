@@ -888,6 +888,7 @@ function StepPayment({ shippingData, guestEmail, onBack, onPromoChange }: StepPa
           shippingMethod: shippingData.shippingMethod,
           promoCode: promo?.code ?? null,
           guestEmail: guestEmail || null,
+          existingOrderId: orderId ?? undefined,
         }),
       });
       const data = (await res.json()) as {
@@ -918,16 +919,16 @@ function StepPayment({ shippingData, guestEmail, onBack, onPromoChange }: StepPa
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
-  // Re-create payment intent when promo changes (to get correct server-side total)
+  // When promo changes after initial PI creation: update the Stripe PI amount
+  // We do NOT recreate the order — we just update the existing PI's amount via the API
   const prevPromoRef = useRef<string | null>(null);
   useEffect(() => {
     const newCode = promo?.code ?? null;
-    if (prevPromoRef.current === newCode) return; // no change
+    if (prevPromoRef.current === newCode) return;
     prevPromoRef.current = newCode;
-    if (!hasCreatedRef.current) return; // not yet created
-    // Reset and recreate with new promo
+    if (!hasCreatedRef.current) return; // initial PI not yet created
+    // Reset client secret so Stripe Elements reload with new amount
     setClientSecret(null);
-    setOrderId(null);
     void createPaymentIntent();
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [promo]);
@@ -1018,7 +1019,7 @@ function StepPayment({ shippingData, guestEmail, onBack, onPromoChange }: StepPa
               disabled
               className="flex-1 bg-[#C9A875]/50 text-[#1A1410] font-inter font-semibold uppercase tracking-widest text-sm py-3 cursor-not-allowed"
             >
-              Payer {(total || computedTotal).toLocaleString('fr-MA')} MAD
+              Payer {computedTotal.toLocaleString('fr-MA')} MAD
             </button>
           </div>
         </div>

@@ -57,27 +57,88 @@ async function sendOrderEmail(orderId: string) {
   else alert('Erreur lors de l\'envoi de l\'email');
 }
 
-function printInvoice(order: AdminOrder) {
-  const clientLabel = order.user?.name ?? order.user?.email ?? order.guestEmail ?? '—';
-  const date = new Date(order.createdAt).toLocaleDateString('fr-MA', { day: '2-digit', month: 'long', year: 'numeric' });
+async function printInvoice(order: AdminOrder) {
+  // Fetch full order details (includes items, subtotal, shipping, discount)
+  let fullOrder: any = null;
+  try {
+    const res = await fetch(`/api/admin/orders/${order.id}`);
+    if (res.ok) fullOrder = (await res.json()).data;
+  } catch { /* use basic order */ }
+
+  const o = fullOrder ?? order;
+  const clientLabel = o.user?.name ?? o.user?.email ?? o.guestEmail ?? '—';
+  const date = new Date(o.createdAt).toLocaleDateString('fr-MA', { day: '2-digit', month: 'long', year: 'numeric' });
+  const statusLabels: Record<string, string> = {
+    PENDING: 'En attente', PAID: 'Payée', PROCESSING: 'En préparation',
+    SHIPPED: 'Expédiée', DELIVERED: 'Livrée', CANCELLED: 'Annulée', REFUNDED: 'Remboursée',
+  };
+
+  const itemsHTML = (o.items ?? []).map((item: any) => `
+    <tr>
+      <td style="padding:8px 4px;border-bottom:1px solid #eee">${item.productName}</td>
+      <td style="padding:8px 4px;border-bottom:1px solid #eee;text-align:center">${item.variantLabel ?? '—'}</td>
+      <td style="padding:8px 4px;border-bottom:1px solid #eee;text-align:center">${item.quantity}</td>
+      <td style="padding:8px 4px;border-bottom:1px solid #eee;text-align:right">${Number(item.unitPrice).toLocaleString('fr-MA')} MAD</td>
+      <td style="padding:8px 4px;border-bottom:1px solid #eee;text-align:right">${Number(item.totalPrice).toLocaleString('fr-MA')} MAD</td>
+    </tr>`).join('');
+
   const win = window.open('', '_blank');
   if (!win) return;
   win.document.write(`
-    <html><head><title>Facture ${order.orderNumber}</title>
-    <style>body{font-family:Arial,sans-serif;padding:40px;color:#1A1410}
-    .header{border-bottom:2px solid #C9A875;padding-bottom:20px;margin-bottom:30px}
-    .brand{font-size:24px;font-weight:bold;color:#C9A875}
-    .row{display:flex;justify-content:space-between;padding:8px 0;border-bottom:1px solid #eee}
-    .total{font-weight:bold;font-size:18px;margin-top:20px}
+    <html><head><title>Facture ${o.orderNumber}</title>
+    <style>
+      *{box-sizing:border-box}
+      body{font-family:Arial,sans-serif;padding:40px;color:#1A1410;max-width:800px;margin:0 auto}
+      .header{display:flex;justify-content:space-between;border-bottom:3px solid #C9A875;padding-bottom:20px;margin-bottom:30px}
+      .brand{font-size:28px;font-weight:bold;color:#C9A875;font-style:italic}
+      .subtitle{font-size:11px;color:#888;text-transform:uppercase;letter-spacing:1px}
+      table{width:100%;border-collapse:collapse;margin:20px 0}
+      th{background:#f5f0e8;padding:10px 4px;text-align:left;font-size:12px;text-transform:uppercase;letter-spacing:0.5px}
+      .totals{margin-top:20px;margin-left:auto;width:300px}
+      .totals-row{display:flex;justify-content:space-between;padding:6px 0;border-bottom:1px solid #eee;font-size:14px}
+      .totals-total{display:flex;justify-content:space-between;padding:10px 0;font-weight:bold;font-size:16px;border-top:2px solid #C9A875;margin-top:6px}
+      .badge{display:inline-block;padding:3px 10px;border-radius:20px;font-size:11px;background:#f0f9f0;color:#2d7a2d}
+      @media print{body{padding:20px}}
     </style></head><body>
     <div class="header">
-      <div class="brand">Ritual Glowry</div>
-      <div>FACTURE — ${order.orderNumber}</div>
-      <div>Date : ${date}</div>
-      <div>Cliente : ${clientLabel}</div>
+      <div>
+        <div class="brand">Ritual Glowry</div>
+        <div class="subtitle">Luxury Hair — Maroc</div>
+      </div>
+      <div style="text-align:right">
+        <div style="font-size:18px;font-weight:bold">FACTURE</div>
+        <div style="font-size:14px;color:#888">${o.orderNumber}</div>
+        <div style="font-size:13px;margin-top:6px">Date : ${date}</div>
+        <div style="font-size:13px">Statut : <span class="badge">${statusLabels[o.status] ?? o.status}</span></div>
+      </div>
     </div>
-    <div class="row"><span>Statut</span><span>${order.status}</span></div>
-    <div class="row total"><span>TOTAL</span><span>${Number(order.total).toLocaleString('fr-MA')} MAD</span></div>
+
+    <div style="margin-bottom:20px">
+      <div style="font-size:12px;color:#888;text-transform:uppercase;letter-spacing:0.5px;margin-bottom:4px">Cliente</div>
+      <div style="font-size:14px;font-weight:bold">${clientLabel}</div>
+    </div>
+
+    <table>
+      <thead>
+        <tr>
+          <th>Produit</th><th>Variante</th><th style="text-align:center">Qté</th>
+          <th style="text-align:right">Prix unit.</th><th style="text-align:right">Total</th>
+        </tr>
+      </thead>
+      <tbody>${itemsHTML || '<tr><td colspan="5" style="padding:12px;text-align:center;color:#888">—</td></tr>'}</tbody>
+    </table>
+
+    <div class="totals">
+      <div class="totals-row"><span>Sous-total</span><span>${Number(o.subtotal ?? 0).toLocaleString('fr-MA')} MAD</span></div>
+      <div class="totals-row"><span>Livraison</span><span>${Number(o.shipping ?? 0) === 0 ? 'Offerte' : Number(o.shipping ?? 0).toLocaleString('fr-MA') + ' MAD'}</span></div>
+      ${Number(o.discount ?? 0) > 0 ? `<div class="totals-row" style="color:#c0392b"><span>Code promo${o.promoCode ? ' (' + o.promoCode + ')' : ''}</span><span>-${Number(o.discount).toLocaleString('fr-MA')} MAD</span></div>` : ''}
+      <div class="totals-total"><span>TOTAL</span><span>${Number(o.total).toLocaleString('fr-MA')} MAD</span></div>
+    </div>
+
+    <div style="margin-top:40px;font-size:11px;color:#aaa;text-align:center;border-top:1px solid #eee;padding-top:20px">
+      Ritual Glowry — contact@ritualglowry.ma — www.ritualglowry.ma<br>
+      Merci pour votre confiance.
+    </div>
     <script>window.onload=()=>{window.print()}</script>
     </body></html>
   `);
@@ -266,7 +327,7 @@ export default function AdminCommandesPage() {
                             <button
                               className="p-1.5 rounded-lg bg-gray-100 text-gray-600 hover:bg-gray-200 transition-colors"
                               title="Imprimer facture"
-                              onClick={() => printInvoice(order)}
+                              onClick={() => void printInvoice(order)}
                             >
                               <Printer className="h-3.5 w-3.5" />
                             </button>

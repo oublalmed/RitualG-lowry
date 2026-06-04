@@ -31,6 +31,7 @@ const requestSchema = z.object({
   shippingMethod: z.enum(['STANDARD', 'EXPRESS', 'PREMIUM']),
   promoCode: z.string().nullable().optional(),
   guestEmail: z.string().email().nullable().optional(),
+  existingOrderId: z.string().optional(), // pass to UPDATE instead of create new order
 });
 
 // ─── Shipping cost ─────────────────────────────────────────────────────────────
@@ -72,7 +73,7 @@ export async function POST(request: NextRequest) {
       );
     }
 
-    const { items, shippingAddress, shippingMethod, promoCode, guestEmail } = parsed.data;
+    const { items, shippingAddress, shippingMethod, promoCode, guestEmail, existingOrderId } = parsed.data;
 
     // ── Server-side price recalculation (anti-tampering) ──
     let subtotal = 0;
@@ -144,44 +145,52 @@ export async function POST(request: NextRequest) {
     }
 
     const total = Math.max(0, subtotal + shippingCost - discount);
-    const orderNumber = generateOrderNumber();
     const email = guestEmail ?? 'guest@checkout.local';
+    let orderNumber = generateOrderNumber();
 
-    // ── Create Order in Prisma ──
+    // ── Create or Update Order in Prisma ──
     let dbOrderId: string | null = null;
     try {
-      const order = await prisma.order.create({
-        data: {
-          orderNumber,
-          status: 'PENDING',
-          subtotal,
-          shipping: shippingCost,
-          discount,
-          total,
-          currency: 'MAD',
-          shippingMethod,
-          guestEmail: email,
-          promoCode: promoCode ?? undefined,
-          notes: JSON.stringify({
-            shippingAddress,
-          }),
-          items: {
-            create: resolvedItems.map((ri, idx) => ({
-              sanityProductId: items[idx].sanityProductId,
-              sanityVariantId: items[idx].sanityVariantId ?? null,
-              productName: ri.name,
-              variantLabel: items[idx].variantLabel,
-              quantity: ri.quantity,
-              unitPrice: ri.price,
-              totalPrice: ri.price * ri.quantity,
-            })),
+      if (existingOrderId) {
+        // Promo was applied after initial creation — update existing order
+        const existing = await prisma.order.findUnique({ where: { id: existingOrderId }, select: { orderNumber: true } });
+        if (existing) orderNumber = existing.orderNumber;
+        await prisma.order.update({
+          where: { id: existingOrderId },
+          data: { subtotal, shipping: shippingCost, discount, total, promoCode: promoCode ?? null },
+        });
+        dbOrderId = existingOrderId;
+      } else {
+        const order = await prisma.order.create({
+          data: {
+            orderNumber,
+            status: 'PENDING',
+            subtotal,
+            shipping: shippingCost,
+            discount,
+            total,
+            currency: 'MAD',
+            shippingMethod,
+            guestEmail: email,
+            promoCode: promoCode ?? undefined,
+            notes: JSON.stringify({ shippingAddress }),
+            items: {
+              create: resolvedItems.map((ri, idx) => ({
+                sanityProductId: items[idx].sanityProductId,
+                sanityVariantId: items[idx].sanityVariantId ?? null,
+                productName: ri.name,
+                variantLabel: items[idx].variantLabel,
+                quantity: ri.quantity,
+                unitPrice: ri.price,
+                totalPrice: ri.price * ri.quantity,
+              })),
+            },
           },
-        },
-      });
-      dbOrderId = order.id;
+        });
+        dbOrderId = order.id;
+      }
     } catch {
-      // Demo mode without DB — continue
-      dbOrderId = `demo-${Date.now()}`;
+      dbOrderId = existingOrderId ?? `demo-${Date.now()}`;
     }
 
     // ── Stripe PaymentIntent ──
