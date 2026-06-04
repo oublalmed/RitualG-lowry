@@ -89,7 +89,13 @@ export default function CompteDashboard() {
   });
 
   useEffect(() => {
-    if (!session?.user?.id) return;
+    // If session is still loading, do nothing (show spinner)
+    if (session === undefined) return;
+    // If session loaded but no user, stop loading (proxy will redirect)
+    if (!session?.user?.id) {
+      setLoading(false);
+      return;
+    }
 
     async function loadData() {
       setLoading(true);
@@ -130,14 +136,25 @@ export default function CompteDashboard() {
     }
 
     loadData();
-  }, [session?.user?.id]);
+  }, [session]);
 
-  const loyaltyPoints = profile?.loyaltyPoints ?? 0;
-  const loyaltyTier = profile?.loyaltyTier ?? 'BRONZE';
+  const loyaltyPoints = profile?.loyaltyPoints ?? session?.user?.loyaltyPoints ?? 0;
+  const loyaltyTier = (profile?.loyaltyTier ?? session?.user?.loyaltyTier ?? 'BRONZE') as UserProfile['loyaltyTier'];
+
+  // Calculate real savings: sum of discounts on PAID/DELIVERED orders
+  const totalSavings = orders
+    .filter((o) => ['PAID', 'PROCESSING', 'SHIPPED', 'DELIVERED'].includes(o.status))
+    .reduce((sum, o) => sum + (Number((o as any).discount) || 0), 0);
+
+  const savingsLabel = loading
+    ? '...'
+    : totalSavings > 0
+    ? `${totalSavings.toLocaleString('fr-MA')} MAD`
+    : '0 MAD';
 
   const stats = [
     { icon: Package, label: 'Commandes', value: String(orders.length), color: 'text-[#C9A875]' },
-    { icon: TrendingDown, label: 'Économies', value: '— MAD', color: 'text-green-600' },
+    { icon: TrendingDown, label: 'Économies', value: savingsLabel, color: 'text-green-600' },
     { icon: Star, label: 'Points', value: String(loyaltyPoints), color: 'text-[#B8924B]' },
     { icon: Trophy, label: 'Tier', value: getTierLabel(loyaltyTier), color: 'text-[#C9A875]' },
   ];
