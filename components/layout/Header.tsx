@@ -137,10 +137,9 @@ export function Header() {
                         aria-label="Ritual Glowry"
                       >
                         <Image src="/logo.png" alt="Ritual Glowry" width={80} height={54} className="h-10 w-auto" />
-                        <div className="flex flex-col leading-none">
-                          <span className="font-playfair font-bold italic text-base text-[#3D2B1F]">Ritual</span>
-                          <span className="font-playfair font-bold italic text-base text-[#C9A875]">Glowry</span>
-                        </div>
+                        <span className="font-playfair font-bold italic text-lg text-[#3D2B1F]">
+                          Ritual<span className="text-[#C9A875]">Glowry</span>
+                        </span>
                       </Link>
                     </div>
                     <nav className="flex-1 px-6 py-8 space-y-1">
@@ -208,10 +207,9 @@ export function Header() {
                 className="h-12 w-auto object-contain"
                 priority
               />
-              <div className="hidden md:flex flex-col leading-none">
-                <span className="font-playfair font-bold italic text-lg text-[#3D2B1F]">Ritual</span>
-                <span className="font-playfair font-bold italic text-lg text-[#C9A875]">Glowry</span>
-              </div>
+              <span className="hidden md:block font-playfair font-bold italic text-xl text-[#3D2B1F]">
+                Ritual<span className="text-[#C9A875]">Glowry</span>
+              </span>
             </Link>
 
             {/* Desktop nav */}

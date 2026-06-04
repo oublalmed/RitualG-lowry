@@ -111,10 +111,9 @@ export function Footer() {
                   height={68}
                   className="h-14 w-auto object-contain brightness-0 invert"
                 />
-                <div className="flex flex-col leading-none">
-                  <span className="font-playfair font-bold italic text-xl text-[#FAF6EF]">Ritual</span>
-                  <span className="font-playfair font-bold italic text-xl text-[#C9A875]">Glowry</span>
-                </div>
+                <span className="font-playfair font-bold italic text-2xl text-[#FAF6EF]">
+                  Ritual<span className="text-[#C9A875]">Glowry</span>
+                </span>
               </Link>
               <p className="mt-3 text-sm font-cormorant italic text-[#FAF6EF]/60 leading-relaxed max-w-[220px]">
                 Des extensions naturelles qui subliment votre beauté authentique.
