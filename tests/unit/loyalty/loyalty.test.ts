@@ -91,6 +91,10 @@ describe('Programme de fidélité et contrôle des permissions', () => {
     resetPrismaMocks();
     mockGetServerSession.mockReset();
     vi.stubEnv('STRIPE_WEBHOOK_SECRET', 'whsec_test_loyalty');
+    vi.spyOn(console, 'error').mockImplementation(() => {});
+    vi.spyOn(console, 'warn').mockImplementation(() => {});
+    vi.spyOn(console, 'log').mockImplementation(() => {});
+    vi.spyOn(console, 'info').mockImplementation(() => {});
   });
 
   // ───────────────────────────────────────────────────────────────────────────

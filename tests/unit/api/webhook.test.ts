@@ -90,6 +90,12 @@ describe('Webhook Stripe — POST /api/webhook/stripe', () => {
     vi.mocked(emailModule.sendPaymentFailureEmail).mockClear();
     vi.mocked(emailModule.sendAdminNotification).mockClear();
 
+    // Suppress expected console output from route handler during tests
+    vi.spyOn(console, 'error').mockImplementation(() => {});
+    vi.spyOn(console, 'warn').mockImplementation(() => {});
+    vi.spyOn(console, 'log').mockImplementation(() => {});
+    vi.spyOn(console, 'info').mockImplementation(() => {});
+
     vi.stubEnv('STRIPE_WEBHOOK_SECRET', WEBHOOK_SECRET);
     vi.stubEnv('ADMIN_EMAIL', 'admin@ritualglowry.com');
 
