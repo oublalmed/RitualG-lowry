@@ -5,6 +5,15 @@ import { createUser } from '@/tests/factories/userFactory';
 // Mock @/lib/prisma via le helper partagé
 vi.mock('@/lib/prisma', () => ({ prisma: prismaMock }));
 
+// Mock bcrypt — évite les ~300ms par hash en tests
+vi.mock('bcryptjs', () => ({
+  default: {
+    hash: vi.fn((p: string) => Promise.resolve(`$2a$01$hashed_${p}`)),
+    compare: vi.fn((p: string, h: string) => Promise.resolve(h === `$2a$01$hashed_${p}`)),
+    genSalt: vi.fn(() => Promise.resolve('$2a$01$fakesalt')),
+  },
+}));
+
 // Mock @/lib/email — non bloquant
 vi.mock('@/lib/email', () => ({
   sendWelcomeEmail: vi.fn().mockResolvedValue({ success: true }),
