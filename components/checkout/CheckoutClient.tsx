@@ -163,6 +163,8 @@ interface StepIdentProps {
 
 function StepIdentification({ onNext, guestEmail, sessionName }: StepIdentProps) {
   const [mode, setMode] = useState<'login' | 'guest' | 'register'>('guest');
+  const [authError, setAuthError] = useState<string | null>(null);
+  const [submitting, setSubmitting] = useState(false);
   const {
     register,
     handleSubmit,
@@ -180,8 +182,29 @@ function StepIdentification({ onNext, guestEmail, sessionName }: StepIdentProps)
     (setValue as (name: string, value: string) => void)('mode', mode);
   }, [mode, setValue]);
 
-  const onSubmit = (data: IdentificationFormData) => {
-    onNext(data.email);
+  const onSubmit = async (data: IdentificationFormData) => {
+    setAuthError(null);
+    setSubmitting(true);
+    try {
+      if (mode === 'register') {
+        // Create account then proceed
+        const res = await fetch('/api/auth/register', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ email: data.email, password: (data as any).password, name: data.email.split('@')[0] }),
+        });
+        const json = await res.json();
+        if (!res.ok) {
+          setAuthError(json.error ?? 'Erreur lors de la création du compte');
+          return;
+        }
+      }
+      onNext(data.email);
+    } catch {
+      setAuthError('Erreur réseau. Veuillez réessayer.');
+    } finally {
+      setSubmitting(false);
+    }
   };
 
   if (sessionName) {
@@ -299,11 +322,18 @@ function StepIdentification({ onNext, guestEmail, sessionName }: StepIdentProps)
           </div>
         )}
 
+        {authError && (
+          <p className="text-xs text-red-600 bg-red-50 border border-red-200 rounded px-3 py-2 font-inter">
+            {authError}
+          </p>
+        )}
+
         <button
           type="submit"
-          className="w-full bg-[#C9A875] hover:bg-[#B8924B] text-[#1A1410] font-inter font-semibold uppercase tracking-widest text-sm py-4 transition-colors duration-300 flex items-center justify-center gap-2 mt-2"
+          disabled={submitting}
+          className="w-full bg-[#C9A875] hover:bg-[#B8924B] disabled:opacity-60 text-[#1A1410] font-inter font-semibold uppercase tracking-widest text-sm py-4 transition-colors duration-300 flex items-center justify-center gap-2 mt-2"
         >
-          Continuer <ChevronRight className="h-4 w-4" />
+          {submitting ? 'Création du compte...' : <>Continuer <ChevronRight className="h-4 w-4" /></>}
         </button>
       </form>
     </motion.div>
@@ -801,11 +831,17 @@ interface StepPaymentProps {
   shippingData: ShippingFormData;
   guestEmail: string;
   onBack: () => void;
+  onPromoChange?: (promo: PromoResult | null) => void;
 }
 
-function StepPayment({ shippingData, guestEmail, onBack }: StepPaymentProps) {
+function StepPayment({ shippingData, guestEmail, onBack, onPromoChange }: StepPaymentProps) {
   const [sameBilling, setSameBilling] = useState(true);
   const [promo, setPromo] = useState<PromoResult | null>(null);
+
+  const handlePromoChange = (p: PromoResult | null) => {
+    setPromo(p);
+    onPromoChange?.(p);
+  };
   const [clientSecret, setClientSecret] = useState<string | null>(null);
   const [orderId, setOrderId] = useState<string | null>(null);
   const [total, setTotal] = useState<number>(0);
@@ -903,7 +939,7 @@ function StepPayment({ shippingData, guestEmail, onBack }: StepPaymentProps) {
       </div>
 
       {/* Promo code */}
-      <PromoCodeInput subtotal={subtotal} onPromo={setPromo} />
+      <PromoCodeInput subtotal={subtotal} onPromo={handlePromoChange} />
 
       {/* Stripe or demo */}
       {apiError && (
@@ -983,6 +1019,7 @@ export function CheckoutClient() {
   const [step, setStep] = useState(0);
   const [guestEmail, setGuestEmail] = useState('');
   const [shippingData, setShippingData] = useState<ShippingFormData | null>(null);
+  const [activePromo, setActivePromo] = useState<PromoResult | null>(null);
   const { items } = useCartStore();
 
   // TODO: Replace with actual session check
@@ -1053,6 +1090,7 @@ export function CheckoutClient() {
                     shippingData={shippingData}
                     guestEmail={guestEmail}
                     onBack={() => setStep(1)}
+                    onPromoChange={setActivePromo}
                   />
                 </motion.div>
               )}
@@ -1063,7 +1101,7 @@ export function CheckoutClient() {
           <div className="lg:col-span-1">
             <OrderSummary
               shippingMethod={shippingData?.shippingMethod ?? null}
-              promo={null}
+              promo={activePromo}
             />
           </div>
         </div>
