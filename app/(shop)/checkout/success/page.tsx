@@ -5,17 +5,22 @@ import { motion } from 'framer-motion';
 import Link from 'next/link';
 import { useSearchParams } from 'next/navigation';
 import { Suspense } from 'react';
+import { useCartStore } from '@/stores/cartStore';
 
 function SuccessContent() {
   const searchParams = useSearchParams();
   const orderNumber = searchParams.get('order') ?? 'LUX-2026-XXXXX';
   const email = searchParams.get('email') ?? '';
+  const { clear } = useCartStore();
 
   const [drawn, setDrawn] = useState(false);
 
   useEffect(() => {
+    // Clear the cart on successful payment — Stripe redirect lands here
+    clear();
     const t = setTimeout(() => setDrawn(true), 100);
     return () => clearTimeout(t);
+  // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
   return (

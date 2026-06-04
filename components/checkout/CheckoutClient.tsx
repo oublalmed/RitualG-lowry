@@ -793,9 +793,8 @@ function StripePaymentForm({ clientSecret: _clientSecret, orderId: _orderId, tot
     if (confirmError) {
       setError(confirmError.message ?? 'Paiement refusé');
       setLoading(false);
-    } else {
-      clear();
     }
+    // Cart is cleared on the /checkout/success page (Stripe redirects there)
   };
 
   return (
