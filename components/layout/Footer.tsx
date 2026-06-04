@@ -33,12 +33,25 @@ export function Footer() {
   const [email, setEmail] = useState('');
   const [subscribed, setSubscribed] = useState(false);
 
-  const handleSubscribe = (e: React.FormEvent) => {
+  const [subLoading, setSubLoading] = useState(false);
+  const [subError, setSubError] = useState('');
+
+  const handleSubscribe = async (e: React.FormEvent) => {
     e.preventDefault();
-    if (email) {
-      setSubscribed(true);
-      setEmail('');
-    }
+    if (!email) return;
+    setSubLoading(true);
+    setSubError('');
+    try {
+      const res = await fetch('/api/newsletter/subscribe', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ email, source: 'footer' }),
+      });
+      const json = await res.json();
+      if (res.ok) { setSubscribed(true); setEmail(''); }
+      else setSubError(json.error ?? 'Erreur, réessayez.');
+    } catch { setSubError('Erreur réseau.'); }
+    finally { setSubLoading(false); }
   };
 
   return (
@@ -58,22 +71,26 @@ export function Footer() {
                 ✓ Merci ! Bienvenue dans le Club Glowry.
               </p>
             ) : (
-              <form onSubmit={handleSubscribe} className="flex flex-col sm:flex-row gap-3 max-w-md mx-auto">
-                <input
-                  type="email"
-                  value={email}
-                  onChange={(e) => setEmail(e.target.value)}
-                  placeholder="Votre adresse email"
-                  required
-                  className="flex-1 bg-[#FAF6EF] border border-[#3D2B1F]/15 px-4 py-3 font-inter text-sm text-[#1A1410] placeholder:text-[#3D2B1F]/40 focus:outline-none focus:border-[#C9A875] transition-colors"
-                />
-                <button
-                  type="submit"
-                  className="bg-[#3D2B1F] hover:bg-[#1A1410] text-[#FAF6EF] font-inter font-semibold uppercase tracking-[0.08em] text-xs px-8 py-3 transition-colors duration-300 whitespace-nowrap"
-                >
-                  S&apos;inscrire
-                </button>
-              </form>
+              <div className="max-w-md mx-auto">
+                <form onSubmit={handleSubscribe} className="flex flex-col sm:flex-row gap-3">
+                  <input
+                    type="email"
+                    value={email}
+                    onChange={(e) => setEmail(e.target.value)}
+                    placeholder="Votre adresse email"
+                    required
+                    className="flex-1 bg-[#FAF6EF] border border-[#3D2B1F]/15 px-4 py-3 font-inter text-sm text-[#1A1410] placeholder:text-[#3D2B1F]/40 focus:outline-none focus:border-[#C9A875] transition-colors"
+                  />
+                  <button
+                    type="submit"
+                    disabled={subLoading}
+                    className="bg-[#3D2B1F] hover:bg-[#1A1410] disabled:opacity-60 text-[#FAF6EF] font-inter font-semibold uppercase tracking-[0.08em] text-xs px-8 py-3 transition-colors duration-300 whitespace-nowrap"
+                  >
+                    {subLoading ? '...' : "S'inscrire"}
+                  </button>
+                </form>
+                {subError && <p className="text-xs text-red-500 mt-2">{subError}</p>}
+              </div>
             )}
           </div>
         </div>

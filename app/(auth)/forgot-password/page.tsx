@@ -23,10 +23,15 @@ export default function ForgotPasswordPage() {
     formState: { errors },
   } = useForm<FormData>({ resolver: zodResolver(schema) });
 
-  const onSubmit = async (_data: FormData) => {
+  const onSubmit = async (data: FormData) => {
     setLoading(true);
-    // Simulate API call
-    await new Promise((r) => setTimeout(r, 1000));
+    try {
+      await fetch('/api/auth/forgot-password', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ email: data.email }),
+      });
+    } catch { /* silent — always show success to prevent enumeration */ }
     setLoading(false);
     setSent(true);
   };

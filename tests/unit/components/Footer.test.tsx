@@ -1,8 +1,11 @@
 import React from 'react';
-import { describe, it, expect } from 'vitest';
+import { describe, it, expect, vi } from 'vitest';
 import { screen, fireEvent, waitFor } from '@testing-library/react';
 import { renderWithProviders } from '@/tests/helpers/renderWithProviders';
 import { Footer } from '@/components/layout/Footer';
+
+// Mock fetch so newsletter subscription resolves immediately in tests
+vi.stubGlobal('fetch', vi.fn().mockResolvedValue({ ok: true, json: async () => ({ success: true }) }));
 
 describe('Footer', () => {
   it('TC-UI-008 — devrait afficher un message de confirmation après soumission d\'un email valide', async () => {
