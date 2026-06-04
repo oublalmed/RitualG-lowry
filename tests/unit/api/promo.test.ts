@@ -1,11 +1,27 @@
 import { describe, it, expect, beforeEach, vi } from 'vitest';
 
-// ── Mock du rate-limiter pour ne jamais bloquer les tests ────────────────────
+// ── Mock du rate-limiter ──────────────────────────────────────────────────────
 vi.mock('@/lib/rate-limit', () => ({
   rateLimit: vi.fn().mockReturnValue({ success: true, remaining: 9, resetIn: 0 }),
   getClientIp: vi.fn().mockReturnValue('127.0.0.1'),
-  RATE_LIMITS: {
-    promo: { max: 10, windowSec: 300 },
+  RATE_LIMITS: { promo: { max: 10, windowSec: 300 } },
+}));
+
+// ── Mock Prisma — promo codes matching Turso DB ───────────────────────────────
+const PROMO_DB: Record<string, object> = {
+  BIENVENUE15: { code: 'BIENVENUE15', type: 'PERCENTAGE', value: 15, minAmount: 500, maxUses: null, currentUses: 0, isActive: true, expiresAt: null, startsAt: null },
+  GLOWRY10:    { code: 'GLOWRY10',   type: 'PERCENTAGE', value: 10, minAmount: 0,   maxUses: null, currentUses: 0, isActive: true, expiresAt: null, startsAt: null },
+  LUXE200:     { code: 'LUXE200',    type: 'FIXED',      value: 200, minAmount: 1000, maxUses: null, currentUses: 0, isActive: true, expiresAt: null, startsAt: null },
+  VIP50:       { code: 'VIP50',      type: 'FIXED',      value: 50,  minAmount: 800, maxUses: null, currentUses: 0, isActive: true, expiresAt: null, startsAt: null },
+};
+
+vi.mock('@/lib/prisma', () => ({
+  prisma: {
+    promoCode: {
+      findUnique: vi.fn(({ where }: { where: { code: string } }) =>
+        Promise.resolve(PROMO_DB[where.code] ?? null)
+      ),
+    },
   },
 }));
 
@@ -34,8 +50,8 @@ describe('Codes promo — POST /api/promo/validate', () => {
   // ── TC-PROMO-001 : Code valide + panier au-dessus du minimum → remise calculée
   describe('TC-PROMO-001 : code actif avec montant suffisant', () => {
     it('devrait retourner isValid=true et le montant de la remise calculé', async () => {
-      // BIENVENUE : 15 % à partir de 500 MAD
-      const req = makeRequest({ code: 'BIENVENUE', total: 600 });
+      // BIENVENUE15 : 15 % à partir de 500 MAD
+      const req = makeRequest({ code: 'BIENVENUE15', total: 600 });
       const res = await POST(req);
       const data = await res.json();
 

@@ -995,7 +995,7 @@ function StepPayment({ shippingData, guestEmail, onBack, onPromoChange }: StepPa
           <StripePaymentForm
             clientSecret={clientSecret}
             orderId={orderId ?? ''}
-            total={total}
+            total={computedTotal}
             onBack={onBack}
           />
         </Elements>

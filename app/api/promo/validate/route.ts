@@ -1,42 +1,12 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { z } from 'zod/v4';
 import { rateLimit, getClientIp, RATE_LIMITS } from '@/lib/rate-limit';
+import { prisma } from '@/lib/prisma';
 
 const requestSchema = z.object({
   code: z.string().min(1),
   total: z.number().min(0),
 });
-
-type DiscountType = 'PERCENTAGE' | 'FIXED';
-
-interface PromoConfig {
-  type: DiscountType;
-  value: number;
-  minAmount: number;
-  label: string;
-}
-
-// Mock promo codes — in production, query the PromoCode table in Prisma
-const MOCK_PROMOS: Record<string, PromoConfig> = {
-  GLOWRY10: {
-    type: 'PERCENTAGE',
-    value: 10,
-    minAmount: 0,
-    label: '10% de réduction',
-  },
-  BIENVENUE: {
-    type: 'PERCENTAGE',
-    value: 15,
-    minAmount: 500,
-    label: '15% de réduction',
-  },
-  LUXE200: {
-    type: 'FIXED',
-    value: 200,
-    minAmount: 1000,
-    label: '200 MAD de réduction',
-  },
-};
 
 export async function POST(request: NextRequest) {
   const ip = getClientIp(request);
@@ -51,55 +21,63 @@ export async function POST(request: NextRequest) {
   try {
     const body = (await request.json()) as unknown;
     const parsed = requestSchema.safeParse(body);
-
     if (!parsed.success) {
-      return NextResponse.json(
-        { isValid: false, message: 'Données invalides' },
-        { status: 400 }
-      );
+      return NextResponse.json({ isValid: false, message: 'Données invalides' }, { status: 400 });
     }
 
     const { code, total } = parsed.data;
     const upperCode = code.toUpperCase();
-    const promo = MOCK_PROMOS[upperCode];
+
+    const promo = await prisma.promoCode.findUnique({ where: { code: upperCode } });
 
     if (!promo) {
-      return NextResponse.json({
-        isValid: false,
-        discountType: null,
-        discountValue: 0,
-        discountAmount: 0,
-        message: 'Code promo invalide',
-      });
+      return NextResponse.json({ isValid: false, discountAmount: 0, message: 'Code promo invalide' });
     }
 
-    if (total < promo.minAmount) {
+    if (!promo.isActive) {
+      return NextResponse.json({ isValid: false, discountAmount: 0, message: 'Ce code promo n\'est plus actif' });
+    }
+
+    if (promo.expiresAt && promo.expiresAt < new Date()) {
+      return NextResponse.json({ isValid: false, discountAmount: 0, message: 'Ce code promo a expiré' });
+    }
+
+    if (promo.startsAt && promo.startsAt > new Date()) {
+      return NextResponse.json({ isValid: false, discountAmount: 0, message: 'Ce code promo n\'est pas encore actif' });
+    }
+
+    if (promo.maxUses && promo.currentUses >= promo.maxUses) {
+      return NextResponse.json({ isValid: false, discountAmount: 0, message: 'Ce code promo a atteint son nombre d\'utilisations maximum' });
+    }
+
+    const minAmount = promo.minAmount ? Number(promo.minAmount) : 0;
+    if (total < minAmount) {
       return NextResponse.json({
         isValid: false,
-        discountType: promo.type,
-        discountValue: promo.value,
         discountAmount: 0,
-        message: `Montant minimum requis : ${promo.minAmount.toLocaleString('fr-MA')} MAD`,
+        message: `Montant minimum requis : ${minAmount.toLocaleString('fr-MA')} MAD`,
       });
     }
 
     const discountAmount =
       promo.type === 'PERCENTAGE'
-        ? Math.round((total * promo.value) / 100)
-        : promo.value;
+        ? Math.round((total * Number(promo.value)) / 100)
+        : Math.min(Number(promo.value), total);
+
+    const label = promo.type === 'PERCENTAGE'
+      ? `${Number(promo.value)}% de réduction`
+      : `${Number(promo.value)} MAD de réduction`;
 
     return NextResponse.json({
       isValid: true,
+      code: upperCode,
       discountType: promo.type,
-      discountValue: promo.value,
+      discountValue: Number(promo.value),
       discountAmount,
-      message: promo.label,
+      message: label,
     });
   } catch (err) {
     console.error('[promo/validate]', err);
-    return NextResponse.json(
-      { isValid: false, message: 'Erreur interne' },
-      { status: 500 }
-    );
+    return NextResponse.json({ isValid: false, message: 'Erreur interne' }, { status: 500 });
   }
 }
