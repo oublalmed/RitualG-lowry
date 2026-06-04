@@ -552,7 +552,7 @@ function StepShipping({ onNext, onBack, defaultValues }: StepShippingProps) {
                       </p>
                       {option.freeAbove && (
                         <p className="text-xs font-inter text-[#C9A875]">
-                          Gratuit dès {option.freeAbove.toLocaleString('fr-BE')} MAD
+                          Gratuit dès {option.freeAbove.toLocaleString('fr-BE')} €
                         </p>
                       )}
                     </div>
@@ -721,7 +721,7 @@ function OrderSummary({ shippingMethod, promo }: OrderSummaryProps) {
               <span className="block text-xs text-[#3D2B1F]/50">{item.variantLabel} × {item.quantity}</span>
             </span>
             <span className="font-inter font-semibold text-[#3D2B1F] whitespace-nowrap">
-              {(item.price * item.quantity).toLocaleString('fr-BE')} MAD
+              {(item.price * item.quantity).toLocaleString('fr-BE')} €
             </span>
           </li>
         ))}
@@ -746,7 +746,7 @@ function OrderSummary({ shippingMethod, promo }: OrderSummaryProps) {
         <div className="border-t border-[#3D2B1F]/15 pt-3 flex justify-between">
           <span className="font-inter font-bold text-[#3D2B1F]">Total</span>
           <span className="font-playfair font-bold text-xl text-[#1A1410]">
-            {total.toLocaleString('fr-BE')} MAD
+            {total.toLocaleString('fr-BE')} €
           </span>
         </div>
       </div>
@@ -1018,7 +1018,7 @@ function StepPayment({ shippingData, guestEmail, onBack, onPromoChange }: StepPa
               disabled
               className="flex-1 bg-[#C9A875]/50 text-[#1A1410] font-inter font-semibold uppercase tracking-widest text-sm py-3 cursor-not-allowed"
             >
-              Payer {computedTotal.toLocaleString('fr-BE')} MAD
+              Payer {computedTotal.toLocaleString('fr-BE')} €
             </button>
           </div>
         </div>

@@ -175,7 +175,7 @@ export function FilterSidebar({ filters, onChange, onReset }: FilterSidebarProps
       <div className="space-y-4">
         <div className="flex items-center justify-between">
           <h3 className="font-inter text-xs font-semibold uppercase tracking-widest text-[#3D2B1F]/60">
-            Prix (MAD)
+            Prix (€)
           </h3>
           <span className="text-xs font-inter text-[#C9A875]">
             {filters.minPrice}–{filters.maxPrice}
@@ -193,8 +193,8 @@ export function FilterSidebar({ filters, onChange, onReset }: FilterSidebarProps
           className="[&_[data-slot=slider-track]]:bg-[#3D2B1F]/15 [&_[data-slot=slider-range]]:bg-[#C9A875] [&_[data-slot=slider-thumb]]:border-[#C9A875] [&_[data-slot=slider-thumb]]:bg-[#FAF6EF]"
         />
         <div className="flex justify-between text-xs font-inter text-[#3D2B1F]/40">
-          <span>0 MAD</span>
-          <span>2 000 MAD</span>
+          <span>0 €</span>
+          <span>2 000 €</span>
         </div>
       </div>
 

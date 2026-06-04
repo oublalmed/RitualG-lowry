@@ -146,7 +146,7 @@ export default function ParametresPage() {
           <div className="bg-[#F5EDE0] rounded-xl border border-[#C9A875]/10 p-6 space-y-4">
             <h2 className="font-inter font-semibold text-[#3D2B1F] text-sm">Programme fidélité</h2>
             <div>
-              <Label className="text-[#3D2B1F] font-inter text-sm">Points gagnés par MAD dépensé</Label>
+              <Label className="text-[#3D2B1F] font-inter text-sm">Points gagnés par € dépensé</Label>
               <Input
                 type="number"
                 min="0"
@@ -180,7 +180,7 @@ export default function ParametresPage() {
           <div className="bg-[#F5EDE0] rounded-xl border border-[#C9A875]/10 p-6 space-y-4">
             <h2 className="font-inter font-semibold text-[#3D2B1F] text-sm">Tarifs de livraison</h2>
             <div>
-              <Label className="text-[#3D2B1F] font-inter text-sm">Seuil livraison gratuite (MAD)</Label>
+              <Label className="text-[#3D2B1F] font-inter text-sm">Seuil livraison gratuite (€)</Label>
               <Input
                 type="number"
                 min="0"
@@ -193,7 +193,7 @@ export default function ParametresPage() {
               {(['standardPrice', 'expressPrice', 'premiumPrice'] as const).map((key) => (
                 <div key={key}>
                   <Label className="text-[#3D2B1F] font-inter text-sm">
-                    {key === 'standardPrice' ? 'Standard' : key === 'expressPrice' ? 'Express' : 'Premium'} (MAD)
+                    {key === 'standardPrice' ? 'Standard' : key === 'expressPrice' ? 'Express' : 'Premium'} (€)
                   </Label>
                   <Input
                     type="number"

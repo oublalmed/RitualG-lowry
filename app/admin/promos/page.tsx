@@ -266,7 +266,7 @@ export default function PromosPage() {
                     {...register('type')}
                     className="accent-[#C9A875]"
                   />
-                  <span className="text-sm font-inter text-[#3D2B1F]">Montant fixe (MAD)</span>
+                  <span className="text-sm font-inter text-[#3D2B1F]">Montant fixe (€)</span>
                 </label>
               </div>
             </div>
@@ -274,7 +274,7 @@ export default function PromosPage() {
             <div className="grid grid-cols-2 gap-3">
               <div>
                 <Label className="text-[#3D2B1F] font-inter text-sm">
-                  Valeur {promoType === 'PERCENTAGE' ? '(%)' : '(MAD)'}
+                  Valeur {promoType === 'PERCENTAGE' ? '(%)' : '(€)'}
                 </Label>
                 <Input
                   type="number"
@@ -285,7 +285,7 @@ export default function PromosPage() {
                 {errors.value && <p className="text-xs text-red-500 mt-1">{errors.value.message}</p>}
               </div>
               <div>
-                <Label className="text-[#3D2B1F] font-inter text-sm">Montant minimum (MAD)</Label>
+                <Label className="text-[#3D2B1F] font-inter text-sm">Montant minimum (€)</Label>
                 <Input
                   type="number"
                   min="0"

@@ -45,10 +45,10 @@ export default function CGVPage() {
             2. Prix
           </h2>
           <p className="font-inter text-[#3D2B1F]/80 text-base leading-relaxed">
-            Les prix affichés sur le site sont indiqués en Dirhams Marocains (MAD), toutes taxes
+            Les prix affichés sur le site sont indiqués en Dirhams Marocains (€), toutes taxes
             comprises. Ritual Glowry se réserve le droit de modifier ses prix à tout moment.
             Les produits seront facturés au prix en vigueur au moment de la validation de la commande.
-            Les frais de livraison sont offerts pour toute commande supérieure à 1 200 MAD.
+            Les frais de livraison sont offerts pour toute commande supérieure à 1 200 €.
           </p>
         </section>
 

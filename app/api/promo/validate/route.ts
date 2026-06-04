@@ -66,7 +66,7 @@ export async function POST(request: NextRequest) {
 
     const label = promo.type === 'PERCENTAGE'
       ? `${Number(promo.value)}% de réduction`
-      : `${Number(promo.value)} MAD de réduction`;
+      : `${Number(promo.value)} € de réduction`;
 
     return NextResponse.json({
       isValid: true,

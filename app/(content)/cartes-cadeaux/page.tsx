@@ -207,7 +207,7 @@ export default function CartesCadeauxPage() {
                   disabled={!selectedAmount}
                   className="w-full bg-[#C9A875] hover:bg-[#B8924B] disabled:opacity-50 disabled:cursor-not-allowed text-[#1A1410] font-inter font-semibold uppercase tracking-[0.1em] py-4 transition-colors duration-200"
                 >
-                  {selectedAmount ? `Offrir ${selectedAmount} MAD →` : 'Sélectionnez un montant'}
+                  {selectedAmount ? `Offrir ${selectedAmount} € →` : 'Sélectionnez un montant'}
                 </button>
                 {!selectedAmount && (
                   <p className="text-center font-inter text-xs text-[#3D2B1F]/50">

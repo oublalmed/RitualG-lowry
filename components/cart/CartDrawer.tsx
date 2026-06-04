@@ -103,7 +103,7 @@ export function CartDrawer() {
                       </p>
                     )}
                     <p className="text-sm font-inter font-semibold text-[#C9A875] mt-1">
-                      {(item.price * item.quantity).toLocaleString('fr-BE')} MAD
+                      {(item.price * item.quantity).toLocaleString('fr-BE')} €
                     </p>
                     {/* Quantity stepper */}
                     <div className="flex items-center gap-1.5 mt-2">
@@ -150,7 +150,7 @@ export function CartDrawer() {
                   Sous-total
                 </span>
                 <span className="font-playfair font-bold text-lg text-[#1A1410]">
-                  {subtotal.toLocaleString('fr-BE')} MAD
+                  {subtotal.toLocaleString('fr-BE')} €
                 </span>
               </div>
               <p className="text-xs font-inter text-[#3D2B1F]/50">

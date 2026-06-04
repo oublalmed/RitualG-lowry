@@ -204,7 +204,7 @@ export default function OrderDetailPage() {
               </div>
               <div className="text-right">
                 <p className="font-inter text-sm font-semibold text-[#1A1410]">
-                  {item.price.toLocaleString('fr-BE')} MAD
+                  {item.price.toLocaleString('fr-BE')} €
                 </p>
                 <p className="text-xs font-inter text-[#3D2B1F]/50">Qté : {item.qty}</p>
               </div>

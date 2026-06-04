@@ -142,11 +142,11 @@ export function ProductCard({ product }: ProductCardProps) {
 
         <div className="flex items-center gap-3 mt-2">
           <span className="text-base font-inter font-semibold text-[#1A1410]">
-            {displayPrice.toLocaleString('fr-BE')} MAD
+            {displayPrice.toLocaleString('fr-BE')} €
           </span>
           {comparePrice && (
             <span className="text-sm font-inter text-[#C9A8A0] line-through">
-              {comparePrice.toLocaleString('fr-BE')} MAD
+              {comparePrice.toLocaleString('fr-BE')} €
             </span>
           )}
         </div>

@@ -134,7 +134,7 @@ export default function AdminProduitsPage() {
                     {/* Price */}
                     <td className="px-4 py-3">
                       <span className="font-semibold" style={{ color: '#C9A875' }}>
-                        {product.basePrice.toLocaleString('fr-BE')} MAD
+                        {product.basePrice.toLocaleString('fr-BE')} €
                       </span>
                       {product.comparePrice && (
                         <span

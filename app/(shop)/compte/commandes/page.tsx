@@ -154,7 +154,7 @@ export default function CommandesPage() {
                 {/* Footer */}
                 <div className="flex items-center justify-between px-5 py-4 border-t border-[#C9A875]/10 bg-[#FAF6EF]/40">
                   <span className="font-inter font-bold text-[#1A1410]">
-                    Total : {order.total.toLocaleString('fr-BE')} MAD
+                    Total : {order.total.toLocaleString('fr-BE')} €
                   </span>
                   <Link
                     href={`/compte/commandes/${order.id}`}

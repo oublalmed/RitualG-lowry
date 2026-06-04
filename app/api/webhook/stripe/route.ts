@@ -101,7 +101,7 @@ async function handlePaymentSucceeded(pi: Stripe.PaymentIntent) {
       .catch(() => {/* promo update failed */});
   }
 
-  // Loyalty points (1 per 10 MAD)
+  // Loyalty points (1 per 10 €)
   if (order.userId) {
     const points = Math.floor(Number(order.total) / 10);
     if (points > 0) {

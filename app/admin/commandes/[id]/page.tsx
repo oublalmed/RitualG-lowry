@@ -315,7 +315,7 @@ export default function AdminOrderDetailPage() {
         <DialogContent className="bg-[#FAF6EF] border-[#C9A875]/20 max-w-sm">
           <DialogHeader><DialogTitle className="text-orange-700 font-inter">Rembourser la commande</DialogTitle></DialogHeader>
           <p className="text-sm font-inter text-[#3D2B1F]/70 mt-2">
-            Rembourser {order.orderNumber} ({Number(order.total).toLocaleString('fr-BE')} MAD) ?
+            Rembourser {order.orderNumber} ({Number(order.total).toLocaleString('fr-BE')} €) ?
           </p>
           <div className="flex gap-2 mt-4">
             <Button variant="outline" className="flex-1" onClick={() => setRefundDialog(false)}>Annuler</Button>

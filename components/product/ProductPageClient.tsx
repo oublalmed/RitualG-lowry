@@ -147,11 +147,11 @@ export function ProductPageClient({ product, relatedProducts }: ProductPageClien
             {/* Price */}
             <motion.div variants={fadeInUp} className="flex items-baseline gap-3">
               <span className="font-inter font-bold text-3xl text-[#1A1410]">
-                {currentPrice.toLocaleString('fr-BE')} MAD
+                {currentPrice.toLocaleString('fr-BE')} €
               </span>
               {product.comparePrice && (
                 <span className="font-inter text-lg text-[#C9A8A0] line-through">
-                  {product.comparePrice.toLocaleString('fr-BE')} MAD
+                  {product.comparePrice.toLocaleString('fr-BE')} €
                 </span>
               )}
               {product.comparePrice && (
@@ -355,8 +355,8 @@ export function ProductPageClient({ product, relatedProducts }: ProductPageClien
                   Livraison
                 </h4>
                 <ul className="space-y-2">
-                  <li>• Livraison standard : 2 à 5 jours ouvrés — Gratuite dès 500 MAD</li>
-                  <li>• Livraison express : 24 à 48h — 40 MAD</li>
+                  <li>• Livraison standard : 2 à 5 jours ouvrés — Gratuite dès 500 €</li>
+                  <li>• Livraison express : 24 à 48h — 40 €</li>
                   <li>• Toutes les commandes sont expédiées avec suivi numéro de colis.</li>
                   <li>• Emballage discret et sécurisé, boîte cadeau Ritual Glowry incluse.</li>
                 </ul>

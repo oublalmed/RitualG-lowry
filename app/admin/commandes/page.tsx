@@ -29,7 +29,7 @@ const statusConfig: Record<string, { label: string; className: string }> = {
 };
 
 function exportToCSV(orders: AdminOrder[]) {
-  const headers = ['N° Commande', 'Date', 'Cliente', 'Total (MAD)', 'Statut'];
+  const headers = ['N° Commande', 'Date', 'Cliente', 'Total (€)', 'Statut'];
   const rows = orders.map((o) => [
     o.orderNumber,
     new Date(o.createdAt).toLocaleDateString('fr-BE'),

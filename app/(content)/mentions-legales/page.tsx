@@ -33,7 +33,7 @@ export default function MentionsLegalesPage() {
           </h2>
           <p className="font-inter text-[#3D2B1F]/80 text-base leading-relaxed">
             Le site <strong>ritualglowry.ma</strong> est édité par la société <strong>Ritual Glowry SARL</strong>,
-            société à responsabilité limitée au capital social de 100 000 MAD, immatriculée au Registre
+            société à responsabilité limitée au capital social de 100 000 €, immatriculée au Registre
             du Commerce de Casablanca sous le numéro RC XXXXXXX. Siège social : Boulevard Anfa,
             Casablanca 20000, Maroc. Téléphone : +212 6XX XXX XXX. Email : contact@ritualglowry.ma.
             Directeur de la publication : Directeur Général de Ritual Glowry.

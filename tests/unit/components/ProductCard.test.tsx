@@ -31,8 +31,8 @@ describe('ProductCard', () => {
     renderWithProviders(<ProductCard product={makeProduct()} />);
 
     expect(screen.getByText('Extension Lisse Naturelle')).toBeInTheDocument();
-    // Price formatted with fr-MA locale: "850 MAD" or "850 MAD"
-    expect(screen.getByText(/850.*MAD/i)).toBeInTheDocument();
+    // Price formatted with fr-BE locale: "850 €"
+    expect(screen.getByText(/850.*€/i)).toBeInTheDocument();
   });
 
   it('TC-UI-012 — devrait afficher le badge "Nouveau" quand isNew est true', () => {
@@ -61,7 +61,7 @@ describe('ProductCard', () => {
     );
 
     // The strikethrough element should contain the original price
-    const struckPrice = screen.getByText(/1\s*[.,\s]?\s*200.*MAD|1200.*MAD/i);
+    const struckPrice = screen.getByText(/1[\s.,]?200.*€|1200.*€/i);
     expect(struckPrice).toBeInTheDocument();
     expect(struckPrice).toHaveClass('line-through');
   });

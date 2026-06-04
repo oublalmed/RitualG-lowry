@@ -28,7 +28,7 @@ export async function POST(req: Request) {
       }).catch(() => {});
     }
 
-    // Loyalty points (1 per 10 MAD)
+    // Loyalty points (1 per 10 €)
     if (order.userId) {
       const points = Math.floor(Number(order.total) / 10);
       if (points > 0) {
