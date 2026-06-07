@@ -5,7 +5,7 @@ import { useRouter, useSearchParams } from 'next/navigation';
 import { SlidersHorizontal, ChevronDown } from 'lucide-react';
 import { motion } from 'framer-motion';
 
-import type { SanityProduct } from '@/components/shop/ProductGrid';
+import type { Product } from '@/lib/types';
 import { Breadcrumb } from '@/components/common/Breadcrumb';
 import { FilterSidebar, type FilterState } from '@/components/shop/FilterSidebar';
 import { ProductGrid } from '@/components/shop/ProductGrid';
@@ -63,7 +63,7 @@ function buildSearchParams(filters: FilterState, sort: SortOption): URLSearchPar
 }
 
 interface BoutiqueClientProps {
-  products: SanityProduct[];
+  products: Product[];
 }
 
 export function BoutiqueClient({ products }: BoutiqueClientProps) {

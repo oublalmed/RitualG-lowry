@@ -1,26 +1,11 @@
 import { ProductCard } from '@/components/product/ProductCard';
 import { ProductGridSkeleton } from './ProductSkeleton';
+import type { Product } from '@/lib/types';
 
-export interface SanityProduct {
-  _id: string;
-  name: string;
-  slug: string;
-  shortDescription?: string;
-  basePrice: number;
-  comparePrice?: number | null;
-  stockStatus?: string;
-  isNew?: boolean;
-  isBestSeller?: boolean;
-  isFeatured?: boolean;
-  productType?: string[];
-  texture?: string[];
-  category?: { _id: string; name: string; slug: string };
-  images?: any;
-  variantCount?: number;
-}
+export type SanityProduct = Product;
 
 interface ProductGridProps {
-  products: SanityProduct[];
+  products: Product[];
   isLoading?: boolean;
   onResetFilters?: () => void;
 }

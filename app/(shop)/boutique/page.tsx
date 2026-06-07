@@ -1,5 +1,5 @@
 import type { Metadata } from 'next';
-import { getAllProducts } from '@/lib/sanity/fetch';
+import { getAllProducts } from '@/lib/shopify/fetch';
 import { BoutiqueClient } from '@/components/shop/BoutiqueClient';
 
 export const metadata: Metadata = {

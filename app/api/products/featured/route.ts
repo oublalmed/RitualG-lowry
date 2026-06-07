@@ -1,5 +1,5 @@
 import { NextResponse } from 'next/server';
-import { getFeaturedProducts } from '@/lib/sanity/fetch';
+import { getFeaturedProducts } from '@/lib/shopify/fetch';
 
 export async function GET() {
   try {

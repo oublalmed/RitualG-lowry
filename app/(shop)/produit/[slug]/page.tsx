@@ -1,6 +1,6 @@
 import type { Metadata } from 'next';
 import { notFound } from 'next/navigation';
-import { getAllProductSlugs, getProductBySlug, getRelatedProducts } from '@/lib/sanity/fetch';
+import { getAllProductSlugs, getProductBySlug, getRelatedProducts } from '@/lib/shopify/fetch';
 import { ProductPageClient } from '@/components/product/ProductPageClient';
 
 export const revalidate = 3600;
@@ -33,7 +33,7 @@ export default async function ProductPage({ params }: PageProps) {
     notFound();
   }
 
-  const related = await getRelatedProducts(product._id, product.category?._id ?? '');
+  const related = await getRelatedProducts(slug, product.category?.slug ?? '');
 
   return <ProductPageClient product={product} relatedProducts={related} />;
 }

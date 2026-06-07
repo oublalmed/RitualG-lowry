@@ -1,7 +1,7 @@
 import Link from 'next/link';
 import { ArrowRight } from 'lucide-react';
 import { ProductCard } from './ProductCard';
-import { getFeaturedProducts } from '@/lib/sanity/fetch';
+import { getFeaturedProducts } from '@/lib/shopify/fetch';
 
 const fallbackProducts = [
   {
@@ -52,13 +52,13 @@ const fallbackProducts = [
 ];
 
 export async function FeaturedProducts() {
-  const sanityProducts = await getFeaturedProducts();
+  const shopifyProducts = await getFeaturedProducts();
 
   const products =
-    sanityProducts && sanityProducts.length > 0
-      ? sanityProducts.map((p: any) => ({
+    shopifyProducts && shopifyProducts.length > 0
+      ? shopifyProducts.map((p) => ({
           id: p._id,
-          slug: p.slug?.current ?? p.slug,
+          slug: p.slug,
           name: p.name,
           price: p.basePrice,
           comparePrice: p.comparePrice ?? null,

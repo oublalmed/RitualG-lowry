@@ -1,5 +1,6 @@
 import { MetadataRoute } from 'next'
-import { getAllProductSlugs, getAllBlogSlugs } from '@/lib/sanity/fetch'
+import { getAllProductSlugs } from '@/lib/shopify/fetch'
+import { getAllBlogSlugs } from '@/lib/sanity/fetch'
 
 export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
   const base = process.env.NEXT_PUBLIC_APP_URL || 'https://ritualglowry.ma'
